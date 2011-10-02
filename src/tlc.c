@@ -20,10 +20,10 @@ Copyright (C) 2011  Christian Friedl
 #include<stdio.h>
 #include<stdlib.h>
 #include"dasl.h"
-#include"token_list_container.h"
+#include"tlc.h"
 
-token_list_container_t *tlc__new(token_list_t *token_list) {
-    token_list_container_t *tlc = malloc(sizeof(token_list_container_t));
+tlc_t *tlc__new(token_list_t *token_list) {
+    tlc_t *tlc = malloc(sizeof(tlc_t));
     if (tlc != NULL) {
         int i;
         tlc->current_token_list = token_list;
@@ -32,21 +32,21 @@ token_list_container_t *tlc__new(token_list_t *token_list) {
             tlc->token_list_marks[i] = NULL;
         tlc->count_token_list_marks = 0;
     } else
-        dasl_raise_fatal_error("Unable to allocate token_list_container_t");
+        dasl_raise_fatal_error("Unable to allocate tlc_t");
     return tlc;
 }
-void tlc__delete(token_list_container_t *tlc) {
+void tlc__delete(tlc_t *tlc) {
     if (tlc->token_list_start != NULL)
         token_list__delete(tlc->token_list_start);
     free(tlc);
 }
-token_t *tlc__get_current(token_list_container_t *tlc) {
+token_t *tlc__get_current(tlc_t *tlc) {
     return token_list__get_token(tlc->current_token_list);
 }
-token_list_t *tlc__get_current_token_list(token_list_container_t *tlc) {
+token_list_t *tlc__get_current_token_list(tlc_t *tlc) {
     return tlc->current_token_list;
 }
-token_t *tlc__move_to_next(token_list_container_t *tlc) {
+token_t *tlc__move_to_next(tlc_t *tlc) {
     if (token_list__get_next(tlc->current_token_list) != NULL) {
         tlc->current_token_list = token_list__get_next(tlc->current_token_list);
         return token_list__get_token(tlc->current_token_list);
@@ -54,22 +54,22 @@ token_t *tlc__move_to_next(token_list_container_t *tlc) {
         return NULL;
         
 }
-void tlc__set_mark(token_list_container_t *tlc) {
+void tlc__set_mark(tlc_t *tlc) {
     if (tlc->count_token_list_marks < MAX_TLC_MARKS - 1)
         tlc->token_list_marks[(tlc->count_token_list_marks)++] = tlc->current_token_list;
     else
         dasl_raise_fatal_error("Maximum number of token_list_marks reached.");
 }
-void tlc__unset_mark(token_list_container_t *tlc) {
+void tlc__unset_mark(tlc_t *tlc) {
     --(tlc->count_token_list_marks);
 }
-token_t *tlc__move_to_mark(token_list_container_t *tlc) {
+token_t *tlc__move_to_mark(tlc_t *tlc) {
     if (tlc->count_token_list_marks == 0)
         dasl_raise_fatal_error("Mark not set.");
     tlc->current_token_list = tlc->token_list_marks[--(tlc->count_token_list_marks)];
     return token_list__get_token(tlc->current_token_list);
 }
-token_t *tlc__move_to_prev(token_list_container_t *tlc) {
+token_t *tlc__move_to_prev(tlc_t *tlc) {
     if (token_list__get_prev(tlc->current_token_list) != NULL) {
         tlc->current_token_list = token_list__get_prev(tlc->current_token_list);
         return token_list__get_token(tlc->current_token_list);
@@ -77,7 +77,7 @@ token_t *tlc__move_to_prev(token_list_container_t *tlc) {
         return NULL;
 }
 
-token_t *tlc__move_to_start(token_list_container_t *tlc) {
+token_t *tlc__move_to_start(tlc_t *tlc) {
     tlc->current_token_list = tlc->token_list_start;
     if (tlc->current_token_list)
         return token_list__get_token(tlc->current_token_list);

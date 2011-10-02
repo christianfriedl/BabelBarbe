@@ -29,17 +29,17 @@ typedef struct {
     token_list_t *token_list_start;
     token_list_t *token_list_marks[MAX_TLC_MARKS];
     unsigned int count_token_list_marks;
-} token_list_container_t;
+} tlc_t;
 
-token_list_container_t *tlc__new(token_list_t *token_list);
-void tlc__delete(token_list_container_t *tlc);
-token_t *tlc__get_current(token_list_container_t *tlc);
-token_list_t *tlc__get_current_token_list(token_list_container_t *tlc);
+tlc_t *tlc__new(token_list_t *token_list);
+void tlc__delete(tlc_t *tlc);
+token_t *tlc__get_current(tlc_t *tlc);
+token_list_t *tlc__get_current_token_list(tlc_t *tlc);
 void tlc__set_mark();
-void tlc__unset_mark(token_list_container_t *tlc);
-token_t *tlc__move_to_mark(token_list_container_t *tlc);
-token_t *tlc__move_to_next(token_list_container_t *tlc);
-token_t *tlc__move_to_prev(token_list_container_t *tlc);
-token_t *tlc__move_to_start(token_list_container_t *tlc);
+void tlc__unset_mark(tlc_t *tlc);
+token_t *tlc__move_to_mark(tlc_t *tlc);
+token_t *tlc__move_to_next(tlc_t *tlc);
+token_t *tlc__move_to_prev(tlc_t *tlc);
+token_t *tlc__move_to_start(tlc_t *tlc);
 
 #endif

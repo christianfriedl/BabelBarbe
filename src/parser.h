@@ -23,7 +23,7 @@ Copyright (C) 2011  Christian Friedl
 #include"dasl.h"
 #include"scanner.h"
 #include"token_list.h"
-#include"token_list_container.h"
+#include"tlc.h"
 #include"results.h"
 
 struct parser_s;
@@ -54,7 +54,7 @@ struct parser_s {
     scanner_t *scanner;
     result_list_t *result_list;
     token_list_t *token_list;
-    token_list_container_t *tlc;
+    tlc_t *tlc;
     bool is_debug;
     rule_t *start_rule;
 }; 
