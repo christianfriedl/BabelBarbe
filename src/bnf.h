@@ -17,30 +17,14 @@ Copyright (C) 2011  Christian Friedl
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     */
 
-#include<assert.h>
-#include<stdio.h>
-#include"../token.h"
+#ifndef _BNF_H
+#define _BNF_H
 
-/*
-    positive tests
-*/
-void test_token_new_delete() {
-    char *text = "xyz";
-    printf("%s...\n", __func__);
-    token_t *token = token__new();
-    token->type = t_literal_uint;
-    token->text = text;
-    token__delete(token);        // works, because currently, token_delete does not delete the string
-    printf("ok\n");
-}
+#define bool int
+#define true (-1)
+#define false (0)
 
-int main() {
-    printf("=== %s ===\n", __FILE__);
-    /*
-        positive tests
-    */
+#define bool__to_string(a) (((a) == true) ? "true" : "false")
+void bnf_raise_fatal_error(const char *msg) __attribute((noreturn));
 
-    test_token_new_delete();
-
-	return 0;
-}
+#endif

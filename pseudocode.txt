@@ -1,4 +1,42 @@
+Data structures:
+
+token
+    type
+    text
+rule
+    name
+    productions
+        repeating-segments
+            rule-references
+            min_count
+            max_count
+grammar_table
+    token-references
+        actions
+        grammar_table-cell-reference
+        optional error code
+symbol_table
+parse_tree
+abstract_syntax_tree
+result
+    type
+    char_val
+    string_val
+    integer_val
+    double_val
+    enum_val
+result_list
+
 ==================================
+Phases:
+
+- Scan(text): token_list
+- Parse(token_list): parse_tree
+- Annotate(parse_tree): abstract_syntax_tree
+- Execute(abstract_syntax_tree): output
+        
+==================================
+Parser generator:
 
 foreach (nonterminal in grammar):
     work_rules

@@ -1,7 +1,7 @@
     /*
     DaSL - Datetime Specific Language, a little DSL for dealing with dates and times
 
-Copyright (C) 2011  Christian Friedl
+    Copyright (C) 2011  Christian Friedl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,29 +18,29 @@ Copyright (C) 2011  Christian Friedl
     */
 
 #include<assert.h>
+#include<time.h>
 #include<stdio.h>
-#include"../parser.h"
+#include<string.h>
+#include"../ast.h"
 
-bool do_parse(parser_t *parser) {
-    return true;
-}
+/*
+    positive tests
+*/
 
-void do_evaluate(parser_t *parser) {
-}
-
-void test_rules__new_delete() {
-    rule_t subrule_1 = { "subrule_1", NULL, NULL, { { NULL, NULL } } };
-    rule_t subrule_2 = { "subrule_2", NULL, NULL, { { NULL, NULL } } };
-    rule_t rule = { "rule", do_parse, do_evaluate, { { &subrule_1, NULL }, { &subrule_2, NULL }, { NULL } } };
+void test_ast__print() {
+    ast_leaf_t *root = ast__new(NULL, token__new_from_type_string_len(t_start, "root", 4), ast_pos_nowhere);
+    ast_leaf_t *left1 = ast__new(root, token__new_from_type_string_len(t_symbol, "left1", 5), ast_pos_left);
+    ast_leaf_t *left1_left = ast__new(left1, token__new_from_type_string_len(t_symbol, "left1_left", 10), ast_pos_left);
+    ast_leaf_t *left1_right = ast__new(left1, token__new_from_type_string_len(t_symbol, "left1_right", 11), ast_pos_right);
+    ast_leaf_t *right1 = ast__new(root, token__new_from_type_string_len(t_symbol, "right1", 6), ast_pos_right);
+    ast_leaf_t *right1_right = ast__new(right1, token__new_from_type_string_len(t_symbol, "right1_right", 12), ast_pos_right);
     printf("%s...\n", __func__);
 
-    assert(rule.parse == do_parse);
-    assert(rule.evaluate == do_evaluate);
-    assert(rule.alternatives[0][0] == &subrule_1);
-    assert(rule.alternatives[1][0] == &subrule_2);
-
+    ast__print(root);
+    
     printf("ok\n");
 }
+
 
 int main() {
     printf("=== %s ===\n", __FILE__);
@@ -48,7 +48,7 @@ int main() {
         positive tests
     */
 
-    test_rules__new_delete();
+    test_ast__print();
 
     /*
         negative tests

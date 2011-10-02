@@ -17,46 +17,12 @@ Copyright (C) 2011  Christian Friedl
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     */
 
-#include<assert.h>
-#include<time.h>
-#include<stdio.h>
 #include<string.h>
-#include"../parser.h"
-#include"../results.h"
+#include<stdlib.h>
+#include<stdio.h>
+#include"bnf.h"
 
-/*
-    positive tests
-*/
-
-void test_dasl_run() {
-    dasl_result_t *dasl_result;
-
-    printf("%s...\n", __func__);
-
-    dasl_result = dasl__run("'2011-01-01 00:00:00' + 1 HOUR");
-
-    assert(dasl_result->is_parsed == true);
-    assert(tm__to_timestamp(dasl_result->datetime) == maketime(2011,1,1,1,0,0));
-    printf("%s\n", dasl_result->text);
-    assert(!strcmp(dasl_result->text, "2011-01-01 01:00:00"));
-    dasl_result__delete(dasl_result);
-
-    printf("ok\n");
-
-}
-
-
-int main() {
-    printf("=== %s ===\n", __FILE__);
-    /*
-        positive tests
-    */
-
-    test_dasl_run();
-
-    /*
-        negative tests
-    */
-
-	return 0;
+void bnf_raise_fatal_error(const char *msg) {
+    printf("DaSL FATAL ERROR: %s\n", msg);
+    abort();
 }

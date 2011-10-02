@@ -1,7 +1,7 @@
     /*
-    DaSL - Datetime Specific Language, a little DSL for dealing with dates and times
+    BNF...
 
-Copyright (C) 2011  Christian Friedl
+    Copyright (C) 2011  Christian Friedl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,25 +17,24 @@ Copyright (C) 2011  Christian Friedl
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     */
 
-#ifndef _TOKEN_H
-#define _TOKEN_H
+#ifndef _AST_H
+#define _AST_H
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include"token.h"
 
-typedef enum { t_start, t_literal_uint, t_quote, t_identifier, t_symbol, t_eof } token_type_t;
+struct ast_leaf;
+typedef struct ast_leaf {
+    token_t *token;
+    struct ast_leaf *parent;
+    struct ast_leaf *left;
+    struct ast_leaf *right;
+} ast_leaf_t;
 
-typedef struct {
-    token_type_t type;
-    char *text;
-} token_t;
+typedef enum { ast_pos_left = 0, ast_pos_right = 1, ast_pos_nowhere = 2 } ast_pos_enum;
 
-token_t *token__new();
-token_t *token__new_from_type_string_len(token_type_t type, const char *src, const size_t len);
-void token__delete(token_t *token);
-void token__print(token_t *token);
-char *token__get_type_name(token_t *token);
-char *token__to_string(token_t *token);
+ast_leaf_t *ast__new(ast_leaf_t *parent, token_t *token, ast_pos_enum where);
+void ast__delete(ast_leaf_t *this);
+void ast__print(ast_leaf_t *this);
 
 #endif
+

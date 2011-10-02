@@ -20,7 +20,7 @@ Copyright (C) 2011  Christian Friedl
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include"dasl.h"
+#include"bnf.h"
 #include"token.h"
 
 token_t *token__new() {
@@ -29,7 +29,7 @@ token_t *token__new() {
         token->type = t_start;
         token->text = NULL;
     } else
-        dasl_raise_fatal_error("Unable to allocate token.");
+        bnf_raise_fatal_error("Unable to allocate token.");
     return token;
 }
 
@@ -41,7 +41,7 @@ token_t *token__new_from_type_string_len(token_type_t type, const char *src, con
         strncpy(token->text, src, len);
         token->text[len] = '\0';
     } else
-        dasl_raise_fatal_error("Unable to allocate token.");
+        bnf_raise_fatal_error("Unable to allocate token.");
     return token;
 }
 
@@ -85,7 +85,7 @@ char *token__get_type_name(token_t *token) {
             return strdup("t_eof");
             break;
         default:
-            dasl_raise_fatal_error("unknown token type");
+            bnf_raise_fatal_error("unknown token type");
             return NULL;
     }
 }

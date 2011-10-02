@@ -8,22 +8,15 @@ MEGA_WARNINGS = -Wall -Wdeclaration-after-statement \
 	-Wnested-externs -Werror
 WARNINGS = $(NORMAL_WARNINGS)
 CFLAGS=-ggdb $(WARNINGS)
-LDFLAGS=-ggdb $(WARNINGS) -lreadline
+LDFLAGS=-ggdb $(WARNINGS) 
 
 
-STATIC_LIBRARY=libdasl.a
-IDASL=idasl
-LIB_OBJECTS = scanner.o parser.o token.o token_list.o token_list_container.o dasl.o tm.o results.o 
+STATIC_LIBRARY=libbnf.a 
+LIB_OBJECTS = ast.o token.o bnf.o
 
 clean-all-test: clean all test
 
 all-test: all test
-
-idasl: idasl.o $(STATIC_LIBRARY)
-
-install: idasl localall
-	cp libdasl.a /opt/local/lib/
-	cp idasl /opt/local/bin/
 
 localall: $(STATIC_LIBRARY)
 
