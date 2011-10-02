@@ -1,0 +1,2 @@
+CC=gccfilter --colorize gcc
+
