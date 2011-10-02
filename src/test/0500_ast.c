@@ -41,6 +41,31 @@ void test_ast__print() {
     
     printf("ok\n");
 }
+void test_ast_setters_getters() {
+    ast_leaf_t *root = ast__new(NULL, token__new_from_type_string_len(t_start, "root", 4), ast_pos_nowhere);
+    ast_leaf_t *left1 = ast__new(root, token__new_from_type_string_len(t_symbol, "left1", 5), ast_pos_left);
+    ast_leaf_t *left1_left = ast__new(left1, token__new_from_type_string_len(t_symbol, "left1_left", 10), ast_pos_left);
+    ast_leaf_t *left1_right = ast__new(left1, token__new_from_type_string_len(t_symbol, "left1_right", 11), ast_pos_right);
+    ast_leaf_t *right1 = ast__new(root, token__new_from_type_string_len(t_symbol, "right1", 6), ast_pos_right);
+    ast_leaf_t *right1_right = ast__new(right1, token__new_from_type_string_len(t_symbol, "right1_right", 12), ast_pos_right);
+    printf("%s...\n", __func__);
+
+    assert(ast__get_parent(left1) == root);
+    assert(ast__get_left(root) == left1);
+    assert(ast__get_right(root) == right1);
+
+    ast__set_left(root, right1);
+    ast__set_right(root, left1);
+    assert(ast__get_left(root) == right1);
+    assert(ast__get_right(root) == left1);
+    ast__set_parent(right1_right, root);
+    assert(ast__get_parent(right1_right) == root);
+
+    ast__delete(root);
+    
+    printf("ok\n");
+}
+
 
 
 int main() {
@@ -50,6 +75,7 @@ int main() {
     */
 
     test_ast__print();
+    test_ast_setters_getters();
 
     /*
         negative tests

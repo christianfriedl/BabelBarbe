@@ -47,6 +47,31 @@ void ast__delete(ast_leaf_t *this) {
     token__delete(this->token);
     free(this);
 }
+ast_leaf_t *ast__get_parent(ast_leaf_t *this) {
+    return this->parent;
+}
+ast_leaf_t *ast__get_left(ast_leaf_t *this) {
+    return this->left;
+}
+ast_leaf_t *ast__get_right(ast_leaf_t *this) {
+    return this->right;
+}
+token_t *ast__get_token(ast_leaf_t *this) {
+    return this->token;
+}
+void ast__set_token(ast_leaf_t *this, token_t *token) {
+    token__delete(this->token);
+    this->token = token;
+}
+void ast__set_parent(ast_leaf_t *this, ast_leaf_t *parent) {
+    this->parent = parent;
+}
+void ast__set_left(ast_leaf_t *this, ast_leaf_t *left) {
+    this->left = left;
+}
+void ast__set_right(ast_leaf_t *this, ast_leaf_t *right) {
+    this->right = right;
+}
 void ast__print_internal(ast_leaf_t *this, unsigned int level);
 void ast__print(ast_leaf_t *this) {
     ast__print_internal(this, 0);

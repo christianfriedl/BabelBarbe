@@ -35,6 +35,14 @@ typedef enum { ast_pos_left = 0, ast_pos_right = 1, ast_pos_nowhere = 2 } ast_po
 ast_leaf_t *ast__new(ast_leaf_t *parent, token_t *token, ast_pos_enum where);
 void ast__delete(ast_leaf_t *this);
 void ast__print(ast_leaf_t *this);
+ast_leaf_t *ast__get_parent(ast_leaf_t *this);
+ast_leaf_t *ast__get_left(ast_leaf_t *this);
+ast_leaf_t *ast__get_right(ast_leaf_t *this);
+token_t *ast__get_token(ast_leaf_t *this);
+void ast__set_token(ast_leaf_t *this, token_t *token);
+void ast__set_parent(ast_leaf_t *this, ast_leaf_t *parent);
+void ast__set_left(ast_leaf_t *this, ast_leaf_t *left);
+void ast__set_right(ast_leaf_t *this, ast_leaf_t *right);
 
 #endif
 
