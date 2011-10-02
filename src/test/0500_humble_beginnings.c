@@ -37,6 +37,7 @@ void test_ast__print() {
     printf("%s...\n", __func__);
 
     ast__print(root);
+    ast__delete(root);
     
     printf("ok\n");
 }

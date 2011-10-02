@@ -24,7 +24,7 @@ Copyright (C) 2011  Christian Friedl
 #include"token.h"
 
 token_t *token__new() {
-    token_t *token = malloc(sizeof(token_t));
+    token_t *token = malloc(sizeof(*token));
     if (token) {
         token->type = t_start;
         token->text = NULL;
@@ -36,17 +36,13 @@ token_t *token__new() {
 token_t *token__new_from_type_string_len(token_type_t type, const char *src, const size_t len) {
     token_t *token = token__new();
     token->type = type;
-    token->text = malloc(sizeof(char) * (len + 1));
-    if (token->text != NULL) {
-        strncpy(token->text, src, len);
-        token->text[len] = '\0';
-    } else
-        bnf_raise_fatal_error("Unable to allocate token.");
+    token->text = strdup(src);
     return token;
 }
 
 void token__delete(token_t *token) {
-    /* TODO ahem: free(token->text); */
+    if (token->text != NULL)
+        free(token->text);
     free(token);
 }
 
@@ -61,6 +57,7 @@ char *token__to_string(token_t *token) {
     char *mystrbuf = malloc(255);
     sprintf(mystrbuf, "token @%ld: type='%s', text='%s'", (long int)token, type_name, token->text);
     free(type_name);
+    free(mystrbuf);
     return mystrbuf;
 }
 
