@@ -1,0 +1,123 @@
+==================================
+
+foreach (nonterminal in grammar):
+    work_rules
+
+work_rules:
+    foreach (rule in nonterminal):
+        if (rule is not in rule array):
+            foreach (node in rule):
+                if (node is a terminal):
+                    add_leaf
+                    if (there is a previous leaf):
+                        amend_previous_leaf
+                else:
+                    push rule -> rule array
+                    follow node
+
+add_leaf:
+    add row
+    if (column does not exist with this terminal):
+        create a column for this terminal
+    write cell to that column in new row
+
+amend_previous_leaf:
+    if (previous leaf is higher in rules):
+        add "move se"
+    else if (previous leaf is lower in rules):
+        add "move ne"
+    else:
+        ??? depending on associativity, do one of the above ???
+
+
+==================================
+Open Questions:
+- Does the above work with indirect recursion?
+- How do I find out whether a terminal is in a "higher" or "lower" rule?
+
+Not included:
+- Repetition
+==================================
+Grammar:
+
+expr ::=                                
+    expr '+' term                      
+    | term                            
+;
+
+term ::= literal                     
+;
+
+Example:
+1
+1 + 2
+
+3: gehe zu 4
+4: folge "expr" -> 3
+3: hier warst du schon, -> position danach pushen, gehe zu 5
+5: folge "term" -> 8
+8: "add leaf"; regel ist zu ende, daher pop -> 4
+4: '+' -> "add leaf;" schreibe 'move ne' in vorherige zelle
+4: folge "term" -> 8
+8: "add leaf"; schreibe 'move se' in vorherige zelle (?); regel ist zu ende, daher pop -> 4
+4: regel ist zu ende, stack ist leer, daher schreibe zeile für "$"
+
+
+        literal         $           '+'
+1       
+-----------------------------------------------------
+2
+-----------------------------------------------------
+3                                   
+-----------------------------------------------------
+4
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+Table:
+  literal       '+'             $                                     <--- current
+  ===================================================
+1 add leaf;     ERROR           ERROR
+  go 2
+-----------------------------------------------------
+2 ERROR         move ne;        END
+                add leaf;
+                go 3
+-----------------------------------------------------
+3 move se;      ERROR           ERROR
+  add leaf;
+  move back;
+  go 4
+-----------------------------------------------------
+4 ERROR         move ne;        END
+                add leaf;
+                go 3
+-----------------------------------------------------
+5 
+-----------------------------------------------------
+6 
+
+Algorithmus:
+
+1. Suche alle Terminals, und mache Spalten daraus
+2. Suche alle Regeln, die mit Terminals beginnen
+    2.1. Alle diese bekommen einen Eintrag in der ersten Zeile
+    2.2. "Add leaf; go x", wobei x bei 2 beginnt und inkrementiert wird
+    2.3. Suche alle Regeln, die diese Regel beinhalten
+        Nach LINKS: Ist hier ein Terminal?
+            F"Move se; add leaf; move back; go x", wobei x die vorherige Zeile ist
