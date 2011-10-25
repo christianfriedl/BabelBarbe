@@ -8,7 +8,7 @@ rule_t rule_start = {
     NULL,
     repeat_off, 0,
     {
-        { &rule_rules, NULL },
+        { repeat_off, 0, { &rule_rules, NULL } },
         NULL_RULE
     }
 };

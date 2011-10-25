@@ -20,7 +20,7 @@ Copyright (C) 2011  Christian Friedl
 #ifndef _PARSER_H
 #define _PARSER_H
 
-#include"dasl.h"
+#include"bnf.h"
 #include"scanner.h"
 #include"token_list.h"
 #include"tlc.h"
@@ -59,7 +59,7 @@ struct parser_s {
     rule_t *start_rule;
 }; 
 
-parser_t *parser__new(scanner_t *scanner);
+parser_t *parser__new(scanner_t *scanner, rule_t *start_rule);
 void parser__delete(parser_t *parser);
 void parser__debug(parser_t *parser);
 bool parser__parse(parser_t *parser);

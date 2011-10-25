@@ -57,7 +57,7 @@ char *parser__get_error_text(parser_t *parser) {
 }
 
 void parser__init_error_texts(parser_t *parser);
-parser_t *parser__new(scanner_t *scanner) {
+parser_t *parser__new(scanner_t *scanner, rule_t *start_rule) {
     parser_t *parser = NULL;
     parser = malloc(sizeof(*parser));
     if (parser) {
@@ -67,7 +67,7 @@ parser_t *parser__new(scanner_t *scanner) {
         parser->tlc = NULL;
         parser->result_list = result_list__new();
         parser->is_debug = false;
-        parser->start_rule = &rule_start;
+        parser->start_rule = start_rule;
         parser__init_error_texts(parser);
     } else
         parser__raise_fatal_error("Unable to allocate parser.");
