@@ -1,25 +1,25 @@
-    /*
-    DaSL - Datetime Specific Language, a little DSL for dealing with dates and times
+/*
+BNF Parser
 
 Copyright (C) 2011  Christian Friedl
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    */
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include<stdio.h>
 #include<stdlib.h>
-#include"dasl.h"
+#include"bnf.h"
 #include"tlc.h"
 
 tlc_t *tlc__new(token_list_t *token_list) {
@@ -32,7 +32,7 @@ tlc_t *tlc__new(token_list_t *token_list) {
             tlc->token_list_marks[i] = NULL;
         tlc->count_token_list_marks = 0;
     } else
-        dasl_raise_fatal_error("Unable to allocate tlc_t");
+        bnf__raise_fatal_error("Unable to allocate tlc_t");
     return tlc;
 }
 void tlc__delete(tlc_t *tlc) {
@@ -58,14 +58,14 @@ void tlc__set_mark(tlc_t *tlc) {
     if (tlc->count_token_list_marks < MAX_TLC_MARKS - 1)
         tlc->token_list_marks[(tlc->count_token_list_marks)++] = tlc->current_token_list;
     else
-        dasl_raise_fatal_error("Maximum number of token_list_marks reached.");
+        bnf__raise_fatal_error("Maximum number of token_list_marks reached.");
 }
 void tlc__unset_mark(tlc_t *tlc) {
     --(tlc->count_token_list_marks);
 }
 token_t *tlc__move_to_mark(tlc_t *tlc) {
     if (tlc->count_token_list_marks == 0)
-        dasl_raise_fatal_error("Mark not set.");
+        bnf__raise_fatal_error("Mark not set.");
     tlc->current_token_list = tlc->token_list_marks[--(tlc->count_token_list_marks)];
     return token_list__get_token(tlc->current_token_list);
 }

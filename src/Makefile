@@ -30,7 +30,7 @@ $(STATIC_LIBRARY): $(LIB_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $?
 
 clean:
-	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY) $(IDASL)
+	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY)
 	(cd test; make clean)
 
 .PHONY: test

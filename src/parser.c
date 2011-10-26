@@ -1,21 +1,21 @@
-    /*
-    DaSL - Datetime Specific Language, a little DSL for dealing with dates and times
+/*
+BNF Parser
 
 Copyright (C) 2011  Christian Friedl
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    */
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include<stdlib.h>
 #include<time.h>
@@ -32,8 +32,6 @@ void parser__debug_print_exit_rule(parser_t *parser, const char *rule_name, cons
 bool parser__scan(parser_t *parser);
 void parser__raise_fatal_error(const char *msg) __attribute((noreturn));
 void parser__raise_error(parser_t *parser, error_t error);
-
-#include"dasl_grammar.inc.c"
 
 void parser__raise_fatal_error(const char *msg) {
     printf("PARSER FATAL ERROR: %s\n", msg);
@@ -65,7 +63,6 @@ parser_t *parser__new(scanner_t *scanner, rule_t *start_rule) {
         parser->scanner = scanner;
         parser->token_list = NULL;
         parser->tlc = NULL;
-        parser->result_list = result_list__new();
         parser->is_debug = false;
         parser->start_rule = start_rule;
         parser__init_error_texts(parser);
@@ -98,12 +95,7 @@ void parser__delete(parser_t *parser) {
     scanner__delete(parser->scanner);
     if (parser->token_list != NULL)
         token_list__delete(parser->token_list);
-    result_list__delete(parser->result_list);
     free(parser);
-}
-
-result_t *parser__remove_last_result(parser_t *parser) {
-    return result_list__remove_result_by_index(parser->result_list, result_list__get_count(parser->result_list) - 1);
 }
 
 bool parser__scan(parser_t *parser) {
@@ -144,13 +136,7 @@ bool parser__parse(parser_t *parser) {
 }
 
 bool parser__evaluate_for_rule(parser_t *parser, rule_t *current_rule) {
-    result_t *result = NULL;
     (current_rule->evaluate)(parser);
-    result = result_list__get_result_by_index(parser->result_list, result_list__get_count(parser->result_list)-1);
-    if (result->error != e_ok) {
-        parser__raise_error(parser, result->error);
-        return false;
-    }
     return true;
 }
 
@@ -194,14 +180,11 @@ bool parser__parse_alternatives(parser_t *parser, rule_t *current_rule) {
 }
 
 bool parser__parse_nonrepeating_alternative(parser_t *parser, rule_t *current_rule, struct rule **productions) {
-    unsigned int result_count_before_rule;
     bool is_parsed = true;
     unsigned int start_index = 0;
     unsigned int i_prod = 0;
 
     tlc__set_mark(parser->tlc);
-
-    result_count_before_rule = result_list__get_count(parser->result_list);
 
     for (i_prod = start_index; productions[i_prod] != NULL && is_parsed; ++i_prod) {
         if (productions[i_prod] != NULL)
@@ -212,7 +195,6 @@ bool parser__parse_nonrepeating_alternative(parser_t *parser, rule_t *current_ru
         tlc__unset_mark(parser->tlc);
     else {
         tlc__move_to_mark(parser->tlc);
-        result_list__prune_to_count(parser->result_list, result_count_before_rule);
     }
 
     is_parsed = parser__evaluate_if_parsed(parser, current_rule, is_parsed);
@@ -221,12 +203,10 @@ bool parser__parse_nonrepeating_alternative(parser_t *parser, rule_t *current_ru
 bool parser__parse_repeating_alternative(parser_t *parser, rule_t *current_rule, alternative_t *alternative) {
     struct rule **productions = alternative->productions;
     bool is_parsed = true;
-    unsigned int result_count_before_rule = 0;
     unsigned int start_index = 0;
     unsigned int i_prod = 0;
     bool repeater_is_parsed = false;
 
-    result_count_before_rule = result_list__get_count(parser->result_list);
     tlc__set_mark(parser->tlc);
 
     do { 
@@ -240,14 +220,12 @@ bool parser__parse_repeating_alternative(parser_t *parser, rule_t *current_rule,
         if (is_parsed) {
             tlc__unset_mark(parser->tlc);
             tlc__set_mark(parser->tlc);
-            result_count_before_rule = result_list__get_count(parser->result_list);
         }
     } while (is_parsed);
 
     is_parsed = repeater_is_parsed;             /* translate back to "normal" is_parsed handling */
 
     tlc__move_to_mark(parser->tlc);
-    result_list__prune_to_count(parser->result_list, result_count_before_rule);
 
     return is_parsed;
 }
@@ -261,9 +239,6 @@ bool parser__evaluate_if_parsed(parser_t *parser, rule_t *current_rule, bool is_
     } else
         return false;
 }
-
-
-/* Old Stuff */
 
 
 /*
