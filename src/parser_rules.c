@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include"bnf.h"
-#include"rule.h"
+#include"parser_rules.h"
 #include"parser.h"
 
 parser_rule_t *rule__new() {
