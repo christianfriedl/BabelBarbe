@@ -28,24 +28,23 @@ Copyright (C) 2011  Christian Friedl
 
 struct parser_s;
 typedef struct parser_s parser_t;
-struct rule;
+struct parser_rule;
+#include"bnf_rules.h"
 
 typedef enum { repeat_on=0, repeat_off } repeat_switch_t;
 
 typedef struct {
     repeat_switch_t repeat_switch;
     unsigned int repeat_from_index; /* index into production */
-    struct rule *productions[20];
+    struct parser_rule *productions[20];
 } alternative_t;
 
-struct rule {
+struct parser_rule {
     char name[255];
     bool (*parse)(parser_t *parser);
     void (*evaluate)(parser_t *parser);
     alternative_t alternatives[20];
 };
-
-typedef struct rule rule_t;
 
 struct parser_s {
     error_t error;
@@ -56,10 +55,10 @@ struct parser_s {
     token_list_t *token_list;
     tlc_t *tlc;
     bool is_debug;
-    rule_t *start_rule;
+    parser_rule_t *start_rule;
 }; 
 
-parser_t *parser__new(scanner_t *scanner, rule_t *start_rule);
+parser_t *parser__new(scanner_t *scanner, parser_rule_t *start_rule);
 void parser__delete(parser_t *parser);
 void parser__debug(parser_t *parser);
 bool parser__parse(parser_t *parser);

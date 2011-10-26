@@ -2,7 +2,7 @@
 #include"bnf_rules.h"
 
 #define NULL_RULE { repeat_off, 0, { NULL } } 
-rule_t rule_start = {
+parser_rule_t rule_start = {
     "rule_start",
     NULL,
     NULL,
@@ -12,7 +12,7 @@ rule_t rule_start = {
     }
 };
 
-rule_t rule_rules = {
+parser_rule_t rule_rules = {
     "rule_rules",
     NULL,
     NULL,
@@ -22,7 +22,7 @@ rule_t rule_rules = {
     }
 };
 
-rule_t rule_rule = {
+parser_rule_t rule_rule = {
     "rule_rule",
     NULL,
     NULL,
@@ -32,7 +32,7 @@ rule_t rule_rule = {
     }
 };
 
-rule_t rule_rule_lhs = {
+parser_rule_t rule_rule_lhs = {
     "rule_rule_lhs",
     NULL,
     NULL,
@@ -42,7 +42,7 @@ rule_t rule_rule_lhs = {
     }
 };
 
-rule_t rule_rule_rhs = {
+parser_rule_t rule_rule_rhs = {
     "rule_rule_rhs",
     NULL,
     NULL,
@@ -52,7 +52,7 @@ rule_t rule_rule_rhs = {
     }
 };
 
-rule_t rule_rule_phrase = {
+parser_rule_t rule_rule_phrase = {
     "rule_rule_phrase",
     NULL,
     NULL,
@@ -63,7 +63,7 @@ rule_t rule_rule_phrase = {
     }
 };
 
-rule_t rule_term = {
+parser_rule_t rule_term = {
     "rule_term",
     NULL,
     NULL,
@@ -74,7 +74,7 @@ rule_t rule_term = {
     }
 };
 
-rule_t rule_openparen = {
+parser_rule_t rule_openparen = {
     "rule_openparen",
     parser__parse_openparen,
     NULL,
@@ -83,7 +83,7 @@ rule_t rule_openparen = {
     }
 };
 
-rule_t rule_closeparen = {
+parser_rule_t rule_closeparen = {
     "rule_closeparen",
     parser__parse_closeparen,
     NULL,
@@ -92,7 +92,7 @@ rule_t rule_closeparen = {
     }
 };
 
-rule_t rule_repetition_marker = {
+parser_rule_t rule_repetition_marker = {
     "rule_repetition_marker",
     parser__parse_repetition_marker,
     NULL,
@@ -101,7 +101,7 @@ rule_t rule_repetition_marker = {
     }
 };
 
-rule_t rule_symbol = {
+parser_rule_t rule_symbol = {
     "rule_symbol",
     NULL,
     NULL,
@@ -112,7 +112,7 @@ rule_t rule_symbol = {
     }
 };
 
-rule_t rule_terminal = {
+parser_rule_t rule_terminal = {
     "rule_terminal",
     NULL,
     NULL,
@@ -123,7 +123,7 @@ rule_t rule_terminal = {
     }
 };
 
-rule_t rule_keyword_regex = {
+parser_rule_t rule_keyword_regex = {
     "rule_keyword_regex",
     parser__parse_keyword_regex,
     NULL,
@@ -132,7 +132,7 @@ rule_t rule_keyword_regex = {
     }
 };
 
-rule_t rule_literal = {
+parser_rule_t rule_literal = {
     "rule_literal",
     parser__parse_literal,
     NULL,
@@ -140,7 +140,7 @@ rule_t rule_literal = {
         NULL_RULE
     }
 };
-rule_t rule_definition_sign = {
+parser_rule_t rule_definition_sign = {
     "rule_definition_sign",
     parser__parse_definition_sign,
     NULL,
@@ -148,7 +148,7 @@ rule_t rule_definition_sign = {
         NULL_RULE
     }
 };
-rule_t rule_semicolon = {
+parser_rule_t rule_semicolon = {
     "rule_semicolon",
     parser__parse_semicolon,
     NULL,
@@ -156,7 +156,7 @@ rule_t rule_semicolon = {
         NULL_RULE
     }
 };
-rule_t rule_identifier = {
+parser_rule_t rule_identifier = {
     "rule_identifier",
     parser__parse_identifier,
     NULL,

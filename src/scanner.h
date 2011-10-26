@@ -22,7 +22,7 @@ Copyright (C) 2011  Christian Friedl
 
 #include<ctype.h>
 #include<stdlib.h>
-#include"dasl.h"
+#include"bnf.h"
 #include"token.h"
 
 typedef enum { s_initial, s_reset, s_alpha, s_digit, s_single_character_symbol, s_double_character_symbol, s_quote } scanner_state_t;
