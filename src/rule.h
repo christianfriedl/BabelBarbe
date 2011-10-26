@@ -24,15 +24,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 struct parser;
 
-struct rule;
+struct parser_rule;
 
-struct rule {
+struct parser_rule {
     void (*xyz)();
     bool (*parse)(struct parser *parser);
     void (*evaluate)(struct parser *parser);
     struct rule *alternatives[20][20];
 };
 
-typedef struct rule rule_t;
+typedef struct parser_rule parser_rule_t;
 
 #endif

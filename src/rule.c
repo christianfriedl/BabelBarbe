@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"rule.h"
 #include"parser.h"
 
-rule_t *rule__new() {
-    rule_t *rule = malloc(sizeof(*rule));
+parser_rule_t *rule__new() {
+    parser_rule_t *rule = malloc(sizeof(*rule));
     if (rule) {
         rule->parse = NULL;
         rule->evaluate = NULL;
@@ -31,13 +31,13 @@ rule_t *rule__new() {
         bnf__raise_fatal_error("Unable to allocate rule.");
     return rule;
 }
-rule_t *rule__new_with_values(bool (*parse)(struct parser *parser), void (*evaluate)(struct parser *parser), rule_t ***alternatives) {
-    rule_t *rule = rule__new();
+parser_rule_t *rule__new_with_values(bool (*parse)(struct parser *parser), void (*evaluate)(struct parser *parser), parser_rule_t ***alternatives) {
+    parser_rule_t *rule = rule__new();
     rule->parse = parse;
     rule->evaluate = evaluate;
     rule->alternatives = alternatives;
     return rule;
 }
-void rule__delete(rule_t *rule) {
+void rule__delete(parser_rule_t *rule) {
     free(rule);
 }

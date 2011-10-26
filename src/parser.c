@@ -55,7 +55,7 @@ char *parser__get_error_text(parser_t *parser) {
 }
 
 void parser__init_error_texts(parser_t *parser);
-parser_t *parser__new(scanner_t *scanner, rule_t *start_rule) {
+parser_t *parser__new(scanner_t *scanner, parser_rule_t *start_rule) {
     parser_t *parser = NULL;
     parser = malloc(sizeof(*parser));
     if (parser) {
@@ -119,13 +119,13 @@ bool parser__scan(parser_t *parser) {
     return scanner_ok;
 }
 
-bool parser__parse_rule(parser_t *parser, rule_t *current_rule);
-bool parser__parse_terminal(parser_t *parser, rule_t *current_rule);
-bool parser__parse_alternatives(parser_t *parser, rule_t *current_rule);
-bool parser__evaluate_if_parsed(parser_t *parser, rule_t *current_rule, bool is_parsed);
-bool parser__evaluate_for_rule(parser_t *parser, rule_t *current_rule);
-bool parser__parse_nonrepeating_alternative(parser_t *parser, rule_t *current_rule, struct rule **productions);
-bool parser__parse_repeating_alternative(parser_t *parser, rule_t *current_rule, alternative_t *alternative);
+bool parser__parse_rule(parser_t *parser, parser_rule_t *current_rule);
+bool parser__parse_terminal(parser_t *parser, parser_rule_t *current_rule);
+bool parser__parse_alternatives(parser_t *parser, parser_rule_t *current_rule);
+bool parser__evaluate_if_parsed(parser_t *parser, parser_rule_t *current_rule, bool is_parsed);
+bool parser__evaluate_for_rule(parser_t *parser, parser_rule_t *current_rule);
+bool parser__parse_nonrepeating_alternative(parser_t *parser, parser_rule_t *current_rule, struct rule **productions);
+bool parser__parse_repeating_alternative(parser_t *parser, parser_rule_t *current_rule, alternative_t *alternative);
 
 bool parser__parse(parser_t *parser) {
     if (parser->is_debug) printf("===> starting parser with text: '%s'\n", parser->scanner->text);
@@ -135,12 +135,12 @@ bool parser__parse(parser_t *parser) {
     return parser__parse_rule(parser, parser->start_rule);
 }
 
-bool parser__evaluate_for_rule(parser_t *parser, rule_t *current_rule) {
+bool parser__evaluate_for_rule(parser_t *parser, parser_rule_t *current_rule) {
     (current_rule->evaluate)(parser);
     return true;
 }
 
-bool parser__parse_rule(parser_t *parser, rule_t *current_rule) {
+bool parser__parse_rule(parser_t *parser, parser_rule_t *current_rule) {
     bool is_parsed = false;
 
     if (parser->error != e_ok)
@@ -154,7 +154,7 @@ bool parser__parse_rule(parser_t *parser, rule_t *current_rule) {
     parser__debug_print_exit_rule(parser, current_rule->name, bool__to_string(is_parsed));
     return is_parsed;
 }
-bool parser__parse_terminal(parser_t *parser, rule_t *current_rule) {
+bool parser__parse_terminal(parser_t *parser, parser_rule_t *current_rule) {
     if ((current_rule->parse)(parser) == false) 
         return false;
     if (current_rule->evaluate != NULL) {
@@ -164,7 +164,7 @@ bool parser__parse_terminal(parser_t *parser, rule_t *current_rule) {
     tlc__move_to_next(parser->tlc);
     return true;
 }
-bool parser__parse_alternatives(parser_t *parser, rule_t *current_rule) {
+bool parser__parse_alternatives(parser_t *parser, parser_rule_t *current_rule) {
     unsigned int i = 0;
     bool is_parsed = false;
 
@@ -179,7 +179,7 @@ bool parser__parse_alternatives(parser_t *parser, rule_t *current_rule) {
     return is_parsed;
 }
 
-bool parser__parse_nonrepeating_alternative(parser_t *parser, rule_t *current_rule, struct rule **productions) {
+bool parser__parse_nonrepeating_alternative(parser_t *parser, parser_rule_t *current_rule, struct rule **productions) {
     bool is_parsed = true;
     unsigned int start_index = 0;
     unsigned int i_prod = 0;
@@ -200,7 +200,7 @@ bool parser__parse_nonrepeating_alternative(parser_t *parser, rule_t *current_ru
     is_parsed = parser__evaluate_if_parsed(parser, current_rule, is_parsed);
     return is_parsed;
 }
-bool parser__parse_repeating_alternative(parser_t *parser, rule_t *current_rule, alternative_t *alternative) {
+bool parser__parse_repeating_alternative(parser_t *parser, parser_rule_t *current_rule, alternative_t *alternative) {
     struct rule **productions = alternative->productions;
     bool is_parsed = true;
     unsigned int start_index = 0;
@@ -230,7 +230,7 @@ bool parser__parse_repeating_alternative(parser_t *parser, rule_t *current_rule,
     return is_parsed;
 }
 
-bool parser__evaluate_if_parsed(parser_t *parser, rule_t *current_rule, bool is_parsed) {
+bool parser__evaluate_if_parsed(parser_t *parser, parser_rule_t *current_rule, bool is_parsed) {
     if (is_parsed) {
         if (current_rule->evaluate != NULL) {
             return parser__evaluate_for_rule(parser, current_rule);
