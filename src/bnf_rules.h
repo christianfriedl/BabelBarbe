@@ -19,4 +19,15 @@ extern rule_t rule_semicolon;
 extern rule_t rule_identifier;
 extern rule_t rule_terminal;
 extern rule_t rule_nonterminal;
+
+
+bool parser__parse_openparen(parser_t *parser);
+bool parser__parse_closeparen(parser_t *parser);
+bool parser__parse_repetition_marker(parser_t *parser);
+bool parser__parse_keyword_regex(parser_t *parser);
+bool parser__parse_literal(parser_t *parser);
+bool parser__parse_definition_sign(parser_t *parser);
+bool parser__parse_semicolon(parser_t *parser);
+bool parser__parse_identifier(parser_t *parser);
+
 #endif
