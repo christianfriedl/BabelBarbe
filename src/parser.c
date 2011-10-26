@@ -65,6 +65,7 @@ parser_t *parser__new(scanner_t *scanner, parser_rule_t *start_rule) {
         parser->tlc = NULL;
         parser->is_debug = false;
         parser->start_rule = start_rule;
+        parser->ast_root = NULL;
         parser__init_error_texts(parser);
     } else
         parser__raise_fatal_error("Unable to allocate parser.");
@@ -95,6 +96,8 @@ void parser__delete(parser_t *parser) {
     scanner__delete(parser->scanner);
     if (parser->token_list != NULL)
         token_list__delete(parser->token_list);
+    if (parser->ast_root != NULL)
+        ast__delete(parser->ast_root);
     free(parser);
 }
 

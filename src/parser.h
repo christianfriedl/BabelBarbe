@@ -54,6 +54,7 @@ struct parser_s {
     tlc_t *tlc;
     bool is_debug;
     parser_rule_t *start_rule;
+    ast_leaf_t *ast_root;
 }; 
 
 parser_t *parser__new(scanner_t *scanner, parser_rule_t *start_rule);
