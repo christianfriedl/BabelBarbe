@@ -24,18 +24,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdlib.h>
 #include<string.h>
 
-typedef enum { t_start, t_literal_uint, t_quote, t_identifier, t_symbol, t_eof } token_type_t;
+typedef enum { TokenType_start, TokenType_identifier, TokenType_definition, TokenType_semicolon } TokenType;
 
 typedef struct {
-    token_type_t type;
-    char *text;
-} token_t;
+    TokenType type;
+    char* text;
+} Token;
 
-token_t *token__new();
-token_t *token__new_from_type_string_len(token_type_t type, const char *src, const size_t len);
-void token__delete(token_t *token);
-void token__print(token_t *token);
-char *token__get_type_name(token_t *token);
-char *token__to_string(token_t *token);
+Token* Token__new();
+Token* Token__newFromTypeString(TokenType type, const char* text);
+void Token_delete(Token* token);
+void Token_print(Token* token);
+char* Token_getTypeName(Token* token);
+char* Token_toString(Token* token);
 
 #endif

@@ -40,13 +40,13 @@ void tlc__delete(tlc_t *tlc) {
         token_list__delete(tlc->token_list_start);
     free(tlc);
 }
-token_t *tlc__get_current(tlc_t *tlc) {
+TokenType *tlc__get_current(tlc_t *tlc) {
     return token_list__get_token(tlc->current_token_list);
 }
 token_list_t *tlc__get_current_token_list(tlc_t *tlc) {
     return tlc->current_token_list;
 }
-token_t *tlc__move_to_next(tlc_t *tlc) {
+TokenType *tlc__move_to_next(tlc_t *tlc) {
     if (token_list__get_next(tlc->current_token_list) != NULL) {
         tlc->current_token_list = token_list__get_next(tlc->current_token_list);
         return token_list__get_token(tlc->current_token_list);
@@ -63,13 +63,13 @@ void tlc__set_mark(tlc_t *tlc) {
 void tlc__unset_mark(tlc_t *tlc) {
     --(tlc->count_token_list_marks);
 }
-token_t *tlc__move_to_mark(tlc_t *tlc) {
+TokenType *tlc__move_to_mark(tlc_t *tlc) {
     if (tlc->count_token_list_marks == 0)
         bnf__raise_fatal_error("Mark not set.");
     tlc->current_token_list = tlc->token_list_marks[--(tlc->count_token_list_marks)];
     return token_list__get_token(tlc->current_token_list);
 }
-token_t *tlc__move_to_prev(tlc_t *tlc) {
+TokenType *tlc__move_to_prev(tlc_t *tlc) {
     if (token_list__get_prev(tlc->current_token_list) != NULL) {
         tlc->current_token_list = token_list__get_prev(tlc->current_token_list);
         return token_list__get_token(tlc->current_token_list);
@@ -77,7 +77,7 @@ token_t *tlc__move_to_prev(tlc_t *tlc) {
         return NULL;
 }
 
-token_t *tlc__move_to_start(tlc_t *tlc) {
+TokenType *tlc__move_to_start(tlc_t *tlc) {
     tlc->current_token_list = tlc->token_list_start;
     if (tlc->current_token_list)
         return token_list__get_token(tlc->current_token_list);

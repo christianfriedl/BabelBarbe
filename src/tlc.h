@@ -33,13 +33,13 @@ typedef struct {
 
 tlc_t *tlc__new(token_list_t *token_list);
 void tlc__delete(tlc_t *tlc);
-token_t *tlc__get_current(tlc_t *tlc);
+TokenType *tlc__get_current(tlc_t *tlc);
 token_list_t *tlc__get_current_token_list(tlc_t *tlc);
 void tlc__set_mark();
 void tlc__unset_mark(tlc_t *tlc);
-token_t *tlc__move_to_mark(tlc_t *tlc);
-token_t *tlc__move_to_next(tlc_t *tlc);
-token_t *tlc__move_to_prev(tlc_t *tlc);
-token_t *tlc__move_to_start(tlc_t *tlc);
+TokenType *tlc__move_to_mark(tlc_t *tlc);
+TokenType *tlc__move_to_next(tlc_t *tlc);
+TokenType *tlc__move_to_prev(tlc_t *tlc);
+TokenType *tlc__move_to_start(tlc_t *tlc);
 
 #endif

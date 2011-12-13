@@ -21,65 +21,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdlib.h>
 #include<string.h>
 #include"bnf.h"
-#include"token.h"
+#include"Token.h"
 
-token_t *token__new() {
-    token_t *token = malloc(sizeof(*token));
+Token* Token__new() {
+    Token* token = malloc(sizeof(*token));
     if (token) {
-        token->type = t_start;
+        token->type = TokenType_start;
         token->text = NULL;
     } else
         bnf_raise_fatal_error("Unable to allocate token.");
     return token;
 }
 
-token_t *token__new_from_type_string_len(token_type_t type, const char *src, const size_t len) {
-    token_t *token = token__new();
+Token* Token__newFromTypeString(TokenType type, const char* text) {
+    Token* token = Token__new();
     token->type = type;
-    token->text = strdup(src);
+    token->text = strdup(text);
     return token;
 }
 
-void token__delete(token_t *token) {
+void Token_delete(Token* token) {
     if (token->text != NULL)
         free(token->text);
     free(token);
 }
 
-void token__print(token_t *token) {
-    char *type_name = token__get_type_name(token);
+void Token_print(Token* token) {
+    char* type_name = Token_getTypeName(token);
     printf("token @%ld: type='%s', text='%s'\n", (long int)token, type_name, token->text);
     free(type_name);
 }
 
-char *token__to_string(token_t *token) {
-    char *type_name = token__get_type_name(token);
-    char *mystrbuf = malloc(255);
+char* Token_toString(Token* token) {
+    char* type_name = Token_getTypeName(token);
+    char* mystrbuf = malloc(255);
     sprintf(mystrbuf, "token @%ld: type='%s', text='%s'", (long int)token, type_name, token->text);
     free(type_name);
-    free(mystrbuf);
     return mystrbuf;
 }
 
-char *token__get_type_name(token_t *token) {
+char* Token_getTypeName(Token* token) {
     switch (token->type) {
-        case t_start: 
-            return strdup("t_start");
+        case TokenType_start: 
+            return strdup("TokenType_start");
             break;
-        case t_literal_uint: 
-            return strdup("t_literal_uint");
+        case TokenType_identifier: 
+            return strdup("TokenType_identifier");
             break;
-        case t_quote: 
-            return strdup("t_quote");
+        case TokenType_definition:
+            return strdup("TokenType_definition");
             break;
-        case t_identifier: 
-            return strdup("t_identifier");
-            break;
-        case t_symbol: 
-            return strdup("t_symbol");
-            break;
-        case t_eof:
-            return strdup("t_eof");
+        case TokenType_semicolon: 
+            return strdup("TokenType_semicolon");
             break;
         default:
             bnf_raise_fatal_error("unknown token type");

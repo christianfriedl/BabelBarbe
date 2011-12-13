@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"scanner.h"
 #include"token_list.h"
 
-token_list_t *token_list__new(token_list_t *prev, token_t *token) {
+token_list_t *token_list__new(token_list_t *prev, TokenType *token) {
     token_list_t *token_list = malloc(sizeof(token_list_t));
     if (token_list) {
         token_list->prev = prev;
@@ -52,6 +52,6 @@ token_list_t *token_list__get_next(token_list_t *current) {
     return current->next;
 }
 
-token_t *token_list__get_token(token_list_t *current) {
+TokenType *token_list__get_token(token_list_t *current) {
     return current->token;
 }

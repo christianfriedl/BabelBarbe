@@ -30,7 +30,7 @@ typedef enum { s_initial = 0 } scanner_state_t;
 typedef struct { 
     char *text;
     char *text_start;
-    token_t *token;
+    TokenType *token;
     scanner_state_t state;
     error_t error;
 } scanner_t;

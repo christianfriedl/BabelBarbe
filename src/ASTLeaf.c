@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"bnf.h"
 #include"ASTLeaf.h"
 
-ASTLeaf *ASTLeaf__new(ASTLeaf *parent, token_t *token, ASTLeafPosition where) {
+ASTLeaf *ASTLeaf__new(ASTLeaf *parent, Token *token, ASTLeafPosition where) {
     ASTLeaf *this = malloc(sizeof(*this));
     if (this != NULL) {
         this->parent = parent;
@@ -44,7 +44,7 @@ void ASTLeaf_delete(ASTLeaf *this) {
         ASTLeaf_delete(this->left);
     if (this->right != NULL)
         ASTLeaf_delete(this->right);
-    token__delete(this->token);
+    Token_delete(this->token);
     free(this);
 }
 ASTLeaf *ASTLeaf_getParent(ASTLeaf *this) {
@@ -56,11 +56,11 @@ ASTLeaf *ASTLeaf_getLeft(ASTLeaf *this) {
 ASTLeaf *ASTLeaf_getRight(ASTLeaf *this) {
     return this->right;
 }
-token_t *ASTLeaf_getToken(ASTLeaf *this) {
+Token *ASTLeaf_getToken(ASTLeaf *this) {
     return this->token;
 }
-void ASTLeaf_setToken(ASTLeaf *this, token_t *token) {
-    token__delete(this->token);
+void ASTLeaf_setToken(ASTLeaf *this, Token *token) {
+    Token_delete(this->token);
     this->token = token;
 }
 void ASTLeaf_setParent(ASTLeaf *this, ASTLeaf *parent) {
@@ -82,7 +82,7 @@ void ASTLeaf_print_(ASTLeaf *this, unsigned int level) {
         ASTLeaf_print_(this->left, level + 1);
     for (i=0; i < level; ++i)
         printf("    ");
-    token__print(this->token);
+    Token_print(this->token);
     if (this->right != NULL)
         ASTLeaf_print_(this->right, level + 1);
 }

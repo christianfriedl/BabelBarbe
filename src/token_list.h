@@ -23,17 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"token.h"
 
 struct token_list_struct {
-    token_t *token;
+    TokenType *token;
     struct token_list_struct *prev;
     struct token_list_struct *next;
 };
 
 typedef struct token_list_struct token_list_t;
 
-token_list_t *token_list__new(token_list_t *prev, token_t *token);
+token_list_t *token_list__new(token_list_t *prev, TokenType *token);
 void token_list__delete(token_list_t *token_list);
 token_list_t *token_list__get_prev(token_list_t *current);
 token_list_t *token_list__get_next(token_list_t *current);
-token_t *token_list__get_token(token_list_t *current);
+TokenType *token_list__get_token(token_list_t *current);
 
 #endif

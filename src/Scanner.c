@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdio.h>
 #include<stdlib.h>
 #include<assert.h>
-#include"token.h"
-#include"scanner.h"
+#include"Token.h"
+#include"Scanner.h"
 
 void scanner__reset(scanner_t *this);
 bool is_single_character_symbol(int ch);

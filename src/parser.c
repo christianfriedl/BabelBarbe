@@ -104,7 +104,7 @@ void parser__delete(parser_t *parser) {
 bool parser__scan(parser_t *parser) {
     bool scanner_ok = false;
     token_list_t *prev = NULL;
-    token_t *token = NULL; 
+    TokenType *token = NULL; 
     token_list_t *token_list = NULL;
     do {
         scanner_ok = scanner__scan(parser->scanner);

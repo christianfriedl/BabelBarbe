@@ -21,19 +21,20 @@
 #include<time.h>
 #include<stdio.h>
 #include<string.h>
-#include"../ASTLeaf.h"
+#include"ASTLeaf.h"
+#include"Token.h"
 
 /*
     positive tests
 */
 
 void test_ast__print() {
-    ASTLeaf* root = ASTLeaf__new(NULL, token__new_from_type_string_len(t_start, "root", 4), ASTLeafPosition_nowhere);
-    ASTLeaf* left1 = ASTLeaf__new(root, token__new_from_type_string_len(t_symbol, "left1", 5), ASTLeafPosition_left);
-    ASTLeaf* left1_left = ASTLeaf__new(left1, token__new_from_type_string_len(t_symbol, "left1_left", 10), ASTLeafPosition_left);
-    ASTLeaf* left1_right = ASTLeaf__new(left1, token__new_from_type_string_len(t_symbol, "left1_right", 11), ASTLeafPosition_right);
-    ASTLeaf* right1 = ASTLeaf__new(root, token__new_from_type_string_len(t_symbol, "right1", 6), ASTLeafPosition_right);
-    ASTLeaf* right1_right = ASTLeaf__new(right1, token__new_from_type_string_len(t_symbol, "right1_right", 12), ASTLeafPosition_right);
+    ASTLeaf* root = ASTLeaf__new(NULL, Token__newFromTypeString(TokenType_start, "root"), ASTLeafPosition_nowhere);
+    ASTLeaf* left1 = ASTLeaf__new(root, Token__newFromTypeString(TokenType_identifier, "left1"), ASTLeafPosition_left);
+    ASTLeaf* left1_left = ASTLeaf__new(left1, Token__newFromTypeString(TokenType_identifier, "left1_left"), ASTLeafPosition_left);
+    ASTLeaf* left1_right = ASTLeaf__new(left1, Token__newFromTypeString(TokenType_identifier, "left1_right"), ASTLeafPosition_right);
+    ASTLeaf* right1 = ASTLeaf__new(root, Token__newFromTypeString(TokenType_identifier, "right1"), ASTLeafPosition_right);
+    ASTLeaf* right1_right = ASTLeaf__new(right1, Token__newFromTypeString(TokenType_identifier, "right1_right"), ASTLeafPosition_right);
     printf("%s...\n", __func__);
 
     ASTLeaf_print(root);
@@ -42,12 +43,12 @@ void test_ast__print() {
     printf("ok\n");
 }
 void test_ast_setters_getters() {
-    ASTLeaf* root = ASTLeaf__new(NULL, token__new_from_type_string_len(t_start, "root", 4), ASTLeafPosition_nowhere);
-    ASTLeaf* left1 = ASTLeaf__new(root, token__new_from_type_string_len(t_symbol, "left1", 5), ASTLeafPosition_left);
-    ASTLeaf* left1_left = ASTLeaf__new(left1, token__new_from_type_string_len(t_symbol, "left1_left", 10), ASTLeafPosition_left);
-    ASTLeaf* left1_right = ASTLeaf__new(left1, token__new_from_type_string_len(t_symbol, "left1_right", 11), ASTLeafPosition_right);
-    ASTLeaf* right1 = ASTLeaf__new(root, token__new_from_type_string_len(t_symbol, "right1", 6), ASTLeafPosition_right);
-    ASTLeaf* right1_right = ASTLeaf__new(right1, token__new_from_type_string_len(t_symbol, "right1_right", 12), ASTLeafPosition_right);
+    ASTLeaf* root = ASTLeaf__new(NULL, Token__newFromTypeString(TokenType_start, "root"), ASTLeafPosition_nowhere);
+    ASTLeaf* left1 = ASTLeaf__new(root, Token__newFromTypeString(TokenType_identifier, "left1"), ASTLeafPosition_left);
+    ASTLeaf* left1_left = ASTLeaf__new(left1, Token__newFromTypeString(TokenType_identifier, "left1_left"), ASTLeafPosition_left);
+    ASTLeaf* left1_right = ASTLeaf__new(left1, Token__newFromTypeString(TokenType_identifier, "left1_right"), ASTLeafPosition_right);
+    ASTLeaf* right1 = ASTLeaf__new(root, Token__newFromTypeString(TokenType_identifier, "right1"), ASTLeafPosition_right);
+    ASTLeaf* right1_right = ASTLeaf__new(right1, Token__newFromTypeString(TokenType_identifier, "right1_right"), ASTLeafPosition_right);
     printf("%s...\n", __func__);
 
     assert(ASTLeaf_getParent(left1) == root);

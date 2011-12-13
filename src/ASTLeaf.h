@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 struct ASTLeaf_struct;
 typedef struct ASTLeaf_struct {
-    token_t *token;
+    Token *token;
     struct ASTLeaf_struct *parent;
     struct ASTLeaf_struct *left;
     struct ASTLeaf_struct *right;
@@ -32,14 +32,14 @@ typedef struct ASTLeaf_struct {
 
 typedef enum { ASTLeafPosition_left = 0, ASTLeafPosition_right = 1, ASTLeafPosition_nowhere = 2 } ASTLeafPosition;
 
-ASTLeaf *ASTLeaf__new(ASTLeaf *parent, token_t *token, ASTLeafPosition where);
+ASTLeaf *ASTLeaf__new(ASTLeaf *parent, Token *token, ASTLeafPosition where);
 void ASTLeaf_delete(ASTLeaf *this);
 void ASTLeaf_print(ASTLeaf *this);
 ASTLeaf *ASTLeaf_getParent(ASTLeaf *this);
 ASTLeaf *ASTLeaf_getLeft(ASTLeaf *this);
 ASTLeaf *ASTLeaf_getRight(ASTLeaf *this);
-token_t *ASTLeaf_getToken(ASTLeaf *this);
-void ASTLeaf_setToken(ASTLeaf *this, token_t *token);
+Token *ASTLeaf_getToken(ASTLeaf *this);
+void ASTLeaf_setToken(ASTLeaf *this, Token *token);
 void ASTLeaf_setParent(ASTLeaf *this, ASTLeaf *parent);
 void ASTLeaf_setLeft(ASTLeaf *this, ASTLeaf *left);
 void ASTLeaf_setRight(ASTLeaf *this, ASTLeaf *right);
