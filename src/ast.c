@@ -20,69 +20,69 @@
 #include"bnf.h"
 #include"ast.h"
 
-ast_leaf_t *ast__new(ast_leaf_t *parent, token_t *token, ast_pos_enum where) {
-    ast_leaf_t *this = malloc(sizeof(*this));
+ASTLeaf *ASTLeaf_new(ASTLeaf *parent, token_t *token, ASTLeafPosition where) {
+    ASTLeaf *this = malloc(sizeof(*this));
     if (this != NULL) {
         this->parent = parent;
         this->token = token;
         this->left = NULL;
         this->right = NULL;
         if (parent != NULL) {
-            if (where == ast_pos_left)
+            if (where == ASTLeafPosition_left)
                 parent->left = this;
-            else if (where == ast_pos_right)
+            else if (where == ASTLeafPosition_right)
                 parent->right = this;
             else
                 bnf_raise_fatal_error("Parent given, but no ast_pos argument");
         }
     } else
-        bnf_raise_fatal_error("Unable to allocate ast_leaf.");
+        bnf_raise_fatal_error("Unable to allocate ASTLeaf.");
     return this;
 }
-void ast__delete(ast_leaf_t *this) {
+void ASTLeaf_delete(ASTLeaf *this) {
     if (this->left != NULL)
-        ast__delete(this->left);
+        ASTLeaf_delete(this->left);
     if (this->right != NULL)
-        ast__delete(this->right);
+        ASTLeaf_delete(this->right);
     token__delete(this->token);
     free(this);
 }
-ast_leaf_t *ast__get_parent(ast_leaf_t *this) {
+ASTLeaf *ASTLeaf_getParent(ASTLeaf *this) {
     return this->parent;
 }
-ast_leaf_t *ast__get_left(ast_leaf_t *this) {
+ASTLeaf *ASTLeaf_getLeft(ASTLeaf *this) {
     return this->left;
 }
-ast_leaf_t *ast__get_right(ast_leaf_t *this) {
+ASTLeaf *ASTLeaf_getRight(ASTLeaf *this) {
     return this->right;
 }
-token_t *ast__get_token(ast_leaf_t *this) {
+token_t *ASTLeaf_getToken(ASTLeaf *this) {
     return this->token;
 }
-void ast__set_token(ast_leaf_t *this, token_t *token) {
+void ASTLeaf_setToken(ASTLeaf *this, token_t *token) {
     token__delete(this->token);
     this->token = token;
 }
-void ast__set_parent(ast_leaf_t *this, ast_leaf_t *parent) {
+void ASTLeaf_setParent(ASTLeaf *this, ASTLeaf *parent) {
     this->parent = parent;
 }
-void ast__set_left(ast_leaf_t *this, ast_leaf_t *left) {
+void ASTLeaf_setLeft(ASTLeaf *this, ASTLeaf *left) {
     this->left = left;
 }
-void ast__set_right(ast_leaf_t *this, ast_leaf_t *right) {
+void ASTLeaf_setRight(ASTLeaf *this, ASTLeaf *right) {
     this->right = right;
 }
-void ast__print_internal(ast_leaf_t *this, unsigned int level);
-void ast__print(ast_leaf_t *this) {
-    ast__print_internal(this, 0);
+void ASTLeaf_printInternal(ASTLeaf *this, unsigned int level);
+void ASTLeaf_print(ASTLeaf *this) {
+    ASTLeaf_printInternal(this, 0);
 }
-void ast__print_internal(ast_leaf_t *this, unsigned int level) {
+void ASTLeaf_printInternal(ASTLeaf *this, unsigned int level) {
     unsigned int i;
     if (this->left != NULL)
-        ast__print_internal(this->left, level + 1);
+        ASTLeaf_printInternal(this->left, level + 1);
     for (i=0; i < level; ++i)
         printf("    ");
     token__print(this->token);
     if (this->right != NULL)
-        ast__print_internal(this->right, level + 1);
+        ASTLeaf_printInternal(this->right, level + 1);
 }

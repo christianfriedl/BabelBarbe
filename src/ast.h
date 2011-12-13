@@ -22,27 +22,27 @@
 
 #include"token.h"
 
-struct ast_leaf;
-typedef struct ast_leaf {
+struct ASTLeaf_struct;
+typedef struct ASTLeaf_struct {
     token_t *token;
-    struct ast_leaf *parent;
-    struct ast_leaf *left;
-    struct ast_leaf *right;
-} ast_leaf_t;
+    struct ASTLeaf_struct *parent;
+    struct ASTLeaf_struct *left;
+    struct ASTLeaf_struct *right;
+} ASTLeaf;
 
-typedef enum { ast_pos_left = 0, ast_pos_right = 1, ast_pos_nowhere = 2 } ast_pos_enum;
+typedef enum { ASTLeafPosition_left = 0, ASTLeafPosition_right = 1, ASTLeafPosition_nowhere = 2 } ASTLeafPosition;
 
-ast_leaf_t *ast__new(ast_leaf_t *parent, token_t *token, ast_pos_enum where);
-void ast__delete(ast_leaf_t *this);
-void ast__print(ast_leaf_t *this);
-ast_leaf_t *ast__get_parent(ast_leaf_t *this);
-ast_leaf_t *ast__get_left(ast_leaf_t *this);
-ast_leaf_t *ast__get_right(ast_leaf_t *this);
-token_t *ast__get_token(ast_leaf_t *this);
-void ast__set_token(ast_leaf_t *this, token_t *token);
-void ast__set_parent(ast_leaf_t *this, ast_leaf_t *parent);
-void ast__set_left(ast_leaf_t *this, ast_leaf_t *left);
-void ast__set_right(ast_leaf_t *this, ast_leaf_t *right);
+ASTLeaf *ASTLeaf_new(ASTLeaf *parent, token_t *token, ASTLeafPosition where);
+void ASTLeaf_delete(ASTLeaf *this);
+void ASTLeaf_print(ASTLeaf *this);
+ASTLeaf *ASTLeaf_getParent(ASTLeaf *this);
+ASTLeaf *ASTLeaf_getLeft(ASTLeaf *this);
+ASTLeaf *ASTLeaf_getRight(ASTLeaf *this);
+token_t *ASTLeaf_getToken(ASTLeaf *this);
+void ASTLeaf_setToken(ASTLeaf *this, token_t *token);
+void ASTLeaf_setParent(ASTLeaf *this, ASTLeaf *parent);
+void ASTLeaf_setLeft(ASTLeaf *this, ASTLeaf *left);
+void ASTLeaf_setRight(ASTLeaf *this, ASTLeaf *right);
 
 #endif
 
