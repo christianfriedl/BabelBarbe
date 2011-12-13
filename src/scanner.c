@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"token.h"
 #include"scanner.h"
 
-void scanner__reset(scanner_t *scanner);
+void scanner__reset(scanner_t *this);
 bool is_single_character_symbol(int ch);
 bool is_double_character_symbol(const char *str);
 
@@ -34,23 +34,23 @@ void scanner__raise_fatal_error(const char *msg) {
 }
 
 scanner_t *scanner__new(const char *text) {
-    scanner_t *scanner = malloc(sizeof(scanner_t));
-    if (scanner != NULL) {
-        scanner->text = scanner->text_start = text;
-        scanner->token = NULL;
-        scanner->state = s_initial;
-        scanner->error = e_ok;
+    scanner_t *this = malloc(sizeof(scanner_t));
+    if (this != NULL) {
+        this->text = this->text_start = text;
+        this->token = NULL;
+        this->state = s_initial;
+        this->error = e_ok;
     } else
-        scanner__raise_fatal_error("Unable to allocate scanner.");
-    return scanner;
+        scanner__raise_fatal_error("Unable to allocate this.");
+    return this;
 }
 
-void scanner__delete(scanner_t *scanner) {
-    free(scanner);
+void scanner__delete(scanner_t *this) {
+    free(this);
 }
 
-void scanner__reset(scanner_t *scanner) {
-    scanner->text_start = scanner->text;
+void scanner__reset(scanner_t *this) {
+    this->text_start = this->text;
 }
 
 bool is_single_character_symbol(int ch) {
@@ -67,77 +67,77 @@ bool is_double_character_symbol(const char *str) {
     return false;
 }
 
-bool scanner__scan_empty(scanner_t *scanner, bool *continue_loop);
+bool scanner__scan_empty(scanner_t *this, bool *continue_loop);
 
-bool scanner__scan(scanner_t *scanner) {
+bool scanner__scan(scanner_t *this) {
     bool continue_loop = false;
     bool rv = false;
-    scanner__reset(scanner);
+    scanner__reset(this);
     do {
-        char ch = *scanner->text;
-        switch (scanner->state) {
+        char ch = *this->text;
+        switch (this->state) {
             case s_initial:
             case s_reset:
-                rv = scanner__scan_empty(scanner, &continue_loop);
+                rv = scanner__scan_empty(this, &continue_loop);
                 break;
             case s_digit:
                 if (isdigit(ch)) {
-                    (scanner->text)++;
+                    (this->text)++;
                     continue_loop = true;
                 } else if (ch == '\'') {
-                    scanner->state = s_quote;
-                    scanner->token = token__new_from_type_string_len(t_literal_uint, scanner->text_start, scanner->text - scanner->text_start);
+                    this->state = s_quote;
+                    this->token = token__new_from_type_string_len(t_literal_uint, this->text_start, this->text - this->text_start);
                     continue_loop = false;
                     rv = true;
                 } else {
-                    scanner->state = s_reset;
-                    scanner->token = token__new_from_type_string_len(t_literal_uint, scanner->text_start, scanner->text - scanner->text_start);
+                    this->state = s_reset;
+                    this->token = token__new_from_type_string_len(t_literal_uint, this->text_start, this->text - this->text_start);
                     continue_loop = false;
                     rv = true;
                 }
                 break;
             case s_single_character_symbol:
-                if (is_double_character_symbol(scanner->text)) {
-                    scanner->state = s_reset;
-                    scanner->text += 2;
-                    scanner->token = token__new_from_type_string_len(t_symbol, scanner->text_start, scanner->text - scanner->text_start);
+                if (is_double_character_symbol(this->text)) {
+                    this->state = s_reset;
+                    this->text += 2;
+                    this->token = token__new_from_type_string_len(t_symbol, this->text_start, this->text - this->text_start);
                     continue_loop = false;
                     rv = true;
                 } else {
-                    scanner->state = s_reset;
-                    (scanner->text)++;
-                    scanner->token = token__new_from_type_string_len(t_symbol, scanner->text_start, scanner->text - scanner->text_start);
+                    this->state = s_reset;
+                    (this->text)++;
+                    this->token = token__new_from_type_string_len(t_symbol, this->text_start, this->text - this->text_start);
                     continue_loop = false;
                     rv = true;
                 }
                 break;
             case s_double_character_symbol:
-                scanner->state = s_reset;
-                scanner->text += 2;
-                scanner->token = token__new_from_type_string_len(t_symbol, scanner->text_start, scanner->text - scanner->text_start);
+                this->state = s_reset;
+                this->text += 2;
+                this->token = token__new_from_type_string_len(t_symbol, this->text_start, this->text - this->text_start);
                 continue_loop = false;
                 rv = true;
                 break;
             case s_quote:
-                scanner->state = s_reset;
-                (scanner->text)++;
-                scanner->token = token__new_from_type_string_len(t_quote, scanner->text_start, scanner->text - scanner->text_start);
+                this->state = s_reset;
+                (this->text)++;
+                this->token = token__new_from_type_string_len(t_quote, this->text_start, this->text - this->text_start);
                 continue_loop = false;
                 rv = true;
                 break;
             case s_alpha:
                 if (isalpha(ch)) {
-                    (scanner->text)++;
+                    (this->text)++;
                     continue_loop = true;
                 } else {
-                    scanner->token = token__new_from_type_string_len(t_identifier, scanner->text_start, scanner->text - scanner->text_start);
-                    scanner->state = s_reset;
+                    this->token = token__new_from_type_string_len(t_identifier, this->text_start, this->text - this->text_start);
+                    this->state = s_reset;
                     continue_loop = false;
                     rv = true;
                 }
                 break;
             default:
-                scanner__raise_error(scanner, e_unknown_scanner_state);
+                scanner__raise_error(this, e_unknown_scanner_state);
                 return false;
         }
     } while (continue_loop);
@@ -145,52 +145,52 @@ bool scanner__scan(scanner_t *scanner) {
 }
 
 // TODO find a more suitable name - it's for initial/reset
-bool scanner__scan_empty(scanner_t *scanner, bool *continue_loop) {
-        char ch = *scanner->text;
-        switch (scanner->state) {
+bool scanner__scan_empty(scanner_t *this, bool *continue_loop) {
+        char ch = *this->text;
+        switch (this->state) {
             case s_initial:
                 if (ch == '\0') {
-                    scanner__raise_error(scanner, e_unexpected_eof);
+                    scanner__raise_error(this, e_unexpected_eof);
                     *continue_loop = false;
                     return false;
                 } else if (ch == '\'') {
-                    scanner->state = s_quote;
+                    this->state = s_quote;
                     *continue_loop = true;
                     return true;
                 }
                 break;
             case s_reset:
                 if (ch == '\0') {
-                    scanner->state = s_initial;
-                    scanner->token = token__new_from_type_string_len(t_eof, "", 0);
+                    this->state = s_initial;
+                    this->token = token__new_from_type_string_len(t_eof, "", 0);
                     *continue_loop = false;
                     return true;
                 } else if (ch == '\'') {
-                    scanner->state = s_quote;
-                    scanner->text_start = scanner->text;
+                    this->state = s_quote;
+                    this->text_start = this->text;
                     *continue_loop = true;
                     return true;
                 }
                 break;
             default:
-                scanner__raise_error(scanner, e_initial_or_reset_expected);
+                scanner__raise_error(this, e_initial_or_reset_expected);
         }
         if (isspace(ch))
-            (scanner->text)++;
+            (this->text)++;
         else if (isdigit(ch)) {
-            scanner->text_start = scanner->text;
-            scanner->state = s_digit;
+            this->text_start = this->text;
+            this->state = s_digit;
         } else if (isalpha(ch)) {
-            scanner->text_start = scanner->text;
-            scanner->state = s_alpha;
+            this->text_start = this->text;
+            this->state = s_alpha;
         } else if (is_single_character_symbol(ch)) {
-            scanner->state = s_single_character_symbol;
-            scanner->text_start = scanner->text;
-        } else if (is_double_character_symbol(scanner->text)) {
-            scanner->state = s_double_character_symbol;
-            scanner->text_start = scanner->text;
+            this->state = s_single_character_symbol;
+            this->text_start = this->text;
+        } else if (is_double_character_symbol(this->text)) {
+            this->state = s_double_character_symbol;
+            this->text_start = this->text;
         } else {
-            scanner__raise_error(scanner, e_unexpected_symbol);
+            scanner__raise_error(this, e_unexpected_symbol);
             *continue_loop = false;
             return false;
         }
@@ -198,6 +198,6 @@ bool scanner__scan_empty(scanner_t *scanner, bool *continue_loop) {
         return true;
 }
 
-void scanner__raise_error(scanner_t *scanner, error_t error) {
-    scanner->error = error;
+void scanner__raise_error(scanner_t *this, error_t error) {
+    this->error = error;
 }

@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"bnf.h"
 #include"token.h"
 
-typedef enum { s_initial, s_reset, s_alpha, s_digit, s_single_character_symbol, s_double_character_symbol, s_quote } scanner_state_t;
+typedef enum { s_initial = 0 } scanner_state_t;
 
 typedef struct { 
     char *text;
@@ -35,10 +35,26 @@ typedef struct {
     error_t error;
 } scanner_t;
 
+struct scanner_table_cell_s;
+
+struct scanner_table_cell_s {
+    scanner_state_t next_state;
+    bool is_final;
+    bool (*recognize)(char ch);
+    unsigned int (*consume)(scanner_t *this);
+};
+typedef struct scanner_table_cell_s scanner_table_cell_t;
+
+#define SCANNER_TABLE_ROWS 20
+#define SCANNER_TABLE_COLS 20
+
+scanner_table_cell_t scanner_table[SCANNER_TABLE_ROWS][SCANNER_TABLE_COLS];
+
+
 scanner_t *scanner__new(const char *text);
-void scanner__delete(scanner_t *scanner);
-bool scanner__scan(scanner_t *scanner);
-void scanner__raise_error(scanner_t *scanner, error_t error);
+void scanner__delete(scanner_t *this);
+bool scanner__scan(scanner_t *this);
+void scanner__raise_error(scanner_t *this, error_t error);
 void scanner__raise_fatal_error(const char *msg) __attribute((noreturn));
 
 
