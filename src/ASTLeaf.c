@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include"bnf.h"
-#include"ast.h"
+#include"ASTLeaf.h"
 
-ASTLeaf *ASTLeaf_new(ASTLeaf *parent, token_t *token, ASTLeafPosition where) {
+ASTLeaf *ASTLeaf__new(ASTLeaf *parent, token_t *token, ASTLeafPosition where) {
     ASTLeaf *this = malloc(sizeof(*this));
     if (this != NULL) {
         this->parent = parent;
@@ -72,17 +72,17 @@ void ASTLeaf_setLeft(ASTLeaf *this, ASTLeaf *left) {
 void ASTLeaf_setRight(ASTLeaf *this, ASTLeaf *right) {
     this->right = right;
 }
-void ASTLeaf_printInternal(ASTLeaf *this, unsigned int level);
+void ASTLeaf_print_(ASTLeaf *this, unsigned int level);
 void ASTLeaf_print(ASTLeaf *this) {
-    ASTLeaf_printInternal(this, 0);
+    ASTLeaf_print_(this, 0);
 }
-void ASTLeaf_printInternal(ASTLeaf *this, unsigned int level) {
+void ASTLeaf_print_(ASTLeaf *this, unsigned int level) {
     unsigned int i;
     if (this->left != NULL)
-        ASTLeaf_printInternal(this->left, level + 1);
+        ASTLeaf_print_(this->left, level + 1);
     for (i=0; i < level; ++i)
         printf("    ");
     token__print(this->token);
     if (this->right != NULL)
-        ASTLeaf_printInternal(this->right, level + 1);
+        ASTLeaf_print_(this->right, level + 1);
 }

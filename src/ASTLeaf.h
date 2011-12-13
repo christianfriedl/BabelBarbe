@@ -32,7 +32,7 @@ typedef struct ASTLeaf_struct {
 
 typedef enum { ASTLeafPosition_left = 0, ASTLeafPosition_right = 1, ASTLeafPosition_nowhere = 2 } ASTLeafPosition;
 
-ASTLeaf *ASTLeaf_new(ASTLeaf *parent, token_t *token, ASTLeafPosition where);
+ASTLeaf *ASTLeaf__new(ASTLeaf *parent, token_t *token, ASTLeafPosition where);
 void ASTLeaf_delete(ASTLeaf *this);
 void ASTLeaf_print(ASTLeaf *this);
 ASTLeaf *ASTLeaf_getParent(ASTLeaf *this);

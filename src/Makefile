@@ -12,7 +12,7 @@ LDFLAGS=-ggdb $(WARNINGS)
 
 
 STATIC_LIBRARY=libbnf.a 
-LIB_OBJECTS = ast.o token.o bnf.o
+LIB_OBJECTS = ASTLeaf.o token.o bnf.o
 
 clean-all-test: clean all test
 
