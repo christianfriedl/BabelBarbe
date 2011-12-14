@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _TOKEN_LIST_H
 #define _TOKEN_LIST_H
 
-#include"token.h"
+#include"Token.h"
 
 struct token_list_struct {
     TokenType* token;

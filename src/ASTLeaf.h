@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _AST_H
 #define _AST_H
 
-#include"token.h"
+#include"Token.h"
 
 struct ASTLeaf_struct;
 typedef struct ASTLeaf_struct {

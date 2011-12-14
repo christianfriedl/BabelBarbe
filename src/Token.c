@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include"bnf.h"
+#include"BNF.h"
 #include"Token.h"
 
 Token* Token__new() {

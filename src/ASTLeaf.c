@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include"bnf.h"
+#include"BNF.h"
 #include"ASTLeaf.h"
 
 ASTLeaf* ASTLeaf__new(ASTLeaf* parent, Token* token, ASTLeafPosition where) {

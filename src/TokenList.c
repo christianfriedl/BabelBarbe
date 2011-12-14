@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include<stdio.h>
 #include<stdlib.h>
-#include"bnf.h"
+#include"BNF.h"
 #include"scanner.h"
 #include"token_list.h"
 

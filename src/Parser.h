@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _PARSER_H
 #define _PARSER_H
 
-#include"bnf.h"
+#include"BNF.h"
 #include"Scanner.h"
 #include"TokenList.h"
 #include"TLC.h"

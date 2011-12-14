@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include<ctype.h>
 #include<stdlib.h>
-#include"bnf.h"
+#include"BNF.h"
 #include"Token.h"
 
 typedef enum { ScannerState_initial = 0 } ScannerState;
