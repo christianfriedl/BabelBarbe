@@ -2,4 +2,7 @@
 *.o
 *.a
 Makefile.local
-src/test/0500_ast
+src/test/0125_Token
+src/test/0187_Scanner
+src/test/0250_Logger
+src/test/0500_ASTLeaf

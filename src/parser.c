@@ -24,39 +24,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"parser.h"
 
 int parser__debug_indent = 0;
-void parser__debug_print_enter_function(parser_t *parser, const char *func);
-void parser__debug_print_exit_function(parser_t *parser, const char *func);
-void parser__debug_print_enter_rule(parser_t *parser, const char *rule_name);
-void parser__debug_print_exit_rule(parser_t *parser, const char *rule_name, const char *succ);
+void parser__debug_print_enter_function(parser_t* parser, const char* func);
+void parser__debug_print_exit_function(parser_t* parser, const char* func);
+void parser__debug_print_enter_rule(parser_t* parser, const char* rule_name);
+void parser__debug_print_exit_rule(parser_t* parser, const char* rule_name, const char* succ);
 
-bool parser__scan(parser_t *parser);
-void parser__raise_fatal_error(const char *msg) __attribute((noreturn));
-void parser__raise_error(parser_t *parser, error_t error);
+bool parser__scan(parser_t* parser);
+void parser__raise_fatal_error(const char* msg) __attribute((noreturn));
+void parser__raise_error(parser_t* parser, Error error);
 
-void parser__raise_fatal_error(const char *msg) {
+void parser__raise_fatal_error(const char* msg) {
     printf("PARSER FATAL ERROR: %s\n", msg);
     abort();
 }
-void parser__raise_error(parser_t *parser, error_t error) {
+void parser__raise_error(parser_t* parser, Error error) {
     parser->error = error;
     strcpy(parser->error_text,  parser->error_texts[error]);
 }
 
-bool parser__is_error(parser_t *parser) {
+bool parser__is_error(parser_t* parser) {
     return (parser->error != e_ok ? true : false);
 }
 
-error_t parser__get_error(parser_t *parser) {
+Error parser__get_error(parser_t* parser) {
     return parser->error;
 }
 
-char *parser__get_error_text(parser_t *parser) {
+char* parser__get_error_text(parser_t* parser) {
     return parser->error_text;
 }
 
-void parser__init_error_texts(parser_t *parser);
-parser_t *parser__new(scanner_t *scanner, parser_rule_t *start_rule) {
-    parser_t *parser = NULL;
+void parser__init_error_texts(parser_t* parser);
+parser_t* parser__new(Scanner* scanner, parser_rule_t* start_rule) {
+    parser_t* parser = NULL;
     parser = malloc(sizeof(*parser));
     if (parser) {
         parser->error = e_ok;
@@ -71,7 +71,7 @@ parser_t *parser__new(scanner_t *scanner, parser_rule_t *start_rule) {
         parser__raise_fatal_error("Unable to allocate parser.");
     return parser;
 }
-void parser__init_error_texts(parser_t *parser) {
+void parser__init_error_texts(parser_t* parser) {
     strcpy(parser->error_texts[e_ok], "No error");
 
     strcpy(parser->error_texts[e_generic_error], "Something bad happened, giving up");
@@ -88,12 +88,12 @@ void parser__init_error_texts(parser_t *parser) {
     strcpy(parser->error_texts[e_cannot_cast_to_uint], "This type cannot be cast to uint");
 }
 
-void parser__debug(parser_t *parser) {
+void parser__debug(parser_t* parser) {
     parser->is_debug = true;
 }
 
-void parser__delete(parser_t *parser) {
-    scanner__delete(parser->scanner);
+void parser__delete(parser_t* parser) {
+    Scanner_delete(parser->scanner);
     if (parser->token_list != NULL)
         token_list__delete(parser->token_list);
     if (parser->ast_root != NULL)
@@ -101,13 +101,13 @@ void parser__delete(parser_t *parser) {
     free(parser);
 }
 
-bool parser__scan(parser_t *parser) {
+bool parser__scan(parser_t* parser) {
     bool scanner_ok = false;
-    token_list_t *prev = NULL;
-    TokenType *token = NULL; 
-    token_list_t *token_list = NULL;
+    token_list_t* prev = NULL;
+    TokenType* token = NULL; 
+    token_list_t* token_list = NULL;
     do {
-        scanner_ok = scanner__scan(parser->scanner);
+        scanner_ok = Scanner_scan(parser->scanner);
         if (scanner_ok) {
             token = parser->scanner->token;
             token_list = token_list__new(prev, token);
@@ -122,15 +122,15 @@ bool parser__scan(parser_t *parser) {
     return scanner_ok;
 }
 
-bool parser__parse_rule(parser_t *parser, parser_rule_t *current_rule);
-bool parser__parse_terminal(parser_t *parser, parser_rule_t *current_rule);
-bool parser__parse_alternatives(parser_t *parser, parser_rule_t *current_rule);
-bool parser__evaluate_if_parsed(parser_t *parser, parser_rule_t *current_rule, bool is_parsed);
-bool parser__evaluate_for_rule(parser_t *parser, parser_rule_t *current_rule);
-bool parser__parse_nonrepeating_alternative(parser_t *parser, parser_rule_t *current_rule, struct rule **productions);
-bool parser__parse_repeating_alternative(parser_t *parser, parser_rule_t *current_rule, alternative_t *alternative);
+bool parser__parse_rule(parser_t* parser, parser_rule_t* current_rule);
+bool parser__parse_terminal(parser_t* parser, parser_rule_t* current_rule);
+bool parser__parse_alternatives(parser_t* parser, parser_rule_t* current_rule);
+bool parser__evaluate_if_parsed(parser_t* parser, parser_rule_t* current_rule, bool is_parsed);
+bool parser__evaluate_for_rule(parser_t* parser, parser_rule_t* current_rule);
+bool parser__parse_nonrepeating_alternative(parser_t* parser, parser_rule_t* current_rule, struct rule* *productions);
+bool parser__parse_repeating_alternative(parser_t* parser, parser_rule_t* current_rule, alternative_t* alternative);
 
-bool parser__parse(parser_t *parser) {
+bool parser__parse(parser_t* parser) {
     if (parser->is_debug) printf("===> starting parser with text: '%s'\n", parser->scanner->text);
     if (!parser__scan(parser))
         return false;
@@ -138,18 +138,18 @@ bool parser__parse(parser_t *parser) {
     return parser__parse_rule(parser, parser->start_rule);
 }
 
-bool parser__evaluate_for_rule(parser_t *parser, parser_rule_t *current_rule) {
+bool parser__evaluate_for_rule(parser_t* parser, parser_rule_t* current_rule) {
     (current_rule->evaluate)(parser);
     return true;
 }
 
-bool parser__parse_rule(parser_t *parser, parser_rule_t *current_rule) {
+bool parser__parse_rule(parser_t* parser, parser_rule_t* current_rule) {
     bool is_parsed = false;
 
     if (parser->error != e_ok)
         return false;
     parser__debug_print_enter_rule(parser, current_rule->name);
-    if (current_rule->parse != NULL) { /* terminal symbol */
+    if (current_rule->parse != NULL) { /* terminal symbol* /
         is_parsed = parser__parse_terminal(parser, current_rule);
     } else {
         is_parsed = parser__parse_alternatives(parser, current_rule);
@@ -157,7 +157,7 @@ bool parser__parse_rule(parser_t *parser, parser_rule_t *current_rule) {
     parser__debug_print_exit_rule(parser, current_rule->name, bool__to_string(is_parsed));
     return is_parsed;
 }
-bool parser__parse_terminal(parser_t *parser, parser_rule_t *current_rule) {
+bool parser__parse_terminal(parser_t* parser, parser_rule_t* current_rule) {
     if ((current_rule->parse)(parser) == false) 
         return false;
     if (current_rule->evaluate != NULL) {
@@ -167,11 +167,11 @@ bool parser__parse_terminal(parser_t *parser, parser_rule_t *current_rule) {
     tlc__move_to_next(parser->tlc);
     return true;
 }
-bool parser__parse_alternatives(parser_t *parser, parser_rule_t *current_rule) {
+bool parser__parse_alternatives(parser_t* parser, parser_rule_t* current_rule) {
     unsigned int i = 0;
     bool is_parsed = false;
 
-    alternative_t *alternatives = current_rule->alternatives;
+    alternative_t* alternatives = current_rule->alternatives;
     is_parsed = false;
     for (i = 0; alternatives[i].productions[0] != NULL && !is_parsed; ++i) {
         if (alternatives[i].repeat_switch == repeat_on)
@@ -182,7 +182,7 @@ bool parser__parse_alternatives(parser_t *parser, parser_rule_t *current_rule) {
     return is_parsed;
 }
 
-bool parser__parse_nonrepeating_alternative(parser_t *parser, parser_rule_t *current_rule, struct rule **productions) {
+bool parser__parse_nonrepeating_alternative(parser_t* parser, parser_rule_t* current_rule, struct rule* *productions) {
     bool is_parsed = true;
     unsigned int start_index = 0;
     unsigned int i_prod = 0;
@@ -203,8 +203,8 @@ bool parser__parse_nonrepeating_alternative(parser_t *parser, parser_rule_t *cur
     is_parsed = parser__evaluate_if_parsed(parser, current_rule, is_parsed);
     return is_parsed;
 }
-bool parser__parse_repeating_alternative(parser_t *parser, parser_rule_t *current_rule, alternative_t *alternative) {
-    struct rule **productions = alternative->productions;
+bool parser__parse_repeating_alternative(parser_t* parser, parser_rule_t* current_rule, alternative_t* alternative) {
+    struct rule* *productions = alternative->productions;
     bool is_parsed = true;
     unsigned int start_index = 0;
     unsigned int i_prod = 0;
@@ -218,7 +218,7 @@ bool parser__parse_repeating_alternative(parser_t *parser, parser_rule_t *curren
                 is_parsed &= parser__parse_rule(parser, productions[i_prod]);
         }
         start_index = alternative->repeat_from_index;
-        repeater_is_parsed |= is_parsed;         /* repeater is seen as parsed the moment it passed the first loop */
+        repeater_is_parsed |= is_parsed;         /* repeater is seen as parsed the moment it passed the first loop* /
         is_parsed = parser__evaluate_if_parsed(parser, current_rule, is_parsed);
         if (is_parsed) {
             tlc__unset_mark(parser->tlc);
@@ -226,14 +226,14 @@ bool parser__parse_repeating_alternative(parser_t *parser, parser_rule_t *curren
         }
     } while (is_parsed);
 
-    is_parsed = repeater_is_parsed;             /* translate back to "normal" is_parsed handling */
+    is_parsed = repeater_is_parsed;             /* translate back to "normal" is_parsed handling* /
 
     tlc__move_to_mark(parser->tlc);
 
     return is_parsed;
 }
 
-bool parser__evaluate_if_parsed(parser_t *parser, parser_rule_t *current_rule, bool is_parsed) {
+bool parser__evaluate_if_parsed(parser_t* parser, parser_rule_t* current_rule, bool is_parsed) {
     if (is_parsed) {
         if (current_rule->evaluate != NULL) {
             return parser__evaluate_for_rule(parser, current_rule);
@@ -250,20 +250,20 @@ bool parser__evaluate_if_parsed(parser_t *parser, parser_rule_t *current_rule, b
 
 
 
-void parser__debug_print_enter_function(parser_t *parser, const char *func) {
+void parser__debug_print_enter_function(parser_t* parser, const char* func) {
     if (parser->is_debug) {
         int i;
-        char *token_string = token__to_string(tlc__get_current(parser->tlc));
+        char* token_string = token__to_string(tlc__get_current(parser->tlc));
         for (i = 0; i < parser__debug_indent; ++i) printf("    ");
         parser__debug_indent++;
         printf("> %s (%s)\n", func, token_string);
         free(token_string);
     }
 }
-void parser__debug_print_exit_function(parser_t *parser, const char *func) {
+void parser__debug_print_exit_function(parser_t* parser, const char* func) {
     if (parser->is_debug) {
         int i;
-        char *token_string = token__to_string(tlc__get_current(parser->tlc));
+        char* token_string = token__to_string(tlc__get_current(parser->tlc));
         parser__debug_indent--;
         for (i = 0; i < parser__debug_indent; ++i) printf("    ");
         printf("< %s (%s)\n", func, token_string);
@@ -271,7 +271,7 @@ void parser__debug_print_exit_function(parser_t *parser, const char *func) {
     }
 }
 
-void parser__debug_print_enter_rule(parser_t *parser, const char *rule_name) {
+void parser__debug_print_enter_rule(parser_t* parser, const char* rule_name) {
     if (parser->is_debug) {
         int i;
         for (i = 0; i < parser__debug_indent; ++i) printf("    ");
@@ -280,7 +280,7 @@ void parser__debug_print_enter_rule(parser_t *parser, const char *rule_name) {
     }
 }
 
-void parser__debug_print_exit_rule(parser_t *parser, const char *rule_name, const char *succ) {
+void parser__debug_print_exit_rule(parser_t* parser, const char* rule_name, const char* succ) {
     if (parser->is_debug) {
         int i;
         parser__debug_indent--;

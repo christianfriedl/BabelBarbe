@@ -34,34 +34,34 @@ typedef enum { repeat_on=0, repeat_off } repeat_switch_t;
 
 typedef struct {
     repeat_switch_t repeat_switch;
-    unsigned int repeat_from_index; /* index into production */
-    struct parser_rule *productions[20];
+    unsigned int repeat_from_index; /* index into production* /
+    struct parser_rule* productions[20];
 } alternative_t;
 
 struct parser_rule {
     char name[255];
-    bool (*parse)(parser_t *parser);
-    void (*evaluate)(parser_t *parser);
+    bool (*parse)(parser_t* parser);
+    void (*evaluate)(parser_t* parser);
     alternative_t alternatives[20];
 };
 
 struct parser_s {
-    error_t error;
+    Error error;
     char error_text[255];
     char error_texts[255][255];
-    scanner_t *scanner;
-    token_list_t *token_list;
-    tlc_t *tlc;
+    Scanner* scanner;
+    token_list_t* token_list;
+    tlc_t* tlc;
     bool is_debug;
-    parser_rule_t *start_rule;
-    ast_leaf_t *ast_root;
+    parser_rule_t* start_rule;
+    ast_leaf_t* ast_root;
 }; 
 
-parser_t *parser__new(scanner_t *scanner, parser_rule_t *start_rule);
-void parser__delete(parser_t *parser);
-void parser__debug(parser_t *parser);
-bool parser__parse(parser_t *parser);
-bool parser__is_error(parser_t *parser);
-error_t parser__get_error(parser_t *parser);
-char *parser__get_error_text(parser_t *parser);
+parser_t* parser__new(Scanner* scanner, parser_rule_t* start_rule);
+void parser__delete(parser_t* parser);
+void parser__debug(parser_t* parser);
+bool parser__parse(parser_t* parser);
+bool parser__is_error(parser_t* parser);
+Error parser__get_error(parser_t* parser);
+char* parser__get_error_text(parser_t* parser);
 #endif

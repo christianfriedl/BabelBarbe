@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdio.h>
 #include"bnf.h"
 
-void bnf_raise_fatal_error(const char *msg) {
+void bnf_raise_fatal_error(const char* msg) {
     printf("BNF FATAL ERROR: %s\n", msg);
     abort();
 }

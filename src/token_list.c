@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"scanner.h"
 #include"token_list.h"
 
-token_list_t *token_list__new(token_list_t *prev, TokenType *token) {
-    token_list_t *token_list = malloc(sizeof(token_list_t));
+token_list_t* token_list__new(token_list_t* prev, TokenType* token) {
+    token_list_t* token_list = malloc(sizeof(token_list_t));
     if (token_list) {
         token_list->prev = prev;
         token_list->token = token;
@@ -32,11 +32,11 @@ token_list_t *token_list__new(token_list_t *prev, TokenType *token) {
         if (prev)
             prev->next = token_list;
     } else
-        scanner__raise_fatal_error("Unable to allocate token_list.");
+        Scanner__raiseFatalError("Unable to allocate token_list.");
     return token_list;
 }
 
-void token_list__delete(token_list_t *token_list) {
+void token_list__delete(token_list_t* token_list) {
     if (token_list->next)
         token_list__delete(token_list->next);
     if (token_list->prev)
@@ -44,14 +44,14 @@ void token_list__delete(token_list_t *token_list) {
     free(token_list);
 }
 
-token_list_t *token_list__get_prev(token_list_t *current) {
+token_list_t* token_list__get_prev(token_list_t* current) {
     return current->prev;
 }
 
-token_list_t *token_list__get_next(token_list_t *current) {
+token_list_t* token_list__get_next(token_list_t* current) {
     return current->next;
 }
 
-TokenType *token_list__get_token(token_list_t *current) {
+TokenType* token_list__get_token(token_list_t* current) {
     return current->token;
 }

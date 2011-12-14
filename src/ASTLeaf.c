@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"bnf.h"
 #include"ASTLeaf.h"
 
-ASTLeaf *ASTLeaf__new(ASTLeaf *parent, Token *token, ASTLeafPosition where) {
-    ASTLeaf *this = malloc(sizeof(*this));
+ASTLeaf* ASTLeaf__new(ASTLeaf* parent, Token* token, ASTLeafPosition where) {
+    ASTLeaf* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->parent = parent;
         this->token = token;
@@ -39,7 +39,7 @@ ASTLeaf *ASTLeaf__new(ASTLeaf *parent, Token *token, ASTLeafPosition where) {
         bnf_raise_fatal_error("Unable to allocate ASTLeaf.");
     return this;
 }
-void ASTLeaf_delete(ASTLeaf *this) {
+void ASTLeaf_delete(ASTLeaf* this) {
     if (this->left != NULL)
         ASTLeaf_delete(this->left);
     if (this->right != NULL)
@@ -47,36 +47,36 @@ void ASTLeaf_delete(ASTLeaf *this) {
     Token_delete(this->token);
     free(this);
 }
-ASTLeaf *ASTLeaf_getParent(ASTLeaf *this) {
+ASTLeaf* ASTLeaf_getParent(ASTLeaf* this) {
     return this->parent;
 }
-ASTLeaf *ASTLeaf_getLeft(ASTLeaf *this) {
+ASTLeaf* ASTLeaf_getLeft(ASTLeaf* this) {
     return this->left;
 }
-ASTLeaf *ASTLeaf_getRight(ASTLeaf *this) {
+ASTLeaf* ASTLeaf_getRight(ASTLeaf* this) {
     return this->right;
 }
-Token *ASTLeaf_getToken(ASTLeaf *this) {
+Token* ASTLeaf_getToken(ASTLeaf* this) {
     return this->token;
 }
-void ASTLeaf_setToken(ASTLeaf *this, Token *token) {
+void ASTLeaf_setToken(ASTLeaf* this, Token* token) {
     Token_delete(this->token);
     this->token = token;
 }
-void ASTLeaf_setParent(ASTLeaf *this, ASTLeaf *parent) {
+void ASTLeaf_setParent(ASTLeaf* this, ASTLeaf* parent) {
     this->parent = parent;
 }
-void ASTLeaf_setLeft(ASTLeaf *this, ASTLeaf *left) {
+void ASTLeaf_setLeft(ASTLeaf* this, ASTLeaf* left) {
     this->left = left;
 }
-void ASTLeaf_setRight(ASTLeaf *this, ASTLeaf *right) {
+void ASTLeaf_setRight(ASTLeaf* this, ASTLeaf* right) {
     this->right = right;
 }
-void ASTLeaf_print_(ASTLeaf *this, unsigned int level);
-void ASTLeaf_print(ASTLeaf *this) {
+void ASTLeaf_print_(ASTLeaf* this, unsigned int level);
+void ASTLeaf_print(ASTLeaf* this) {
     ASTLeaf_print_(this, 0);
 }
-void ASTLeaf_print_(ASTLeaf *this, unsigned int level) {
+void ASTLeaf_print_(ASTLeaf* this, unsigned int level) {
     unsigned int i;
     if (this->left != NULL)
         ASTLeaf_print_(this->left, level + 1);

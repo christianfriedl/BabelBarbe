@@ -23,39 +23,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<ctype.h>
 #include<stdlib.h>
 #include"bnf.h"
-#include"token.h"
+#include"Token.h"
 
-typedef enum { s_initial = 0 } scanner_state_t;
+typedef enum { ScannerState_initial = 0 } ScannerState;
 
 typedef struct { 
-    char *text;
-    char *text_start;
-    TokenType *token;
-    scanner_state_t state;
-    error_t error;
-} scanner_t;
+    const char* text;
+    const char* text_start;
+    Token* token;
+    ScannerState state;
+    Error error;
+} Scanner;
 
-struct scanner_table_cell_s;
-
-struct scanner_table_cell_s {
-    scanner_state_t next_state;
-    bool is_final;
-    bool (*recognize)(char ch);
-    unsigned int (*consume)(scanner_t *this);
-};
-typedef struct scanner_table_cell_s scanner_table_cell_t;
-
-#define SCANNER_TABLE_ROWS 20
-#define SCANNER_TABLE_COLS 20
-
-scanner_table_cell_t scanner_table[SCANNER_TABLE_ROWS][SCANNER_TABLE_COLS];
-
-
-scanner_t *scanner__new(const char *text);
-void scanner__delete(scanner_t *this);
-bool scanner__scan(scanner_t *this);
-void scanner__raise_error(scanner_t *this, error_t error);
-void scanner__raise_fatal_error(const char *msg) __attribute((noreturn));
+Scanner* Scanner__new(const char* text);
+void Scanner_delete(Scanner* this);
+bool Scanner_scan(Scanner* this);
+void Scanner_raiseError(Scanner* this, Error error);
+void Scanner__raiseFatalError(const char* msg) __attribute((noreturn));
 
 
 
