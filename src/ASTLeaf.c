@@ -33,10 +33,10 @@ ASTLeaf* ASTLeaf__new(ASTLeaf* parent, Token* token, ASTLeafPosition where) {
             else if (where == ASTLeafPosition_right)
                 parent->right = this;
             else
-                bnf_raise_fatal_error("Parent given, but no ast_pos argument");
+                BNF__raiseFatalError("Parent given, but no ast_pos argument");
         }
     } else
-        bnf_raise_fatal_error("Unable to allocate ASTLeaf.");
+        BNF__raiseFatalError("Unable to allocate ASTLeaf.");
     return this;
 }
 void ASTLeaf_delete(ASTLeaf* this) {

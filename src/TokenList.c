@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"scanner.h"
 #include"token_list.h"
 
-token_list_t* token_list__new(token_list_t* prev, TokenType* token) {
-    token_list_t* token_list = malloc(sizeof(token_list_t));
+TokenList* token_list__new(TokenList* prev, TokenType* token) {
+    TokenList* token_list = malloc(sizeof(TokenList));
     if (token_list) {
         token_list->prev = prev;
         token_list->token = token;
@@ -36,7 +36,7 @@ token_list_t* token_list__new(token_list_t* prev, TokenType* token) {
     return token_list;
 }
 
-void token_list__delete(token_list_t* token_list) {
+void token_list__delete(TokenList* token_list) {
     if (token_list->next)
         token_list__delete(token_list->next);
     if (token_list->prev)
@@ -44,14 +44,14 @@ void token_list__delete(token_list_t* token_list) {
     free(token_list);
 }
 
-token_list_t* token_list__get_prev(token_list_t* current) {
+TokenList* token_list__get_prev(TokenList* current) {
     return current->prev;
 }
 
-token_list_t* token_list__get_next(token_list_t* current) {
+TokenList* token_list__get_next(TokenList* current) {
     return current->next;
 }
 
-TokenType* token_list__get_token(token_list_t* current) {
+TokenType* token_list__get_token(TokenList* current) {
     return current->token;
 }

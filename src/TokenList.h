@@ -28,12 +28,12 @@ struct token_list_struct {
     struct token_list_struct* next;
 };
 
-typedef struct token_list_struct token_list_t;
+typedef struct token_list_struct TokenList;
 
-token_list_t* token_list__new(token_list_t* prev, TokenType* token);
-void token_list__delete(token_list_t* token_list);
-token_list_t* token_list__get_prev(token_list_t* current);
-token_list_t* token_list__get_next(token_list_t* current);
-TokenType* token_list__get_token(token_list_t* current);
+TokenList* token_list__new(TokenList* prev, TokenType* token);
+void token_list__delete(TokenList* token_list);
+TokenList* token_list__get_prev(TokenList* current);
+TokenList* token_list__get_next(TokenList* current);
+TokenType* token_list__get_token(TokenList* current);
 
 #endif

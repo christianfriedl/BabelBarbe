@@ -29,6 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define bool__to_string(a) (((a) == true) ? "true" : "false")
 
 
-void bnf_raise_fatal_error(const char* msg) __attribute((noreturn));
+void BNF__raiseFatalError(const char* msg) __attribute((noreturn));
 
 #endif

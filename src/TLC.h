@@ -17,12 +17,29 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include<string.h>
-#include<stdlib.h>
-#include<stdio.h>
-#include"bnf.h"
+#ifndef _TOKEN_LIST_CONTAINER_H
+#define _TOKEN_LIST_CONTAINER_H
 
-void bnf_raise_fatal_error(const char* msg) {
-    printf("BNF FATAL ERROR: %s\n", msg);
-    abort();
-}
+#include"TokenList.h"
+
+#define MAX_TLC_MARKS 255
+
+typedef struct {
+    TokenList* current_token_list;
+    TokenList* token_list_start;
+    TokenList* token_list_marks[MAX_TLC_MARKS];
+    unsigned int count_token_list_marks;
+} TLC;
+
+TLC* TLC__new(TokenList* token_list);
+void TLC_delete(TLC* tlc);
+TokenType* TLC_getCurrent(TLC* tlc);
+TokenList* TLC_getCurrentTokenList(TLC* tlc);
+void TLC_set_mark();
+void TLC_unset_mark(TLC* tlc);
+TokenType* TLC_moveToMark(TLC* tlc);
+TokenType* TLC_moveToNext(TLC* tlc);
+TokenType* TLC_moveToPrevious(TLC* tlc);
+TokenType* TLC_moveToStart(TLC* tlc);
+
+#endif

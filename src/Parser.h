@@ -21,47 +21,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define _PARSER_H
 
 #include"bnf.h"
-#include"scanner.h"
-#include"token_list.h"
-#include"tlc.h"
+#include"Scanner.h"
+#include"TokenList.h"
+#include"TLC.h"
 
 struct parser_s;
-typedef struct parser_s parser_t;
-struct parser_rule;
+typedef struct Parser_struct Parser;
+struct ParserRule;
 #include"bnf_rules.h"
 
-typedef enum { repeat_on=0, repeat_off } repeat_switch_t;
+typedef enum { Repeat_on=0, Repeat_off } RepeatSwitch;
 
 typedef struct {
-    repeat_switch_t repeat_switch;
-    unsigned int repeat_from_index; /* index into production* /
-    struct parser_rule* productions[20];
+    RepeatSwitch repeat_switch;
+    unsigned int repeat_from_index; /* index into production */
+    struct ParserRule* productions[20];
 } alternative_t;
 
-struct parser_rule {
+struct ParserRule {
     char name[255];
-    bool (*parse)(parser_t* parser);
-    void (*evaluate)(parser_t* parser);
+    bool (*parse)(Parser* parser);
+    void (*evaluate)(Parser* parser);
     alternative_t alternatives[20];
 };
 
-struct parser_s {
+struct Parser_struct {
     Error error;
     char error_text[255];
     char error_texts[255][255];
     Scanner* scanner;
-    token_list_t* token_list;
-    tlc_t* tlc;
+    TokenList* token_list;
+    TLC* tlc;
     bool is_debug;
-    parser_rule_t* start_rule;
-    ast_leaf_t* ast_root;
+    ParserRule* start_rule;
+    ASTLeaf* ast_root;
 }; 
 
-parser_t* parser__new(Scanner* scanner, parser_rule_t* start_rule);
-void parser__delete(parser_t* parser);
-void parser__debug(parser_t* parser);
-bool parser__parse(parser_t* parser);
-bool parser__is_error(parser_t* parser);
-Error parser__get_error(parser_t* parser);
-char* parser__get_error_text(parser_t* parser);
+Parser* Parser__new(Scanner* scanner, ParserRule* start_rule);
+void Parser_delete(Parser* parser);
+void Parser_debug(Parser* parser);
+bool Parser_parse(Parser* parser);
+bool Parser_isError(Parser* parser);
+Error Parser_getError(Parser* parser);
+char* Parser_getErrorText(Parser* parser);
 #endif

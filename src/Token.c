@@ -29,7 +29,7 @@ Token* Token__new() {
         token->type = TokenType_start;
         token->text = NULL;
     } else
-        bnf_raise_fatal_error("Unable to allocate token.");
+        BNF__raiseFatalError("Unable to allocate token.");
     return token;
 }
 
@@ -75,7 +75,7 @@ char* Token_getTypeName(Token* token) {
             return strdup("TokenType_semicolon");
             break;
         default:
-            bnf_raise_fatal_error("unknown token type");
+            BNF__raiseFatalError("unknown token type");
             return NULL;
     }
 }
