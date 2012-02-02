@@ -17,29 +17,29 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TOKEN_LIST_CONTAINER_H
-#define _TOKEN_LIST_CONTAINER_H
+#ifndef _SCANNER_H
+#define _SCANNER_H
 
-#include"TokenList.h"
+#include<ctype.h>
+#include<stdlib.h>
+#include"BNF.h"
+#include"Token.h"
 
-#define MAX_TLC_MARKS 255
+typedef enum { BNFScannerState_initial = 0 } BNFScannerState;
 
-typedef struct {
-    TokenList* current_token_list;
-    TokenList* token_list_start;
-    TokenList* token_list_marks[MAX_TLC_MARKS];
-    unsigned int count_token_list_marks;
-} TLC;
+typedef struct { 
+    const char* text;
+    const char* text_start;
+    BNFToken* token;
+    BNFScannerState state;
+} BNFScanner;
 
-TLC* TLC__new(TokenList* token_list);
-void TLC_delete(TLC* tlc);
-TokenType* TLC_getCurrent(TLC* tlc);
-TokenList* TLC_getCurrentTokenList(TLC* tlc);
-void TLC_set_mark();
-void TLC_unset_mark(TLC* tlc);
-TokenType* TLC_moveToMark(TLC* tlc);
-TokenType* TLC_moveToNext(TLC* tlc);
-TokenType* TLC_moveToPrevious(TLC* tlc);
-TokenType* TLC_moveToStart(TLC* tlc);
+BNFScanner* BNFScanner__new(const char* text);
+void BNFScanner_delete(BNFScanner* this);
+bool BNFScanner_scan(BNFScanner* this);
+void BNFScanner_raiseError(BNFScanner* this, Error error);
+void BNFScanner__raiseFatalError(const char* msg) __attribute((noreturn));
+
+
 
 #endif

@@ -21,55 +21,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdio.h>
 #include<stdlib.h>
 #include<assert.h>
+#include<cgenerics/CGException.h>
+#include<cgenerics/CGAppState.h>
 #include"Token.h"
-#include"Scanner.h"
+#include"BNFException.h"
+#include"BNFScanner.h"
 
-void Scanner_reset(Scanner* this);
-
-void Scanner__raiseFatalError(const char* msg) {
-    printf("SCANNER FATAL ERROR: %s\n", msg);
-    abort();
+void BNFScanner_raiseFatalError(BNFScanner* this, const char* msg) {
 }
 
-Scanner* Scanner__new(const char* text) {
-    Scanner* this = malloc(sizeof(*this));
+BNFScanner* BNFScanner__new(const char* text) {
+    BNFScanner* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->text = this->text_start = text;
         this->token = NULL;
         this->state = ScannerState_initial;
         this->error = Error_ok;
     } else
-        Scanner__raiseFatalError("Unable to allocate this.");
+        CGAppState_throwException(this->appState, CGException__new(Severity_fatal, BNFExceptionID_ScannerFatalError, "unable to allocate BNFScanner"));
     return this;
 }
 
-void Scanner_delete(Scanner* this) {
+void BNFScanner_delete(BNFScanner* this) {
     free(this);
 }
 
-void Scanner_reset(Scanner* this) {
-    this->text_start = this->text;
-}
-
-bool Scanner_scanEmpty(Scanner* this, bool* continue_loop);
-
-bool Scanner_scan(Scanner* this) {
+bool BNFScanner_scan(BNFScanner* this) {
     bool continue_loop = false;
     bool rv = false;
-    Scanner_reset(this);
     do {
         char ch = *this->text;
         switch (this->state) {
-            case ScannerState_initial:
+            case BNFScannerState_initial:
                 break;
             default:
-                Scanner_raiseError(this, Error_unknownScannerState);
+                BNFScanner_raiseError(this, Severity_error, BNFExceptionID_UnknownScannerState, "unknown scanner state");
                 return false;
         }
     } while (continue_loop);
     return rv;
 }
 
-void Scanner_raiseError(Scanner* this, Error error) {
-    this->error = error;
+void BNFScanner_raiseError(BNFScanner* this, Severity severity, int exceptionID, char *msg) {
+    CGAppState_throwException(this->appState, CGException__new(severity, exceptionID, msg));
 }
