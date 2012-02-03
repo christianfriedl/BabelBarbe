@@ -23,20 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<assert.h>
 #include<cgenerics/CGException.h>
 #include<cgenerics/CGAppState.h>
-#include"Token.h"
+#include"BNF.h"
+#include"BNFToken.h"
 #include"BNFException.h"
 #include"BNFScanner.h"
-
-void BNFScanner_raiseFatalError(BNFScanner* this, const char* msg) {
-}
 
 BNFScanner* BNFScanner__new(const char* text) {
     BNFScanner* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->text = this->text_start = text;
         this->token = NULL;
-        this->state = ScannerState_initial;
-        this->error = Error_ok;
+        this->state = BNFScannerState_initial;
     } else
         CGAppState_throwException(this->appState, CGException__new(Severity_fatal, BNFExceptionID_ScannerFatalError, "unable to allocate BNFScanner"));
     return this;

@@ -22,12 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include<ctype.h>
 #include<stdlib.h>
+#include<cgenerics/CGAppState.h>
 #include"BNF.h"
-#include"Token.h"
+#include"BNFToken.h"
 
 typedef enum { BNFScannerState_initial = 0 } BNFScannerState;
 
 typedef struct { 
+    CGAppState* appState;
     const char* text;
     const char* text_start;
     BNFToken* token;
@@ -37,8 +39,7 @@ typedef struct {
 BNFScanner* BNFScanner__new(const char* text);
 void BNFScanner_delete(BNFScanner* this);
 bool BNFScanner_scan(BNFScanner* this);
-void BNFScanner_raiseError(BNFScanner* this, Error error);
-void BNFScanner__raiseFatalError(const char* msg) __attribute((noreturn));
+void BNFScanner_raiseError(BNFScanner* this, Severity severity, int exceptionID, char *msg);
 
 
 

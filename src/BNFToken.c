@@ -21,58 +21,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdlib.h>
 #include<string.h>
 #include"BNF.h"
-#include"Token.h"
+#include"BNFToken.h"
 
-Token* Token__new() {
-    Token* token = malloc(sizeof(*token));
+BNFToken* BNFToken__new() {
+    BNFToken* token = malloc(sizeof(*token));
     if (token) {
-        token->type = TokenType_start;
+        token->type = BNFTokenType_start;
         token->text = NULL;
     } else
         BNF__raiseFatalError("Unable to allocate token.");
     return token;
 }
 
-Token* Token__newFromTypeString(TokenType type, const char* text) {
-    Token* token = Token__new();
+BNFToken* BNFToken__newFromTypeString(BNFTokenType type, const char* text) {
+    BNFToken* token = BNFToken__new();
     token->type = type;
     token->text = strdup(text);
     return token;
 }
 
-void Token_delete(Token* token) {
+void BNFToken_delete(BNFToken* token) {
     if (token->text != NULL)
         free(token->text);
     free(token);
 }
 
-void Token_print(Token* token) {
-    char* type_name = Token_getTypeName(token);
+void BNFToken_print(BNFToken* token) {
+    char* type_name = BNFToken_getTypeName(token);
     printf("token @%ld: type='%s', text='%s'\n", (long int)token, type_name, token->text);
     free(type_name);
 }
 
-char* Token_toString(Token* token) {
-    char* type_name = Token_getTypeName(token);
+char* BNFToken_toString(BNFToken* token) {
+    char* type_name = BNFToken_getTypeName(token);
     char* mystrbuf = malloc(255);
     sprintf(mystrbuf, "token @%ld: type='%s', text='%s'", (long int)token, type_name, token->text);
     free(type_name);
     return mystrbuf;
 }
 
-char* Token_getTypeName(Token* token) {
+char* BNFToken_getTypeName(BNFToken* token) {
     switch (token->type) {
-        case TokenType_start: 
-            return strdup("TokenType_start");
+        case BNFTokenType_start: 
+            return strdup("BNFTokenType_start");
             break;
-        case TokenType_identifier: 
-            return strdup("TokenType_identifier");
+        case BNFTokenType_identifier: 
+            return strdup("BNFTokenType_identifier");
             break;
-        case TokenType_definition:
-            return strdup("TokenType_definition");
+        case BNFTokenType_definition:
+            return strdup("BNFTokenType_definition");
             break;
-        case TokenType_semicolon: 
-            return strdup("TokenType_semicolon");
+        case BNFTokenType_semicolon: 
+            return strdup("BNFTokenType_semicolon");
             break;
         default:
             BNF__raiseFatalError("unknown token type");

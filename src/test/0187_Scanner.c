@@ -1,7 +1,7 @@
 #include<assert.h>
 #include<stdio.h>
 #include<string.h>
-#include"Scanner.h"
+#include"BNFScanner.h"
 
 /*
     tests that should scan ok
@@ -9,25 +9,24 @@
 void test_scanner_new_delete() {
     char* text = "";
     printf("%s...\n", __func__);
-    Scanner* scanner = Scanner__new(text);
-    Scanner_delete(scanner);
+    BNFScanner* scanner = BNFScanner__new(text);
+    BNFScanner_delete(scanner);
     printf("ok\n");
 }
 
 void test_scanner_identifier() {
     char* text = "abcde";
-    Scanner* scanner;
+    BNFScanner* scanner;
     bool rv;
     printf("%s...\n", __func__);
-    scanner = Scanner__new(text);
-    rv = Scanner_scan(scanner);
+    scanner = BNFScanner__new(text);
+    rv = BNFScanner_scan(scanner);
     assert(rv == true);
-    assert(scanner->error == Error_ok);
-    assert(scanner->state == ScannerState_initial);
-    assert(scanner->token->type == TokenType_start);
+    assert(scanner->state == BNFScannerState_initial);
+    assert(scanner->token->type == BNFTokenType_start);
     assert(scanner->text == text+strlen(text));
     assert(!strcmp(scanner->text, text));
-    Scanner_delete(scanner);
+    BNFScanner_delete(scanner);
     printf("ok\n");
 }
 

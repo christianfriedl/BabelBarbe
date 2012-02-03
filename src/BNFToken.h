@@ -24,18 +24,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdlib.h>
 #include<string.h>
 
-typedef enum { TokenType_start, TokenType_identifier, TokenType_definition, TokenType_semicolon } TokenType;
+typedef enum { BNFTokenType_start, BNFTokenType_identifier, BNFTokenType_definition, BNFTokenType_semicolon } BNFTokenType;
 
 typedef struct {
-    TokenType type;
+    BNFTokenType type;
     char* text;
-} Token;
+} BNFToken;
 
-Token* Token__new();
-Token* Token__newFromTypeString(TokenType type, const char* text);
-void Token_delete(Token* token);
-void Token_print(Token* token);
-char* Token_getTypeName(Token* token);
-char* Token_toString(Token* token);
+BNFToken* BNFToken__new();
+BNFToken* BNFToken__newFromTypeString(BNFTokenType type, const char* text);
+void BNFToken_delete(BNFToken* token);
+void BNFToken_print(BNFToken* token);
+char* BNFToken_getTypeName(BNFToken* token);
+char* BNFToken_toString(BNFToken* token);
 
 #endif

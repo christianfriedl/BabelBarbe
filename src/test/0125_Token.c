@@ -19,7 +19,7 @@ Copyright (C) 2011  Christian Friedl
 
 #include<assert.h>
 #include<stdio.h>
-#include"Token.h"
+#include"BNFToken.h"
 
 /*
     positive tests
@@ -28,16 +28,16 @@ void test_token_new_delete() {
     printf("%s...\n", __func__);
 
     char* text = "xyz";
-    Token* token = Token__new();
-    token->type = TokenType_identifier;
+    BNFToken* token = BNFToken__new();
+    token->type = BNFTokenType_identifier;
     token->text = strdup(text);
-    Token_delete(token);
+    BNFToken_delete(token);
 
     text = "abcde";
-    token = Token__newFromTypeString(TokenType_identifier, text);
-    assert(token->type == TokenType_identifier);
+    token = BNFToken__newFromTypeString(BNFTokenType_identifier, text);
+    assert(token->type == BNFTokenType_identifier);
     assert(!strcmp(token->text, text));
-    Token_delete(token);
+    BNFToken_delete(token);
 
     printf("ok\n");
 }
