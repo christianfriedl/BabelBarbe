@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<cgenerics/CGAppState.h>
 #include"BNF.h"
 #include"BNFToken.h"
+#include"CGArrayOfBNFScannerRule.h"
+#include"BNF_scanner_rules.h"
 
 typedef enum { BNFScannerState_initial = 0 } BNFScannerState;
 
@@ -34,6 +36,7 @@ typedef struct {
     const char* text_start;
     BNFToken* token;
     BNFScannerState state;
+    BNFScannerRule* current_rule;
 } BNFScanner;
 
 BNFScanner* BNFScanner__new(const char* text);

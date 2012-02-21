@@ -12,7 +12,7 @@ LDFLAGS=-ggdb $(WARNINGS)
 
 
 STATIC_LIBRARY=libbnf.a 
-LIB_OBJECTS =  BNF.o BNFToken.o BNFScanner.o
+LIB_OBJECTS =  BNF.o BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerRule.o
 # ASTLeaf.o Logger.o Token.o Scanner.o BNF.o
 
 clean-all-test: clean all test
@@ -31,9 +31,15 @@ $(STATIC_LIBRARY): $(LIB_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $?
 
 clean:
-	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY)
+	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY) *.e.c *.BAK
 	(cd test; make clean)
 
 .PHONY: test
 test:
 	for i in `find test -type f -not -name "*.*" -name "0*" |sort -n`; do $$i; if [ $$? != 0 ]; then exit; fi; done
+
+pp:
+	for i in $(LIB_OBJECTS); do base=`echo $$i|perl -pe"s/\.o//"`; gcc $(CFLAGS) -E -o $$base.e.c -c $$base.c; done 
+
+pp-indent: pp
+	for i in $(LIB_OBJECTS); do base=`echo $$i|perl -pe"s/\.o//"`; indent -bad -bap -i4 $$base.e.c && perl -pi -e"s/^#\d+.+$$//;" $$base.e.c && gcc -o $$base.e.o -c $$base.e.c; done
