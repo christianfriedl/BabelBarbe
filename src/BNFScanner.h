@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"BNF.h"
 #include"BNFToken.h"
 #include"CGArrayOfBNFScannerNode.h"
-#include"BNF_scanner_rules.h"
+#include"BNFScannerRules.h"
 
 typedef enum { BNFScannerState_initial = 0 } BNFScannerState;
 
