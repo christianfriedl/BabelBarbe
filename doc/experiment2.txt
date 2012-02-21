@@ -1,0 +1,36 @@
+1. Reduziere immer dann, wenn es nur EINE Produktion innerhalb der derzeitigen Regel gibt, die mit dem Stackinhalt beginnt
+
+
+E ::= E + T
+    | E - T
+    | T
+
+T ::= T * F
+    | T / F
+    | F
+
+F ::= id
+
+
+
+
+id * id / id + id
+
+                    id * id / id + id
+id                  * id / id + id
+F                   * id / id + id
+T                   * id / id + id
+T *                 id / id + id
+T * id              / id + id
+T * F               / id + id
+T                   / id + id
+T /                 id + id
+T / id              + id
+T / F               + id
+T                   + id
+E                   + id
+E +                 id
+E + id
+E + F
+E + T
+E
