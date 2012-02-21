@@ -1,17 +1,35 @@
-#include"CGArrayOfBNFScannerRule.h"
+#include"CGArrayOfBNFScannerNode.h"
 #include"BNFScannerRule.h"
-DECLARE_ARRAY_FUNCS(BNFScannerRule)
+DECLARE_ARRAY_FUNCS(BNFScannerNode)
 
-BNFScannerRule* BNFScannerRule_clone(CGAppState* appState, BNFScannerRule* this) {
-    return BNFScannerRule__new(appState, this->type, this->pattern, this->followupRules);
+BNFScannerNode* BNFScannerNode_clone(CGAppState* appState, BNFScannerNode* this) {
+    return BNFScannerNode__new(appState, this->type, this->pattern, this->followupRule, this->token);
 }
 
-BNFScannerRule* BNFScannerRule__new(CGAppState* appState, BNFScannerRuleType type, CGString* pattern, CGArray(BNFScannerRule)* followupRules) {
-    BNFScannerRule* this = malloc(sizeof(*this));
-    if (this) {
+BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFToken* token) {
+    BNFScannerNode* this = malloc(sizeof(*this));
+    if (this != NULL) {
         this->type = type;
         this->pattern = pattern;
-        this->followupRules = followupRules;
+        this->followupRule = followupRule;
+        this->token = token;
+    } else
+        CGAppState_throwException(appState, CGException__new(Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerNode"));
+    return this;
+}
+
+void BNFScannerNode_delete(CGAppState* appState, BNFScannerNode* this) {
+    free(this);
+}
+
+BNFScannerRule* BNFScannerRule_clone(CGAppState* appState, BNFScannerRule* this) {
+    return BNFScannerRule__new(appState, this->nodes);
+}
+
+BNFScannerRule* BNFScannerRule__new(CGAppState* appState, CGArray(BNFScannerNode)* nodes) {
+    BNFScannerRule* this = malloc(sizeof(*this));
+    if (this) {
+        this->nodes = nodes;
     } else
         CGAppState_throwException(appState, CGException__new(Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerRule"));
     return this;
