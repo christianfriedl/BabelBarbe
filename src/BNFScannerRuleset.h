@@ -3,5 +3,6 @@
 
 #include"BNFScannerRule.h"
 
+BNFScannerRule* BNFScannerRules__createRuleset(CGAppState* appState);
 
 #endif
