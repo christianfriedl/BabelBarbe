@@ -7,3 +7,4 @@ src/test/0187_Scanner
 src/test/0250_Logger
 src/test/0500_ASTLeaf
 src/test/0140_BNFScannerNode
+src/test/0160_BNFScannerRule
