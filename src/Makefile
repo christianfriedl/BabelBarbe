@@ -7,8 +7,8 @@ MEGA_WARNINGS = -Wall -Wdeclaration-after-statement \
 	-Wundef -Waggregate-return -Wmissing-format-attribute \
 	-Wnested-externs -Werror
 WARNINGS = $(NORMAL_WARNINGS)
-CFLAGS=-ggdb $(WARNINGS)
-LDFLAGS=-ggdb $(WARNINGS) 
+CFLAGS=-ggdb -I/opt/local/include $(WARNINGS)
+LDFLAGS=-ggdb -L/opt/local/lib -lpcre $(WARNINGS) 
 
 
 STATIC_LIBRARY=libbnf.a 

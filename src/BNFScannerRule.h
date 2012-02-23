@@ -2,6 +2,7 @@
 #define _BNF_SCANNER_RULE_H
 
 #include<stdio.h>
+#include<pcre.h>
 #include<cgenerics/CGAppState.h>
 #include<cgenerics/CGArray.h>
 #include<cgenerics/CGArrayIterator.h>
@@ -16,6 +17,7 @@ typedef enum { BNFScannerNodeType_string = 0, BNFScannerNodeType_regex = 1 } BNF
 typedef struct {
     BNFScannerNodeType type;
     CGString* pattern;
+    pcre* regex;
     BNFScannerRule* followupRule;
     BNFTokenType tokenType;
 } BNFScannerNode;
@@ -34,6 +36,7 @@ struct BNFScannerRule_struct {
 BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType);
 BNFScannerNode* BNFScannerNode_clone(CGAppState* appState, BNFScannerNode* this);
 void BNFScannerNode_delete(CGAppState* appState, BNFScannerNode* this);
+bool BNFScannerNode_setRegex(CGAppState* appState, BNFScannerNode* this, CGString* pattern);
 BNFTokenType BNFScannerNode_getTokenType(CGAppState* appState, BNFScannerNode* this);
 bool BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const char* text);
 

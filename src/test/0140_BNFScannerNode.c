@@ -24,6 +24,7 @@ Copyright (C) 2011  Christian Friedl
 #include"BNFScannerRule.h"
 
 static CGAppState *appState;
+static CGException* e;
 
 void testNewDelete() {
     printf("%s...\n", __func__);
@@ -62,6 +63,51 @@ void testApplyRegexPattern() {
     printf("ok\n");
 }
 
+void testApplyComplexRegexPattern() {
+    printf("%s...\n", __func__);
+
+    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_start);
+    
+    assert(BNFScannerNode_applyToText(appState, node, "abcde") == true);
+    assert(BNFScannerNode_applyToText(appState, node, "abcxe") == true);
+
+    BNFScannerNode_delete(appState, node);
+
+    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[a-z][a-z\\d]+", NULL, BNFTokenType_start);
+    assert(BNFScannerNode_applyToText(appState, node, "abcde") == true);
+    assert(BNFScannerNode_applyToText(appState, node, "abcxe") == true);
+    assert(BNFScannerNode_applyToText(appState, node, "abcxe22") == true);
+    assert(BNFScannerNode_applyToText(appState, node, "abcxe22fab") == true);
+    assert(BNFScannerNode_applyToText(appState, node, "22a") == false);
+
+    BNFScannerNode_delete(appState, node);
+
+    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10})[a-z\\d]+", NULL, BNFTokenType_start);
+    assert(BNFScannerNode_applyToText(appState, node, "abc") == false);
+
+    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10})(Y+)([a-z\\d]+)", NULL, BNFTokenType_start);
+    assert(BNFScannerNode_applyToText(appState, node, "abcdeYYYa20") == false);
+    if ((e = CGAppState_catchException(appState)) != NULL) {
+        CGException_print(e);
+        CGException_delete(e);
+    } else
+        printf("wtf no exception\n");
+    BNFScannerNode_delete(appState, node);
+    
+    /* syntax error! */
+    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10}[a-z\\d]+", NULL, BNFTokenType_start);
+    assert(BNFScannerNode_applyToText(appState, node, "abc") == false);
+    if ((e = CGAppState_catchException(appState)) != NULL) {
+        CGException_print(e);
+        CGException_delete(e);
+    } else
+        printf("wtf no exception\n");
+    BNFScannerNode_delete(appState, node);
+    
+
+    printf("ok\n");
+}
+
 int main() {
     printf("=== %s ===\n", __FILE__);
 
@@ -70,6 +116,7 @@ int main() {
     testNewDelete();
     testApplyStringPattern();
     testApplyRegexPattern();
+    testApplyComplexRegexPattern();
 
     CGAppState_delete(appState);
 
