@@ -36,6 +36,8 @@ clean:
 
 .PHONY: test
 test:
+	rm -rf test/*.dSYM
+	rm -rf *.dSYM
 	for i in `find test -type f -not -name "*.*" -name "0*" |sort -n`; do $$i; if [ $$? != 0 ]; then exit; fi; done
 
 pp:

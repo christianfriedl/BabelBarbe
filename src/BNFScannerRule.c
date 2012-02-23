@@ -68,7 +68,7 @@ BNFTokenType BNFScannerNode_getTokenType(CGAppState* appState, BNFScannerNode* t
 /**
     @return success or failure
 */
-bool BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const char* text) {
+bool BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const CGString* text) {
     if (this->type == BNFScannerNodeType_string)
         return (!strncmp(this->pattern, text, strlen(this->pattern))) ? true : false;
     else
@@ -78,7 +78,7 @@ bool BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, cons
 /**
     @return whether the regex matched
 */
-bool BNFScannerNode_applyRegexToText_(CGAppState* appState, BNFScannerNode* this, const char* text) {
+bool BNFScannerNode_applyRegexToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text) {
     CGString* errorString = CGString__newFromLengthAndPreset(appState, 255, ' ');
     int errorOffset = 0;
     int outputVector[3];
@@ -116,5 +116,16 @@ BNFScannerRule* BNFScannerRule__new(CGAppState* appState, CGArray(BNFScannerNode
 
 void BNFScannerRule_delete(CGAppState* appState, BNFScannerRule* this) {
     free(this);
+}
+
+BNFScannerNode* BNFScannerRule_applyToText(CGAppState* appState, BNFScannerRule* this, const CGString* text) {
+    CGArrayIterator(BNFScannerNode)* iter = CGArrayIterator__new(appState, BNFScannerNode, this->nodes);
+    while (CGArrayIterator_isInsideBounds(appState, BNFScannerNode, iter)) {
+        BNFScannerNode* node = CGArrayIterator_getCurrentElement(appState, BNFScannerNode, iter);
+        if (BNFScannerNode_applyToText(appState, node, text) == true)
+            return node;
+        CGArrayIterator_moveToNextElement(appState, BNFScannerNode, iter);
+    }
+    return NULL;
 }
 

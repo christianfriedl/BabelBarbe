@@ -38,11 +38,12 @@ BNFScannerNode* BNFScannerNode_clone(CGAppState* appState, BNFScannerNode* this)
 void BNFScannerNode_delete(CGAppState* appState, BNFScannerNode* this);
 bool BNFScannerNode_setRegex(CGAppState* appState, BNFScannerNode* this, CGString* pattern);
 BNFTokenType BNFScannerNode_getTokenType(CGAppState* appState, BNFScannerNode* this);
-bool BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const char* text);
+bool BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const CGString* text);
 
 BNFScannerRule* BNFScannerRule__new(CGAppState* appState, CGArray(BNFScannerNode)* nodes);
 BNFScannerRule* BNFScannerRule_clone(CGAppState* appState, BNFScannerRule* this);
 void BNFScannerRule_delete(CGAppState* appState, BNFScannerRule* this);
+BNFScannerNode* BNFScannerRule_applyToText(CGAppState* appState, BNFScannerRule* this, const CGString* text);
 
 
 #endif
