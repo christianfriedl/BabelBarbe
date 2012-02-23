@@ -1,8 +1,8 @@
-#ifndef _BNF_SCANNER_RULES_H
-#define _BNF_SCANNER_RULES_H
+#ifndef _BNF_SCANNER_RULESET_H
+#define _BNF_SCANNER_RULESET_H
 
 #include"BNFScannerRule.h"
 
-BNFScannerRule* BNFScannerRules__createRuleset(CGAppState* appState);
+BNFScannerRule* BNFScannerRuleset__getInstance(CGAppState* appState);
 
 #endif

@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<cgenerics/CGAppState.h>
 #include<cgenerics/CGArray.h>
+#include<cgenerics/CGArrayIterator.h>
 #include<cgenerics/CGString.h>
 #include"BNFToken.h"
 
@@ -16,10 +17,13 @@ typedef struct {
     BNFScannerNodeType type;
     CGString* pattern;
     BNFScannerRule* followupRule;
-    BNFToken* token;
+    BNFTokenType tokenType;
 } BNFScannerNode;
 
 DECLARE_ARRAY_TYPE(BNFScannerNode)
+DECLARE_ARRAY_ITERATOR_TYPE(BNFScannerNode)
+DECLARE_ARRAY_FUNCS(BNFScannerNode)
+DECLARE_ARRAY_ITERATOR_FUNCS(BNFScannerNode)
 
 struct BNFScannerRule_struct {
 
@@ -27,12 +31,15 @@ struct BNFScannerRule_struct {
 };
     
 
-BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFToken* token);
+BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType);
 BNFScannerNode* BNFScannerNode_clone(CGAppState* appState, BNFScannerNode* this);
 void BNFScannerNode_delete(CGAppState* appState, BNFScannerNode* this);
+BNFTokenType BNFScannerNode_getTokenType(CGAppState* appState, BNFScannerNode* this);
+bool BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const char* text);
 
 BNFScannerRule* BNFScannerRule__new(CGAppState* appState, CGArray(BNFScannerNode)* nodes);
 BNFScannerRule* BNFScannerRule_clone(CGAppState* appState, BNFScannerRule* this);
 void BNFScannerRule_delete(CGAppState* appState, BNFScannerRule* this);
+
 
 #endif

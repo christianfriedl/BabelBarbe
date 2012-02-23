@@ -2,7 +2,7 @@ include Makefile.local
 CFLAGS=-ggdb -Wall -I../
 LDFLAGS=-ggdb -lcgenerics -L../ -lbnf -Wall
 
-BINARIES=0125_Token 0187_Scanner # 0250_Logger 0500_ASTLeaf
+BINARIES=0125_Token 0140_BNFScannerNode 0187_Scanner # 0250_Logger 0500_ASTLeaf
 
 
 STATIC_LIBRARY=../libbnf.a
