@@ -22,9 +22,9 @@ Copyright (C) 2011  Christian Friedl
 #include<cgenerics/CGAppState.h>
 #include"BNFToken.h"
 #include"BNFScannerRule.h"
+#include"BNFException.h"
 
 static CGAppState *appState;
-static CGException* e;
 
 void testNewDelete() {
     printf("%s...\n", __func__);
@@ -84,26 +84,15 @@ void testApplyComplexRegexPattern() {
 
     node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10})[a-z\\d]+", NULL, BNFTokenType_start);
     assert(BNFScannerNode_applyToText(appState, node, "abc") == false);
+    BNFScannerNode_delete(appState, node);
 
     node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10})(Y+)([a-z\\d]+)", NULL, BNFTokenType_start);
     assert(BNFScannerNode_applyToText(appState, node, "abcdeYYYa20") == false);
-    if ((e = CGAppState_catchException(appState)) != NULL) {
-        CGException_print(e);
-        CGException_delete(e);
-    } else
-        printf("wtf no exception\n");
+    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_PCRERegexError) == true);
     BNFScannerNode_delete(appState, node);
     
-    /* syntax error! */
     node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10}[a-z\\d]+", NULL, BNFTokenType_start);
-    assert(BNFScannerNode_applyToText(appState, node, "abc") == false);
-    if ((e = CGAppState_catchException(appState)) != NULL) {
-        CGException_print(e);
-        CGException_delete(e);
-    } else
-        printf("wtf no exception\n");
-    BNFScannerNode_delete(appState, node);
-    
+    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_PCRERegexError) == true);
 
     printf("ok\n");
 }

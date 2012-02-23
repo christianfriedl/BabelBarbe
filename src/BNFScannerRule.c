@@ -35,11 +35,9 @@ BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType typ
 }
 
 bool BNFScannerNode_setRegex(CGAppState* appState, BNFScannerNode* this, CGString* pattern) {
-    CGString* errorString = NULL;
+    CGString errorString[255];
     int errorOffset = 0;
     bool success = false;
-
-    errorString = CGString__newFromLengthAndPreset(appState, 255, ' ');
 
     if (this->pattern != NULL) free(this->pattern);
     if (this->regex != NULL) free(this->regex);
@@ -50,9 +48,9 @@ bool BNFScannerNode_setRegex(CGAppState* appState, BNFScannerNode* this, CGStrin
     else {
         CGAppState_throwException(appState, CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE reported a compilation error at offset %i, message: '%s' (pattern '%s')", errorOffset, errorString, this->pattern));
         free(this->pattern);
+        this->pattern = NULL;
         success = false;
     }
-    CGString_delete(appState, errorString);
     return success;
 }
 
