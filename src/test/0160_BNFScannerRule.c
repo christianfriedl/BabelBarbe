@@ -81,7 +81,7 @@ void testApplyRegexPattern() {
 int main() {
     printf("=== %s ===\n", __FILE__);
 
-    appState = CGAppState__new();
+    appState = CGAppState__new(__FILE__);
 
     testNewDelete();
     testApplyStringPattern();
