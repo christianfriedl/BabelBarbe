@@ -20,6 +20,7 @@ typedef struct {
     pcre* regex;
     BNFScannerRule* followupRule;
     BNFTokenType tokenType;
+    bool isNoise;
 } BNFScannerNode;
 
 DECLARE_ARRAY_TYPE(BNFScannerNode)
@@ -32,12 +33,13 @@ struct BNFScannerRule_struct {
     BNFScannerNode* node;
 };
 
-BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType);
+BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType, bool isNoise);
 BNFScannerNode* BNFScannerNode_clone(CGAppState* appState, BNFScannerNode* this);
 void BNFScannerNode_delete(CGAppState* appState, BNFScannerNode* this);
 bool BNFScannerNode_setRegex(CGAppState* appState, BNFScannerNode* this, CGString* pattern);
 BNFTokenType BNFScannerNode_getTokenType(CGAppState* appState, BNFScannerNode* this);
 BNFScannerRule* BNFScannerNode_getFollowupRule(CGAppState* appState, BNFScannerNode* this);
+bool BNFScannerNode_getIsNoise(CGAppState* appState, BNFScannerNode* this);
 BNFToken* BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const CGString* text);
 
 BNFScannerRule* BNFScannerRule__new(CGAppState* appState, CGArray(BNFScannerNode)* nodes);

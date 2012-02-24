@@ -52,7 +52,7 @@ void _helpAssertEqual(BNFToken* token, BNFToken* token2) {
 void testNewDelete() {
     printf("%s...\n", __func__);
 
-    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_string, "", NULL, BNFTokenType_start);
+    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_string, "", NULL, BNFTokenType_start, false);
     BNFScannerRule* rule = BNFScannerRule__new(appState, CGArray__newFromInitializerList(appState, BNFScannerNode, node, NULL));
     assert(rule != NULL);
     assert(CGAppState_catchAndDeleteException(appState) == false);
@@ -66,8 +66,8 @@ void testNewDelete() {
 void testApplyStringPattern() {
     printf("%s...\n", __func__);
 
-    BNFScannerNode* node1 = BNFScannerNode__new(appState, BNFScannerNodeType_string, "abcd", NULL, BNFTokenType_start);
-    BNFScannerNode* node2 = BNFScannerNode__new(appState, BNFScannerNodeType_string, "efgh", NULL, BNFTokenType_start);
+    BNFScannerNode* node1 = BNFScannerNode__new(appState, BNFScannerNodeType_string, "abcd", NULL, BNFTokenType_start, false);
+    BNFScannerNode* node2 = BNFScannerNode__new(appState, BNFScannerNodeType_string, "efgh", NULL, BNFTokenType_start, false);
 
     BNFScannerRule* rule = BNFScannerRule__new(appState, CGArray__newFromInitializerList(appState, BNFScannerNode, node1, node2, NULL));
     
@@ -85,8 +85,8 @@ void testApplyStringPattern() {
 void testApplyRegexPattern() {
     printf("%s...\n", __func__);
 
-    BNFScannerNode* node1 = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_start);
-    BNFScannerNode* node2 = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[0-9]+", NULL, BNFTokenType_start);
+    BNFScannerNode* node1 = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_start, false);
+    BNFScannerNode* node2 = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[0-9]+", NULL, BNFTokenType_start, false);
 
     BNFScannerRule* rule = BNFScannerRule__new(appState, CGArray__newFromInitializerList(appState, BNFScannerNode, node1, node2, NULL));
     

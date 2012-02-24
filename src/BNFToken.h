@@ -26,11 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<cgenerics/CGString.h>
 #include<cgenerics/CGAppState.h>
 
-typedef enum { BNFTokenType_start, BNFTokenType_identifier, BNFTokenType_definition, BNFTokenType_semicolon } BNFTokenType;
+typedef enum { BNFTokenType_start, BNFTokenType_noise, BNFTokenType_identifier, BNFTokenType_definition, BNFTokenType_semicolon } BNFTokenType;
 
 typedef struct {
     BNFTokenType type;
     CGString* text;
+    unsigned int textLength;
 } BNFToken;
 
 BNFToken* BNFToken__new(CGAppState* appState, BNFTokenType type, CGString* text);
@@ -40,6 +41,8 @@ CGString* BNFToken_toString(CGAppState* appState, BNFToken* this);
 CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this);
 CGString* BNFToken_getText(CGAppState* appState, BNFToken* this);
 BNFTokenType BNFToken_getType(CGAppState* appState, BNFToken* this);
+unsigned int BNFToken_getTextLength(CGAppState* appState, BNFToken* this);
+void BNFToken_setTextLength(CGAppState* appState, BNFToken* this, unsigned int length);
 bool BNFToken_isEQual(CGAppState* appState, BNFToken* this, BNFToken* other);
 
 #endif

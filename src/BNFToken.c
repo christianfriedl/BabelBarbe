@@ -30,6 +30,7 @@ BNFToken* BNFToken__new(CGAppState* appState, BNFTokenType type, CGString* text)
     if (this != NULL) {
         this->type = type;
         this->text = text;
+        this->textLength = CGString_getSize(appState, text);
     } else
         CGAppState_THROW(appState, Severity_error, CGExceptionID_CannotAllocate, "unable to allocate BNFToken");
     return this;
@@ -59,6 +60,9 @@ CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this) {
         case BNFTokenType_start: 
             return CGString__new(appState, "BNFTokenType_start");
             break;
+        case BNFTokenType_noise: 
+            return CGString__new(appState, "BNFTokenType_noise");
+            break;
         case BNFTokenType_identifier: 
             return CGString__new(appState, "BNFTokenType_identifier");
             break;
@@ -79,6 +83,12 @@ BNFTokenType BNFToken_getType(CGAppState* appState, BNFToken* this) {
 }
 CGString* BNFToken_getText(CGAppState* appState, BNFToken* this) {
     return this->text;
+}
+unsigned int BNFToken_getTextLength(CGAppState* appState, BNFToken* this) {
+    return this->textLength;
+}
+void BNFToken_setTextLength(CGAppState* appState, BNFToken* this, unsigned int length) {
+    this->textLength = length;
 }
 
 bool BNFToken_isEQual(CGAppState* appState, BNFToken* this, BNFToken* other) {

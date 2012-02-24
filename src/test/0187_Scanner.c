@@ -23,7 +23,7 @@ void testIdentifier() {
     printf("%s...\n", __func__);
 
     char* text = CGString__new(appState, "abcde");
-    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(appState, BNFScannerNode, BNFScannerNode__new(appState, BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_identifier), NULL);
+    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(appState, BNFScannerNode, BNFScannerNode__new(appState, BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_identifier, false), NULL);
     BNFScannerRule* rule = BNFScannerRule__new(appState, nodes);
     BNFScanner* scanner = BNFScanner__new(appState, rule, text);
     BNFToken* token = BNFScanner_scanNextToken(appState, scanner);
@@ -42,7 +42,27 @@ void testIdentifierWithError() {
 
     CGString* text = CGString__new(appState, "abcde123");
     CGString* identText = CGString__new(appState, "abcde");
-    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(appState, BNFScannerNode, BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_identifier), NULL);
+    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(appState, BNFScannerNode, BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_identifier, false), NULL);
+    BNFScannerRule* rule = BNFScannerRule__new(appState, nodes);
+    BNFScanner* scanner = BNFScanner__new(appState, rule, text);
+    BNFToken* token = BNFScanner_scanNextToken(appState, scanner);
+    assert(token != NULL);
+    assert(BNFToken_getType(appState, token) == BNFTokenType_identifier);
+    CGString* tokenText = BNFToken_getText(appState, token);
+    assert(!CGString__compare(appState, tokenText, identText));
+    assert(BNFScanner_scanNextToken(appState, scanner) == NULL);
+    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_ScannerError) == true);
+    BNFToken_delete(appState, token);
+    BNFScanner_delete(appState, scanner);
+
+    printf("ok\n");
+}
+void testComplexRuleset() {
+    printf("%s...\n", __func__);
+
+    CGString* text = CGString__new(appState, "abcde ::= 123");
+    CGString* identText = CGString__new(appState, "abcde");
+    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(appState, BNFScannerNode, BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_identifier, false), NULL);
     BNFScannerRule* rule = BNFScannerRule__new(appState, nodes);
     BNFScanner* scanner = BNFScanner__new(appState, rule, text);
     BNFToken* token = BNFScanner_scanNextToken(appState, scanner);

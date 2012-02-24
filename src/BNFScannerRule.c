@@ -9,11 +9,7 @@ static unsigned int BNFScannerNode_applyStringToText_(CGAppState* appState, BNFS
 static unsigned int BNFScannerNode_applyRegexToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text);
 static BNFToken* BNFScannerNode_applyFunctionToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text, unsigned int(*func)(CGAppState*, BNFScannerNode*, const CGString*));
 
-BNFScannerNode* BNFScannerNode_clone(CGAppState* appState, BNFScannerNode* this) {
-    return BNFScannerNode__new(appState, this->type, this->pattern, this->followupRule, this->tokenType);
-}
-
-BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType) {
+BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType, bool isNoise) {
     BNFScannerNode* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->type = type;
@@ -31,9 +27,14 @@ BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType typ
         }
         this->followupRule = followupRule;
         this->tokenType = tokenType;
+        this->isNoise = isNoise;
     } else
         CGAppState_throwException(appState, CGException__new(Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerNode"));
     return this;
+}
+
+BNFScannerNode* BNFScannerNode_clone(CGAppState* appState, BNFScannerNode* this) {
+    return BNFScannerNode__new(appState, this->type, this->pattern, this->followupRule, this->tokenType, this->isNoise);
 }
 
 bool BNFScannerNode_setRegex(CGAppState* appState, BNFScannerNode* this, CGString* pattern) {
@@ -66,9 +67,17 @@ void BNFScannerNode_delete(CGAppState* appState, BNFScannerNode* this) {
 BNFTokenType BNFScannerNode_getTokenType(CGAppState* appState, BNFScannerNode* this) {
     return this->tokenType;
 }
+bool BNFScannerNode_getIsNoise(CGAppState* appState, BNFScannerNode* this) {
+    return this->isNoise;
+}
 
 static BNFToken* BNFScannerNode_createToken_(CGAppState* appState, BNFScannerNode* this, const CGString* text, const unsigned int len) {
-    return BNFToken__new(appState, this->tokenType, CGString_createSubstring(appState, text, 0, len));
+    if (this->isNoise) {
+        BNFToken* token = BNFToken__new(appState, this->tokenType, CGString__new(appState, ""));
+        BNFToken_setTextLength(appState, token, len);
+        return token;
+    } else
+        return BNFToken__new(appState, this->tokenType, CGString_createSubstring(appState, text, 0, len));
 }
 
 static BNFToken* BNFScannerNode_applyFunctionToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text, unsigned int(*func)(CGAppState*, BNFScannerNode*, const CGString*)) {

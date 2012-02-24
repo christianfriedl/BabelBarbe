@@ -29,7 +29,7 @@ static CGAppState *appState;
 void testNewDelete() {
     printf("%s...\n", __func__);
 
-    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_string, "", NULL, BNFTokenType_start);
+    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_string, "", NULL, BNFTokenType_start, false);
     assert(node != NULL);
     assert(BNFScannerNode_getTokenType(appState, node) == BNFTokenType_start);
     BNFScannerNode_delete(appState, node);
@@ -45,7 +45,7 @@ void _helpAssertEqual(BNFToken* token, BNFToken* token2) {
 void testApplyStringPattern() {
     printf("%s...\n", __func__);
 
-    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_string, "abcd", NULL, BNFTokenType_start);
+    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_string, "abcd", NULL, BNFTokenType_start, false);
     BNFToken* token = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcd"));
     
     BNFToken* token2 = BNFScannerNode_applyToText(appState, node, "abcde");
@@ -61,7 +61,7 @@ void testApplyStringPattern() {
 void testApplyRegexPattern() {
     printf("%s...\n", __func__);
 
-    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "abcd", NULL, BNFTokenType_start);
+    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "abcd", NULL, BNFTokenType_start, false);
     BNFToken* token = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcd"));
     
     BNFToken* token2 = BNFScannerNode_applyToText(appState, node, "abcde");
@@ -77,7 +77,7 @@ void testApplyRegexPattern() {
 void testApplyComplexRegexPattern() {
     printf("%s...\n", __func__);
 
-    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_start);
+    BNFScannerNode* node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_start, false);
     BNFToken* tokenAbcde = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcde"));
     BNFToken* tokenAbcxe = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcxe"));
     BNFToken* tokenAbcxe22 = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcxe22"));
@@ -88,7 +88,7 @@ void testApplyComplexRegexPattern() {
 
     BNFScannerNode_delete(appState, node);
 
-    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[a-z][a-z\\d]+", NULL, BNFTokenType_start);
+    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[a-z][a-z\\d]+", NULL, BNFTokenType_start, false);
     token2 = BNFScannerNode_applyToText(appState, node, "abcde");
     _helpAssertEqual(tokenAbcde, token2);
     token2 = BNFScannerNode_applyToText(appState, node, "abcxe");
@@ -104,18 +104,18 @@ void testApplyComplexRegexPattern() {
     BNFScannerNode_delete(appState, node);
 
     /* this should fail because text is too short */
-    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10})[a-z\\d]+", NULL, BNFTokenType_start);
+    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10})[a-z\\d]+", NULL, BNFTokenType_start, false);
     assert(BNFScannerNode_applyToText(appState, node, "abc") == NULL);
     BNFScannerNode_delete(appState, node);
 
     /* this should fail w/exception because we cannot deal with more than one parentheses pair */
-    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10})(Y+)([a-z\\d]+)", NULL, BNFTokenType_start);
+    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10})(Y+)([a-z\\d]+)", NULL, BNFTokenType_start, false);
     assert(BNFScannerNode_applyToText(appState, node, "abcdeYYYa20") == NULL);
     assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_PCRERegexError) == true);
     BNFScannerNode_delete(appState, node);
     
     /* this should fail w/exception because the regex has a syntax error */
-    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10}[a-z\\d]+", NULL, BNFTokenType_start);
+    node = BNFScannerNode__new(appState, BNFScannerNodeType_regex, "([a-z]{5,10}[a-z\\d]+", NULL, BNFTokenType_start, false);
     assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_PCRERegexError) == true);
 
     printf("ok\n");

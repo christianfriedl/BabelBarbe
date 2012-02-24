@@ -57,9 +57,10 @@ BNFToken* BNFScanner_scanNextToken(CGAppState* appState, BNFScanner* this) {
     BNFToken* token = BNFScannerRule_applyToText(appState, this->currentRule, this->textPtr);
     if (token != NULL) {
         BNFScannerNode* node = BNFScannerRule_getNode(appState, this->currentRule);
-        this->textPtr += CGString_getSize(appState, BNFToken_getText(appState, token));
+        this->textPtr += BNFToken_getTextLength(appState, token);
         this->currentRule = BNFScannerNode_getFollowupRule(appState, node);
-    } else /* no token, but not EOT, therefore there was an error */
+    } else 
+        /* no token, not noise, but not EOT, therefore there was an error */
         CGAppState_THROW(appState, Severity_error, BNFExceptionID_ScannerError, "Scanner error at %d, near '%s ...'", (this->textPtr - this->text), CGString_createSubstring(appState, this->textPtr, 0, 20));
     return token;
 }
