@@ -33,7 +33,7 @@ BNFScanner* BNFScanner__new(CGAppState* appState, BNFScannerRule* startRule, CGS
     if (this != NULL) {
         this->currentRule = startRule;
         this->text = text;
-        this->textPtr = CGString_toVector(appState, text);
+        this->textPtr = this->text;
         this->textEndPtr = this->textPtr + CGString_getSize(appState, this->text);
     } else
         CGAppState_THROW(appState, Severity_fatal, BNFExceptionID_ScannerError, "unable to allocate BNFScanner");
@@ -49,6 +49,11 @@ void BNFScanner_delete(CGAppState* appState, BNFScanner* this) {
 BNFToken* BNFScanner_scanNextToken(CGAppState* appState, BNFScanner* this) {
     if (this->textPtr == this->textEndPtr) /* end of text reached, so no more tokens */
         return NULL;
+    if (this->currentRule == NULL) { /* we are not at EOT, and we have no rule to follow -> error */
+        CGAppState_THROW(appState, Severity_error, BNFExceptionID_ScannerError, "No rule for text at (%ld, %ld) %u, near '%s ...'", this->text, this->textPtr, (this->textPtr - this->text), CGString_createSubstring(appState, this->textPtr, 0, 20));
+        return NULL;
+    }
+        
     BNFToken* token = BNFScannerRule_applyToText(appState, this->currentRule, this->textPtr);
     if (token != NULL) {
         BNFScannerNode* node = BNFScannerRule_getNode(appState, this->currentRule);

@@ -39,6 +39,7 @@ void BNFToken_print(CGAppState* appState, BNFToken* this);
 CGString* BNFToken_toString(CGAppState* appState, BNFToken* this);
 CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this);
 CGString* BNFToken_getText(CGAppState* appState, BNFToken* this);
+BNFTokenType BNFToken_getType(CGAppState* appState, BNFToken* this);
 bool BNFToken_isEQual(CGAppState* appState, BNFToken* this, BNFToken* other);
 
 #endif

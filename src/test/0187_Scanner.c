@@ -19,21 +19,44 @@ void testNewDelete() {
     printf("ok\n");
 }
 
-/*
 void testIdentifier() {
     printf("%s...\n", __func__);
-    char* text = CGString__new("abcde");
-    BNFScanner* scanner = BNFScanner__new(appState, text);
-    rv = BNFScanner_scan(scanner);
-    assert(rv == true);
-    assert(scanner->state == BNFScannerState_initial);
-    assert(scanner->token->type == BNFTokenType_start);
-    assert(scanner->text == text+strlen(text));
-    assert(!strcmp(scanner->text, text));
-    BNFScanner_delete(scanner);
+
+    char* text = CGString__new(appState, "abcde");
+    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(appState, BNFScannerNode, BNFScannerNode__new(appState, BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_identifier), NULL);
+    BNFScannerRule* rule = BNFScannerRule__new(appState, nodes);
+    BNFScanner* scanner = BNFScanner__new(appState, rule, text);
+    BNFToken* token = BNFScanner_scanNextToken(appState, scanner);
+    assert(token != NULL);
+    assert(BNFToken_getType(appState, token) == BNFTokenType_identifier);
+    CGString* tokenText = BNFToken_getText(appState, token);
+    assert(!CGString__compare(appState, tokenText, text));
+    assert(BNFScanner_scanNextToken(appState, scanner) == NULL);
+    BNFToken_delete(appState, token);
+    BNFScanner_delete(appState, scanner);
+
     printf("ok\n");
 }
-*/
+void testIdentifierWithError() {
+    printf("%s...\n", __func__);
+
+    CGString* text = CGString__new(appState, "abcde123");
+    CGString* identText = CGString__new(appState, "abcde");
+    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(appState, BNFScannerNode, BNFScannerNode__new(appState, BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_identifier), NULL);
+    BNFScannerRule* rule = BNFScannerRule__new(appState, nodes);
+    BNFScanner* scanner = BNFScanner__new(appState, rule, text);
+    BNFToken* token = BNFScanner_scanNextToken(appState, scanner);
+    assert(token != NULL);
+    assert(BNFToken_getType(appState, token) == BNFTokenType_identifier);
+    CGString* tokenText = BNFToken_getText(appState, token);
+    assert(!CGString__compare(appState, tokenText, identText));
+    assert(BNFScanner_scanNextToken(appState, scanner) == NULL);
+    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_ScannerError) == true);
+    BNFToken_delete(appState, token);
+    BNFScanner_delete(appState, scanner);
+
+    printf("ok\n");
+}
 
 int main() {
     printf("=== %s ===\n", __FILE__);
@@ -41,6 +64,8 @@ int main() {
     appState = CGAppState__new(__FILE__);
 
     testNewDelete();
+    testIdentifier();
+    testIdentifierWithError();
 
 	return 0;
 }

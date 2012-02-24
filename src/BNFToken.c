@@ -74,6 +74,9 @@ CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this) {
     }
 }
 
+BNFTokenType BNFToken_getType(CGAppState* appState, BNFToken* this) {
+    return this->type;
+}
 CGString* BNFToken_getText(CGAppState* appState, BNFToken* this) {
     return this->text;
 }
