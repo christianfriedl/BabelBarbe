@@ -20,62 +20,57 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<cgenerics/CGAppState.h>
 #include"BNF.h"
+#include"BNFException.h"
 #include"BNFToken.h"
 
-BNFToken* BNFToken__new() {
-    BNFToken* token = malloc(sizeof(*token));
-    if (token) {
-        token->type = BNFTokenType_start;
-        token->text = NULL;
+BNFToken* BNFToken__new(CGAppState* appState, BNFTokenType type, CGString* text) {
+    BNFToken* this = malloc(sizeof(*this));
+    if (this != NULL) {
+        this->type = type;
+        this->text = text;
     } else
-        BNF__raiseFatalError("Unable to allocate token.");
-    return token;
+        CGAppState_THROW(appState, Severity_error, CGExceptionID_CannotAllocate, "unable to allocate BNFToken");
+    return this;
 }
 
-BNFToken* BNFToken__newFromTypeString(BNFTokenType type, const char* text) {
-    BNFToken* token = BNFToken__new();
-    token->type = type;
-    token->text = strdup(text);
-    return token;
+void BNFToken_delete(CGAppState* appState, BNFToken* this) {
+    if (this->text != NULL) /* TODO: decide - will that ever be possible? */
+        free(this->text);
+    free(this);
 }
 
-void BNFToken_delete(BNFToken* token) {
-    if (token->text != NULL)
-        free(token->text);
-    free(token);
-}
-
-void BNFToken_print(BNFToken* token) {
-    char* type_name = BNFToken_getTypeName(token);
-    printf("token @%ld: type='%s', text='%s'\n", (long int)token, type_name, token->text);
+void BNFToken_print(CGAppState* appState, BNFToken* this) {
+    char* type_name = BNFToken_getTypeName(appState, this);
+    printf("token @%ld: type='%s', text='%s'\n", (long int)this, type_name, this->text);
     free(type_name);
 }
 
-char* BNFToken_toString(BNFToken* token) {
-    char* type_name = BNFToken_getTypeName(token);
+CGString* BNFToken_toString(CGAppState* appState, BNFToken* this) {
+    CGString* type_name = BNFToken_getTypeName(appState, this);
     char* mystrbuf = malloc(255);
-    sprintf(mystrbuf, "token @%ld: type='%s', text='%s'", (long int)token, type_name, token->text);
+    sprintf(mystrbuf, "token @%ld: type='%s', text='%s'", (long int)this, type_name, this->text);
     free(type_name);
     return mystrbuf;
 }
 
-char* BNFToken_getTypeName(BNFToken* token) {
-    switch (token->type) {
+CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this) {
+    switch (this->type) {
         case BNFTokenType_start: 
-            return strdup("BNFTokenType_start");
+            return CGString__new(appState, "BNFTokenType_start");
             break;
         case BNFTokenType_identifier: 
-            return strdup("BNFTokenType_identifier");
+            return CGString__new(appState, "BNFTokenType_identifier");
             break;
         case BNFTokenType_definition:
-            return strdup("BNFTokenType_definition");
+            return CGString__new(appState, "BNFTokenType_definition");
             break;
         case BNFTokenType_semicolon: 
-            return strdup("BNFTokenType_semicolon");
+            return CGString__new(appState, "BNFTokenType_semicolon");
             break;
         default:
-            BNF__raiseFatalError("unknown token type");
-            return NULL;
+            CGAppState_THROW(appState, Severity_error, BNFExceptionID_UnknownTokenType, "unknown token type %u", this->type);
+            return CGString__new(appState, "Unknown Token Type");
     }
 }

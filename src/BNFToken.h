@@ -23,19 +23,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<cgenerics/CGString.h>
+#include<cgenerics/CGAppState.h>
 
 typedef enum { BNFTokenType_start, BNFTokenType_identifier, BNFTokenType_definition, BNFTokenType_semicolon } BNFTokenType;
 
 typedef struct {
     BNFTokenType type;
-    char* text;
+    CGString* text;
 } BNFToken;
 
-BNFToken* BNFToken__new();
-BNFToken* BNFToken__newFromTypeString(BNFTokenType type, const char* text);
-void BNFToken_delete(BNFToken* token);
-void BNFToken_print(BNFToken* token);
-char* BNFToken_getTypeName(BNFToken* token);
-char* BNFToken_toString(BNFToken* token);
+BNFToken* BNFToken__new(CGAppState* appState, BNFTokenType type, CGString* text);
+void BNFToken_delete(CGAppState* appState, BNFToken* this);
+void BNFToken_print(CGAppState* appState, BNFToken* this);
+CGString* BNFToken_toString(CGAppState* appState, BNFToken* this);
+CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this);
 
 #endif
