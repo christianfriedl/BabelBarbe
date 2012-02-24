@@ -26,6 +26,29 @@ Copyright (C) 2011  Christian Friedl
 
 static CGAppState *appState;
 
+BNFToken* tokenAbcd;
+BNFToken* tokenAbcde;
+BNFToken* tokenEfgh;
+BNFToken* tokenAbcxe;
+BNFToken* tokenAbcxe22;
+BNFToken* tokenAbcxe22fab;
+BNFToken* token123;
+
+void setUp() {
+    tokenAbcd = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcd"));
+    tokenAbcde = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcde"));
+    tokenEfgh = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "efgh"));
+    tokenAbcxe = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcxe"));
+    tokenAbcxe22 = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcxe22"));
+    tokenAbcxe22fab = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "abcxe22fab"));
+    token123 = BNFToken__new(appState, BNFTokenType_start, CGString__new(appState, "123"));
+}
+
+void _helpAssertEqual(BNFToken* token, BNFToken* token2) {
+    assert(token2 != NULL);
+    assert(BNFToken_isEQual(appState, token, token2));
+}
+
 void testNewDelete() {
     printf("%s...\n", __func__);
 
@@ -48,8 +71,8 @@ void testApplyStringPattern() {
 
     BNFScannerRule* rule = BNFScannerRule__new(appState, CGArray__newFromInitializerList(appState, BNFScannerNode, node1, node2, NULL));
     
-    assert(BNFScannerRule_applyToText(appState, rule, "abcde") == node1);
-    assert(BNFScannerRule_applyToText(appState, rule, "efghi") == node2);
+    _helpAssertEqual(BNFScannerRule_applyToText(appState, rule, "abcde"), tokenAbcd);
+    _helpAssertEqual(BNFScannerRule_applyToText(appState, rule, "efghi"), tokenEfgh);
     assert(BNFScannerRule_applyToText(appState, rule, "xxxefghi") == NULL);
 
     BNFScannerRule_delete(appState, rule);
@@ -67,8 +90,8 @@ void testApplyRegexPattern() {
 
     BNFScannerRule* rule = BNFScannerRule__new(appState, CGArray__newFromInitializerList(appState, BNFScannerNode, node1, node2, NULL));
     
-    assert(BNFScannerRule_applyToText(appState, rule, "abcde") == node1);
-    assert(BNFScannerRule_applyToText(appState, rule, "123efghi") == node2);
+    _helpAssertEqual(BNFScannerRule_applyToText(appState, rule, "abcde"), tokenAbcde);
+    _helpAssertEqual(BNFScannerRule_applyToText(appState, rule, "123efghi"), token123);
     assert(BNFScannerRule_applyToText(appState, rule, " xxxefghi") == NULL);
 
     BNFScannerRule_delete(appState, rule);
@@ -79,6 +102,8 @@ void testApplyRegexPattern() {
 }
 
 int main() {
+    setUp();
+
     printf("=== %s ===\n", __FILE__);
 
     appState = CGAppState__new(__FILE__);

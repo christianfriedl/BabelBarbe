@@ -73,3 +73,7 @@ CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this) {
             return CGString__new(appState, "Unknown Token Type");
     }
 }
+
+bool BNFToken_isEQual(CGAppState* appState, BNFToken* this, BNFToken* other) {
+    return toBool((this->type == other->type && !CGString__compare(appState, this->text, other->text)));
+}
