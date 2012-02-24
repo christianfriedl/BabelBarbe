@@ -37,14 +37,14 @@ BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType typ
 }
 
 bool BNFScannerNode_setRegex(CGAppState* appState, BNFScannerNode* this, CGString* pattern) {
-    CGString errorString[255];
+    const char *errorString;
     int errorOffset = 0;
     bool success = false;
 
     if (this->pattern != NULL) free(this->pattern);
     if (this->regex != NULL) free(this->regex);
     this->pattern = strdup(pattern);
-    this->regex = pcre_compile(this->pattern, PCRE_ANCHORED, (const char**)&errorString, &errorOffset, NULL); /* TODO optimization: compile the pattern once and store it */
+    this->regex = pcre_compile(this->pattern, PCRE_ANCHORED, &errorString, &errorOffset, NULL); 
     if (this->regex != NULL)
         success = true;
     else {
