@@ -5,7 +5,9 @@
 DECLARE_ARRAY_FUNCS(BNFScannerNode)
 DECLARE_ARRAY_ITERATOR_FUNCS(BNFScannerNode)
 
-static bool BNFScannerNode_applyRegexToText_(CGAppState* appState, BNFScannerNode* this, const char* text);
+static unsigned int BNFScannerNode_applyStringToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text);
+static unsigned int BNFScannerNode_applyRegexToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text);
+static BNFToken* BNFScannerNode_applyFunctionToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text, unsigned int(*func)(CGAppState*, BNFScannerNode*, const CGString*));
 
 BNFScannerNode* BNFScannerNode_clone(CGAppState* appState, BNFScannerNode* this) {
     return BNFScannerNode__new(appState, this->type, this->pattern, this->followupRule, this->tokenType);
@@ -65,20 +67,38 @@ BNFTokenType BNFScannerNode_getTokenType(CGAppState* appState, BNFScannerNode* t
     return this->tokenType;
 }
 
+static BNFToken* BNFScannerNode_createToken_(CGAppState* appState, BNFScannerNode* this, const CGString* text, const unsigned int len) {
+    return BNFToken__new(appState, this->tokenType, CGString_createSubstring(appState, text, 0, len));
+}
+
+static BNFToken* BNFScannerNode_applyFunctionToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text, unsigned int(*func)(CGAppState*, BNFScannerNode*, const CGString*)) {
+    unsigned int len = (*func)(appState, this, text);
+    if (len > 0)
+        return BNFScannerNode_createToken_(appState, this, text, len); 
+    else
+        return NULL;
+}
 /**
     @return success or failure
 */
-bool BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const CGString* text) {
-    if (this->type == BNFScannerNodeType_string)
-        return (!strncmp(this->pattern, text, strlen(this->pattern))) ? true : false;
+BNFToken* BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const CGString* text) {
+    if (this->type == BNFScannerNodeType_string) 
+        return BNFScannerNode_applyFunctionToText_(appState, this, text, BNFScannerNode_applyStringToText_);
     else
-        return BNFScannerNode_applyRegexToText_(appState, this, text);
+        return BNFScannerNode_applyFunctionToText_(appState, this, text, BNFScannerNode_applyRegexToText_);
+}
+
+static unsigned int BNFScannerNode_applyStringToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text) {
+    if (!strncmp(this->pattern, text, strlen(this->pattern)))
+        return strlen(this->pattern);
+    else
+        return 0;
 }
 
 /**
     @return whether the regex matched
 */
-bool BNFScannerNode_applyRegexToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text) {
+static unsigned int BNFScannerNode_applyRegexToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text) {
     CGString* errorString = CGString__newFromLengthAndPreset(appState, 255, ' ');
     int errorOffset = 0;
     int outputVector[3];
@@ -88,17 +108,17 @@ bool BNFScannerNode_applyRegexToText_(CGAppState* appState, BNFScannerNode* this
     if (reResult < 0) { /* not found, but also possible error */
         switch (reResult) {
             case PCRE_ERROR_NOMATCH:
-                return false;
+                return 0;
                 break;
             default:
                 CGAppState_throwException(appState, CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE reported an error, message '%s' at offset %i, resultcode was %i (pattern '%s', text '%s')", errorString, errorOffset, reResult, this->pattern, text));
-                return false;
+                return 0;
         }
     } else if (reResult == 0) {
         CGAppState_throwException(appState, CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE cannot write into outputVector because it is too small (pattern '%s', text '%s')", this->pattern, text));
-        return false;
+        return 0;
     } else
-        return true;
+        return outputVector[1] - outputVector[0];
 
 }
 BNFScannerRule* BNFScannerRule_clone(CGAppState* appState, BNFScannerRule* this) {
@@ -118,12 +138,13 @@ void BNFScannerRule_delete(CGAppState* appState, BNFScannerRule* this) {
     free(this);
 }
 
-BNFScannerNode* BNFScannerRule_applyToText(CGAppState* appState, BNFScannerRule* this, const CGString* text) {
+BNFToken* BNFScannerRule_applyToText(CGAppState* appState, BNFScannerRule* this, const CGString* text) {
     CGArrayIterator(BNFScannerNode)* iter = CGArrayIterator__new(appState, BNFScannerNode, this->nodes);
     while (CGArrayIterator_isInsideBounds(appState, BNFScannerNode, iter)) {
         BNFScannerNode* node = CGArrayIterator_getCurrentElement(appState, BNFScannerNode, iter);
-        if (BNFScannerNode_applyToText(appState, node, text) == true)
-            return node;
+        BNFToken* token = BNFScannerNode_applyToText(appState, node, text);
+        if (token != NULL)
+            return token;
         CGArrayIterator_moveToNextElement(appState, BNFScannerNode, iter);
     }
     return NULL;
