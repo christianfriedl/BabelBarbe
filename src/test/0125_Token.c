@@ -19,25 +19,45 @@ Copyright (C) 2011  Christian Friedl
 
 #include<assert.h>
 #include<stdio.h>
+#include<cgenerics/CGAppState.h>
 #include"BNFToken.h"
 
-/*
-    positive tests
-*/
-void test_token_new_delete() {
+CGAppState* appState;
+
+void testNewDelete() {
     printf("%s...\n", __func__);
 
     char* text = "xyz";
-    BNFToken* token = BNFToken__new();
-    token->type = BNFTokenType_identifier;
-    token->text = strdup(text);
-    BNFToken_delete(token);
+    BNFToken* token = BNFToken__new(appState, BNFTokenType_identifier, CGString__new(appState, text));
+    BNFToken_delete(appState, token);
 
-    text = "abcde";
-    token = BNFToken__newFromTypeString(BNFTokenType_identifier, text);
-    assert(token->type == BNFTokenType_identifier);
-    assert(!strcmp(token->text, text));
-    BNFToken_delete(token);
+    printf("ok\n");
+}
+void testPrint() {
+    printf("%s...\n", __func__);
+
+    char* text = "xyz";
+    BNFToken* token = BNFToken__new(appState, BNFTokenType_identifier, CGString__new(appState, text));
+    BNFToken_print(appState, token);
+    BNFToken_delete(appState, token);
+
+    printf("ok\n");
+}
+void testGetters() {
+    printf("%s...\n", __func__);
+
+    char* text = "xyz";
+    BNFToken* token = BNFToken__new(appState, BNFTokenType_identifier, CGString__new(appState, text));
+    CGString* string;
+    string = BNFToken_getTypeName(appState, token);
+    assert(string != NULL);
+    printf("'%s' should contain a stringified token type\n", string);
+    CGString_delete(appState, string);
+    string = BNFToken_toString(appState, token);
+    assert(string != NULL);
+    printf("'%s' should contain a stringified token\n", string);
+    CGString_delete(appState, string);
+    BNFToken_delete(appState, token);
 
     printf("ok\n");
 }
@@ -48,7 +68,9 @@ int main() {
         positive tests
    */
 
-    test_token_new_delete();
+    testNewDelete();
+    testPrint();
+    testGetters();
 
 	return 0;
 }

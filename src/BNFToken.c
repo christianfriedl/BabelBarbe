@@ -49,10 +49,9 @@ void BNFToken_print(CGAppState* appState, BNFToken* this) {
 
 CGString* BNFToken_toString(CGAppState* appState, BNFToken* this) {
     CGString* type_name = BNFToken_getTypeName(appState, this);
-    char* mystrbuf = malloc(255);
-    sprintf(mystrbuf, "token @%ld: type='%s', text='%s'", (long int)this, type_name, this->text);
-    free(type_name);
-    return mystrbuf;
+    CGString* string = CGString__newWithSprintf(appState, "token @%ld: type='%s', text='%s'", (long int)this, type_name, this->text);
+    CGString_delete(appState, type_name);
+    return string;
 }
 
 CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this) {
