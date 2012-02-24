@@ -1,25 +1,29 @@
 #include<assert.h>
 #include<stdio.h>
 #include<string.h>
+#include<cgenerics/CGAppState.h>
+#include<cgenerics/CGString.h>
+#include"CGArrayOfBNFScannerNode.h"
+#include"BNFScannerRule.h"
 #include"BNFScanner.h"
 
-/*
-    tests that should scan ok
-*/
-void test_scanner_new_delete() {
-    char* text = "";
+CGAppState* appState;
+
+void testNewDelete() {
     printf("%s...\n", __func__);
-    BNFScanner* scanner = BNFScanner__new(text);
-    BNFScanner_delete(scanner);
+    CGString* text = CGString__new(appState, "");
+    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(appState, BNFScannerNode, NULL);
+    BNFScannerRule* rule = BNFScannerRule__new(appState, nodes);
+    BNFScanner* scanner = BNFScanner__new(appState, rule, text);
+    BNFScanner_delete(appState, scanner);
     printf("ok\n");
 }
 
-void test_scanner_identifier() {
-    char* text = "abcde";
-    BNFScanner* scanner;
-    bool rv;
+/*
+void testIdentifier() {
     printf("%s...\n", __func__);
-    scanner = BNFScanner__new(text);
+    char* text = CGString__new("abcde");
+    BNFScanner* scanner = BNFScanner__new(appState, text);
     rv = BNFScanner_scan(scanner);
     assert(rv == true);
     assert(scanner->state == BNFScannerState_initial);
@@ -29,19 +33,14 @@ void test_scanner_identifier() {
     BNFScanner_delete(scanner);
     printf("ok\n");
 }
+*/
 
 int main() {
     printf("=== %s ===\n", __FILE__);
-    /*
-        positive tests
-    */
+    
+    appState = CGAppState__new(__FILE__);
 
-    test_scanner_new_delete();
-    test_scanner_identifier();
-
-    /*
-        negative tests
-    */
+    testNewDelete();
 
 	return 0;
 }

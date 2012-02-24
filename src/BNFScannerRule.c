@@ -121,6 +121,11 @@ static unsigned int BNFScannerNode_applyRegexToText_(CGAppState* appState, BNFSc
         return outputVector[1] - outputVector[0];
 
 }
+BNFScannerRule* BNFScannerNode_getFollowupRule(CGAppState* appState, BNFScannerNode* this) {
+    return this->followupRule;
+}
+
+
 BNFScannerRule* BNFScannerRule_clone(CGAppState* appState, BNFScannerRule* this) {
     return BNFScannerRule__new(appState, this->nodes);
 }
@@ -129,6 +134,7 @@ BNFScannerRule* BNFScannerRule__new(CGAppState* appState, CGArray(BNFScannerNode
     BNFScannerRule* this = malloc(sizeof(*this));
     if (this) {
         this->nodes = nodes;
+        this->node = NULL;
     } else
         CGAppState_throwException(appState, CGException__new(Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerRule"));
     return this;
@@ -141,8 +147,8 @@ void BNFScannerRule_delete(CGAppState* appState, BNFScannerRule* this) {
 BNFToken* BNFScannerRule_applyToText(CGAppState* appState, BNFScannerRule* this, const CGString* text) {
     CGArrayIterator(BNFScannerNode)* iter = CGArrayIterator__new(appState, BNFScannerNode, this->nodes);
     while (CGArrayIterator_isInsideBounds(appState, BNFScannerNode, iter)) {
-        BNFScannerNode* node = CGArrayIterator_getCurrentElement(appState, BNFScannerNode, iter);
-        BNFToken* token = BNFScannerNode_applyToText(appState, node, text);
+        this->node = CGArrayIterator_getCurrentElement(appState, BNFScannerNode, iter);
+        BNFToken* token = BNFScannerNode_applyToText(appState, this->node, text);
         if (token != NULL)
             return token;
         CGArrayIterator_moveToNextElement(appState, BNFScannerNode, iter);
@@ -150,3 +156,6 @@ BNFToken* BNFScannerRule_applyToText(CGAppState* appState, BNFScannerRule* this,
     return NULL;
 }
 
+BNFScannerNode* BNFScannerRule_getNode(CGAppState* appState, BNFScannerRule* this) {
+    return this->node;
+}

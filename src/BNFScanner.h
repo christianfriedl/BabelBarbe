@@ -28,22 +28,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"CGArrayOfBNFScannerNode.h"
 #include"BNFScannerRuleset.h"
 
-typedef enum { BNFScannerState_initial = 0 } BNFScannerState;
-
 typedef struct { 
-    CGAppState* appState;
-    const char* text;
-    const char* text_start;
-    BNFToken* token;
-    BNFScannerState state;
-    BNFScannerRule* current_rule;
+    CGString* text;
+    char* textPtr;
+    char* textEndPtr; /* strictly for performance, so we can cache the strlen() at construction time */
+    BNFScannerRule* currentRule;
 } BNFScanner;
 
-BNFScanner* BNFScanner__new(const char* text);
-void BNFScanner_delete(BNFScanner* this);
-bool BNFScanner_scan(BNFScanner* this);
-void BNFScanner_raiseError(BNFScanner* this, Severity severity, int exceptionID, char *msg);
-
-
+BNFScanner* BNFScanner__new(CGAppState* appState, BNFScannerRule* startRule, CGString* text);
+void BNFScanner_delete(CGAppState* appState, BNFScanner* this);
+BNFToken* BNFScanner_scanNextToken(CGAppState* appState, BNFScanner* this);
 
 #endif

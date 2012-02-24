@@ -28,37 +28,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"BNFException.h"
 #include"BNFScanner.h"
 
-BNFScanner* BNFScanner__new(const char* text) {
+BNFScanner* BNFScanner__new(CGAppState* appState, BNFScannerRule* startRule, CGString* text) {
     BNFScanner* this = malloc(sizeof(*this));
     if (this != NULL) {
-        this->text = this->text_start = text;
-        this->token = NULL;
-        this->state = BNFScannerState_initial;
+        this->currentRule = startRule;
+        this->text = text;
+        this->textPtr = CGString_toVector(appState, text);
+        this->textEndPtr = this->textPtr + CGString_getSize(appState, this->text);
     } else
-        CGAppState_throwException(this->appState, CGException__new(Severity_fatal, BNFExceptionID_ScannerFatalError, "unable to allocate BNFScanner"));
+        CGAppState_THROW(appState, Severity_fatal, BNFExceptionID_ScannerError, "unable to allocate BNFScanner");
     return this;
 }
 
-void BNFScanner_delete(BNFScanner* this) {
+void BNFScanner_delete(CGAppState* appState, BNFScanner* this) {
+    /* TODO delete rules */
+    CGString_delete(appState, this->text);
     free(this);
 }
 
-bool BNFScanner_scan(BNFScanner* this) {
-    bool continue_loop = false;
-    bool rv = false;
-    do {
-        char ch = *this->text;
-        switch (this->state) {
-            case BNFScannerState_initial:
-                break;
-            default:
-                BNFScanner_raiseError(this, Severity_error, BNFExceptionID_UnknownScannerState, "unknown scanner state");
-                return false;
-        }
-    } while (continue_loop);
-    return rv;
+BNFToken* BNFScanner_scanNextToken(CGAppState* appState, BNFScanner* this) {
+    if (this->textPtr == this->textEndPtr) /* end of text reached, so no more tokens */
+        return NULL;
+    BNFToken* token = BNFScannerRule_applyToText(appState, this->currentRule, this->textPtr);
+    if (token != NULL) {
+        BNFScannerNode* node = BNFScannerRule_getNode(appState, this->currentRule);
+        this->textPtr += CGString_getSize(appState, BNFToken_getText(appState, token));
+        this->currentRule = BNFScannerNode_getFollowupRule(appState, node);
+    } else /* no token, but not EOT, therefore there was an error */
+        CGAppState_THROW(appState, Severity_error, BNFExceptionID_ScannerError, "Scanner error at %d, near '%s ...'", (this->textPtr - this->text), CGString_createSubstring(appState, this->textPtr, 0, 20));
+    return token;
 }
 
-void BNFScanner_raiseError(BNFScanner* this, Severity severity, int exceptionID, char *msg) {
-    CGAppState_throwException(this->appState, CGException__new(severity, exceptionID, msg));
-}

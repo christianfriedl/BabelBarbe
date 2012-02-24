@@ -57,6 +57,9 @@ void testGetters() {
     assert(string != NULL);
     printf("'%s' should contain a stringified token\n", string);
     CGString_delete(appState, string);
+    string = BNFToken_getText(appState, token);
+    assert(string != NULL);
+    assert(!CGString__compare(appState, string, CGString__new(appState, text)));
     BNFToken_delete(appState, token);
 
     printf("ok\n");
@@ -64,13 +67,11 @@ void testGetters() {
 
 int main() {
     printf("=== %s ===\n", __FILE__);
-    /*
-        positive tests
-   */
 
     testNewDelete();
     testPrint();
     testGetters();
 
+    printf("=== %s ok ===\n", __FILE__);
 	return 0;
 }

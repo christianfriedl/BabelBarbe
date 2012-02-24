@@ -29,6 +29,7 @@ DECLARE_ARRAY_ITERATOR_FUNCS(BNFScannerNode)
 
 struct BNFScannerRule_struct {
     CGArray(BNFScannerNode)* nodes;
+    BNFScannerNode* node;
 };
 
 BNFScannerNode* BNFScannerNode__new(CGAppState* appState, BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType);
@@ -36,12 +37,14 @@ BNFScannerNode* BNFScannerNode_clone(CGAppState* appState, BNFScannerNode* this)
 void BNFScannerNode_delete(CGAppState* appState, BNFScannerNode* this);
 bool BNFScannerNode_setRegex(CGAppState* appState, BNFScannerNode* this, CGString* pattern);
 BNFTokenType BNFScannerNode_getTokenType(CGAppState* appState, BNFScannerNode* this);
+BNFScannerRule* BNFScannerNode_getFollowupRule(CGAppState* appState, BNFScannerNode* this);
 BNFToken* BNFScannerNode_applyToText(CGAppState* appState, BNFScannerNode* this, const CGString* text);
 
 BNFScannerRule* BNFScannerRule__new(CGAppState* appState, CGArray(BNFScannerNode)* nodes);
 BNFScannerRule* BNFScannerRule_clone(CGAppState* appState, BNFScannerRule* this);
 void BNFScannerRule_delete(CGAppState* appState, BNFScannerRule* this);
 BNFToken* BNFScannerRule_applyToText(CGAppState* appState, BNFScannerRule* this, const CGString* text);
+BNFScannerNode* BNFScannerRule_getNode(CGAppState* appState, BNFScannerRule* this);
 
 
 #endif
