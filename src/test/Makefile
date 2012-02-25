@@ -19,6 +19,7 @@ clean:
 
 %: %.o
 	$(CC)  -o $@ $< $(LDFLAGS)
+	rm -f *.i *.s
 
 tags: $(BINARIES)
 	ctags *.c ../../../CGenerics/src/*.{c,h}

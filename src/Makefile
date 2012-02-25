@@ -23,6 +23,7 @@ localall: $(STATIC_LIBRARY)
 
 all: localall
 	(cd test; make all)
+	rm -f *.i *.s
 
 $(STATIC_LIBRARY): $(LIB_OBJECTS)
 	ar -rcsv $@ $?
