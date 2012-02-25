@@ -25,72 +25,72 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"BNFException.h"
 #include"BNFToken.h"
 
-BNFToken* BNFToken__new(CGAppState* appState, BNFTokenType type, CGString* text) {
+BNFToken* BNFToken__new(BNFTokenType type, CGString* text) {
     BNFToken* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->type = type;
         this->text = text;
-        this->textLength = CGString_getSize(appState, text);
+        this->textLength = CGString_getSize(text);
     } else
-        CGAppState_THROW(appState, Severity_error, CGExceptionID_CannotAllocate, "unable to allocate BNFToken");
+        CGAppState_THROW(CGAppState__getInstance(), Severity_error, CGExceptionID_CannotAllocate, "unable to allocate BNFToken");
     return this;
 }
 
-void BNFToken_delete(CGAppState* appState, BNFToken* this) {
+void BNFToken_delete(BNFToken* this) {
     if (this->text != NULL) /* TODO: decide - will that ever be possible? */
         free(this->text);
     free(this);
 }
 
-void BNFToken_print(CGAppState* appState, BNFToken* this) {
-    char* type_name = BNFToken_getTypeName(appState, this);
+void BNFToken_print(BNFToken* this) {
+    char* type_name = BNFToken_getTypeName(this);
     printf("token @%ld: type='%s', text='%s'\n", (long int)this, type_name, this->text);
     free(type_name);
 }
 
-CGString* BNFToken_toString(CGAppState* appState, BNFToken* this) {
-    CGString* type_name = BNFToken_getTypeName(appState, this);
-    CGString* string = CGString__newWithSprintf(appState, "token @%ld: type='%s', text='%s'", (long int)this, type_name, this->text);
-    CGString_delete(appState, type_name);
+CGString* BNFToken_toString(BNFToken* this) {
+    CGString* type_name = BNFToken_getTypeName(this);
+    CGString* string = CGString__newWithSprintf("token @%ld: type='%s', text='%s'", (long int)this, type_name, this->text);
+    CGString_delete(type_name);
     return string;
 }
 
-CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this) {
+CGString* BNFToken_getTypeName(BNFToken* this) {
     switch (this->type) {
         case BNFTokenType_start: 
-            return CGString__new(appState, "BNFTokenType_start");
+            return CGString__new("BNFTokenType_start");
             break;
         case BNFTokenType_noise: 
-            return CGString__new(appState, "BNFTokenType_noise");
+            return CGString__new("BNFTokenType_noise");
             break;
         case BNFTokenType_identifier: 
-            return CGString__new(appState, "BNFTokenType_identifier");
+            return CGString__new("BNFTokenType_identifier");
             break;
         case BNFTokenType_definition:
-            return CGString__new(appState, "BNFTokenType_definition");
+            return CGString__new("BNFTokenType_definition");
             break;
         case BNFTokenType_semicolon: 
-            return CGString__new(appState, "BNFTokenType_semicolon");
+            return CGString__new("BNFTokenType_semicolon");
             break;
         default:
-            CGAppState_THROW(appState, Severity_error, BNFExceptionID_UnknownTokenType, "unknown token type %u", this->type);
-            return CGString__new(appState, "Unknown Token Type");
+            CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_UnknownTokenType, "unknown token type %u", this->type);
+            return CGString__new("Unknown Token Type");
     }
 }
 
-BNFTokenType BNFToken_getType(CGAppState* appState, BNFToken* this) {
+BNFTokenType BNFToken_getType(BNFToken* this) {
     return this->type;
 }
-CGString* BNFToken_getText(CGAppState* appState, BNFToken* this) {
+CGString* BNFToken_getText(BNFToken* this) {
     return this->text;
 }
-unsigned int BNFToken_getTextLength(CGAppState* appState, BNFToken* this) {
+unsigned int BNFToken_getTextLength(BNFToken* this) {
     return this->textLength;
 }
-void BNFToken_setTextLength(CGAppState* appState, BNFToken* this, unsigned int length) {
+void BNFToken_setTextLength(BNFToken* this, unsigned int length) {
     this->textLength = length;
 }
 
-bool BNFToken_isEQual(CGAppState* appState, BNFToken* this, BNFToken* other) {
-    return toBool((this->type == other->type && !CGString__compare(appState, this->text, other->text)));
+bool BNFToken_isEQual(BNFToken* this, BNFToken* other) {
+    return toBool((this->type == other->type && !CGString__compare(this->text, other->text)));
 }

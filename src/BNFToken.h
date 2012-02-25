@@ -34,15 +34,15 @@ typedef struct {
     unsigned int textLength;
 } BNFToken;
 
-BNFToken* BNFToken__new(CGAppState* appState, BNFTokenType type, CGString* text);
-void BNFToken_delete(CGAppState* appState, BNFToken* this);
-void BNFToken_print(CGAppState* appState, BNFToken* this);
-CGString* BNFToken_toString(CGAppState* appState, BNFToken* this);
-CGString* BNFToken_getTypeName(CGAppState* appState, BNFToken* this);
-CGString* BNFToken_getText(CGAppState* appState, BNFToken* this);
-BNFTokenType BNFToken_getType(CGAppState* appState, BNFToken* this);
-unsigned int BNFToken_getTextLength(CGAppState* appState, BNFToken* this);
-void BNFToken_setTextLength(CGAppState* appState, BNFToken* this, unsigned int length);
-bool BNFToken_isEQual(CGAppState* appState, BNFToken* this, BNFToken* other);
+BNFToken* BNFToken__new(BNFTokenType type, CGString* text);
+void BNFToken_delete(BNFToken* this);
+void BNFToken_print(BNFToken* this);
+CGString* BNFToken_toString(BNFToken* this);
+CGString* BNFToken_getTypeName(BNFToken* this);
+CGString* BNFToken_getText(BNFToken* this);
+BNFTokenType BNFToken_getType(BNFToken* this);
+unsigned int BNFToken_getTextLength(BNFToken* this);
+void BNFToken_setTextLength(BNFToken* this, unsigned int length);
+bool BNFToken_isEQual(BNFToken* this, BNFToken* other);
 
 #endif
