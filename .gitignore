@@ -4,6 +4,7 @@
 *.i
 *.s
 Makefile.local
+tags
 src/test/0125_Token
 src/test/0187_Scanner
 src/test/0250_Logger
