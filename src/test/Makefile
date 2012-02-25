@@ -1,5 +1,5 @@
 include Makefile.local
-CFLAGS=-ggdb -Wall -I../ -I/opt/local/include
+CFLAGS=-ggdb -save-temps -Wall -I../ -I/opt/local/include
 LDFLAGS=-ggdb -lcgenerics -L../ -lbnf -L/opt/local/lib -lpcre -Wall
 
 BINARIES=0125_Token 0140_BNFScannerNode 0160_BNFScannerRule 0187_Scanner # 0250_Logger 0500_ASTLeaf
@@ -7,9 +7,9 @@ BINARIES=0125_Token 0140_BNFScannerNode 0160_BNFScannerRule 0187_Scanner # 0250_
 
 STATIC_LIBRARY=../libbnf.a
 
-clean-all: clean all
+clean-all: all
 
-all: clean $(BINARIES) $(STATIC_LIBRARY)
+all: clean $(BINARIES) $(STATIC_LIBRARY) tags
 
 clean:
 	rm -f *.o $(BINARIES) 
@@ -19,3 +19,6 @@ clean:
 
 %: %.o
 	$(CC)  -o $@ $< $(LDFLAGS)
+
+tags: $(BINARIES)
+	ctags *.c ../../../CGenerics/src/*.{c,h}

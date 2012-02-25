@@ -7,7 +7,7 @@ MEGA_WARNINGS = -Wall -Wdeclaration-after-statement \
 	-Wundef -Waggregate-return -Wmissing-format-attribute \
 	-Wnested-externs -Werror
 WARNINGS = $(NORMAL_WARNINGS)
-CFLAGS=-ggdb -I/opt/local/include $(WARNINGS)
+CFLAGS=-ggdb -save-temps -I/opt/local/include $(WARNINGS)
 LDFLAGS=-ggdb -L/opt/local/lib -lpcre $(WARNINGS) 
 
 
@@ -15,9 +15,9 @@ STATIC_LIBRARY=libbnf.a
 LIB_OBJECTS =  BNF.o BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o
 # ASTLeaf.o Logger.o Token.o Scanner.o BNF.o
 
-clean-all-test: clean all test
+all-test: all tags test
 
-all-test: all test
+clean-all-test: clean all tags test
 
 localall: $(STATIC_LIBRARY)
 
@@ -31,7 +31,7 @@ $(STATIC_LIBRARY): $(LIB_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $?
 
 clean:
-	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY) *.e.c *.BAK
+	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY) *.e.c *.BAK *.i *.s
 	(cd test; make clean)
 
 .PHONY: test
@@ -45,3 +45,7 @@ pp:
 
 pp-indent: pp
 	for i in $(LIB_OBJECTS); do base=`echo $$i|perl -pe"s/\.o//"`; indent -bad -bap -i4 $$base.e.c && perl -pi -e"s/^#\d+.+$$//;" $$base.e.c && gcc -o $$base.e.o -c $$base.e.c; done
+
+tags: $(LIB_OBJECTS)
+	ctags *.{c,h} ../../CGenerics/src/*.{c,h}
+	(cd test; make tags)

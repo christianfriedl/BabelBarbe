@@ -55,6 +55,14 @@ void testApplyStringPattern() {
 
     BNFScannerNode_delete(node);
 
+    /* edge case: empty string */
+    node = BNFScannerNode__new(BNFScannerNodeType_string, "", NULL, BNFTokenType_start, false);
+    token = BNFToken__new(BNFTokenType_start, CGString__new(""));
+    token2 = BNFScannerNode_applyToText(node, "abcde");
+    _helpAssertEqual(token, token2);
+
+    BNFScannerNode_delete(node);
+
     printf("ok\n");
 }
 
@@ -134,5 +142,6 @@ int main() {
 
     CGAppState__deInit(appState);
 
+    printf("=== %s === ok\n", __FILE__);
 	return 0;
 }

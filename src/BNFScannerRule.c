@@ -5,9 +5,14 @@
 DECLARE_ARRAY_FUNCS(BNFScannerNode)
 DECLARE_ARRAY_ITERATOR_FUNCS(BNFScannerNode)
 
-static unsigned int BNFScannerNode_applyStringToText_(BNFScannerNode* this, const CGString* text);
-static unsigned int BNFScannerNode_applyRegexToText_(BNFScannerNode* this, const CGString* text);
-static BNFToken* BNFScannerNode_applyFunctionToText_(BNFScannerNode* this, const CGString* text, unsigned int(*func)(BNFScannerNode*, const CGString*));
+typedef struct {
+    unsigned int len;
+    bool success;
+} ApplyToTextRV_;
+
+static ApplyToTextRV_* BNFScannerNode_applyStringToText_(BNFScannerNode* this, const CGString* text);
+static ApplyToTextRV_* BNFScannerNode_applyRegexToText_(BNFScannerNode* this, const CGString* text);
+static BNFToken* BNFScannerNode_applyFunctionToText_(BNFScannerNode* this, const CGString* text, ApplyToTextRV_*(*func)(BNFScannerNode*, const CGString*));
 
 BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType, bool isNoise) {
     BNFScannerNode* this = malloc(sizeof(*this));
@@ -80,25 +85,30 @@ static BNFToken* BNFScannerNode_createToken_(BNFScannerNode* this, const CGStrin
         return BNFToken__new(this->tokenType, CGString_createSubstring(text, 0, len));
 }
 
-typedef struct {
-    unsigned int len;
-    bool success;
-} ApplyToTextRV_;
-
-ApplyToTextRV_* ApplyToTextRV__new(unsigned int len, bool success) {
+static ApplyToTextRV_* ApplyToTextRV__new(unsigned int len, bool success) {
     ApplyToTextRV_* this = malloc(sizeof(*this));
     if (this != NULL) {
+        this->len = len;
+        this->success = success;
     } else
         CGAppState_THROW(CGAppState__getInstance(), Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate ApplyToTextRV_");
     return this;
 }
 
-static BNFToken* BNFScannerNode_applyFunctionToText_(BNFScannerNode* this, const CGString* text, unsigned int(*func)(BNFScannerNode*, const CGString*)) {
-    unsigned int len = (*func)(this, text);
-    if (len > 0)
-        return BNFScannerNode_createToken_(this, text, len); 
+static void ApplyToTextRV_delete(ApplyToTextRV_* this) {
+    free(this);
+}
+
+static BNFToken* BNFScannerNode_applyFunctionToText_(BNFScannerNode* this, const CGString* text, ApplyToTextRV_*(*func)(BNFScannerNode*, const CGString*)) {
+    ApplyToTextRV_* funcRv = (*func)(this, text);
+    BNFToken* token = NULL;
+
+    if (funcRv->success == true)
+        token = BNFScannerNode_createToken_(this, text, funcRv->len); 
     else
-        return NULL;
+        token = NULL;
+    ApplyToTextRV_delete(funcRv);
+    return token;
 }
 /**
     @return success or failure
@@ -110,17 +120,17 @@ BNFToken* BNFScannerNode_applyToText(BNFScannerNode* this, const CGString* text)
         return BNFScannerNode_applyFunctionToText_(this, text, BNFScannerNode_applyRegexToText_);
 }
 
-static unsigned int BNFScannerNode_applyStringToText_(BNFScannerNode* this, const CGString* text) {
+static ApplyToTextRV_* BNFScannerNode_applyStringToText_(BNFScannerNode* this, const CGString* text) {
     if (!strncmp(this->pattern, text, strlen(this->pattern)))
-        return strlen(this->pattern);
+        return ApplyToTextRV__new(strlen(this->pattern), true);
     else
-        return 0;
+        return ApplyToTextRV__new(0, false);
 }
 
 /**
     @return whether the regex matched
 */
-static unsigned int BNFScannerNode_applyRegexToText_(BNFScannerNode* this, const CGString* text) {
+static ApplyToTextRV_* BNFScannerNode_applyRegexToText_(BNFScannerNode* this, const CGString* text) {
     CGString* errorString = CGString__newFromLengthAndPreset(255, ' ');
     int errorOffset = 0;
     int outputVector[3];
@@ -130,19 +140,19 @@ static unsigned int BNFScannerNode_applyRegexToText_(BNFScannerNode* this, const
     if (reResult < 0) { /* not found, but also possible error */
         switch (reResult) {
             case PCRE_ERROR_NOMATCH:
-                return 0;
+                return ApplyToTextRV__new(0, false);
                 break;
             default:
                 CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE reported an error, message '%s' at offset %i, resultcode was %i (pattern '%s', text '%s')", errorString, errorOffset, reResult, this->pattern, text));
-                return 0;
+                return ApplyToTextRV__new(0, false);
         }
     } else if (reResult == 0) {
         CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE cannot write into outputVector because it is too small (pattern '%s', text '%s')", this->pattern, text));
-        return 0;
+        return ApplyToTextRV__new(0, false);
     } else
-        return outputVector[1] - outputVector[0];
-
+        return ApplyToTextRV__new(outputVector[1] - outputVector[0], true);
 }
+
 BNFScannerRule* BNFScannerNode_getFollowupRule(BNFScannerNode* this) {
     return this->followupRule;
 }
