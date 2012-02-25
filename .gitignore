@@ -1,6 +1,8 @@
 *.sw?
 *.o
 *.a
+*.i
+*.s
 Makefile.local
 src/test/0125_Token
 src/test/0187_Scanner
