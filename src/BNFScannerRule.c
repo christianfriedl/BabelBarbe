@@ -80,6 +80,19 @@ static BNFToken* BNFScannerNode_createToken_(CGAppState* appState, BNFScannerNod
         return BNFToken__new(appState, this->tokenType, CGString_createSubstring(appState, text, 0, len));
 }
 
+typedef struct {
+    unsigned int len;
+    bool success;
+} ApplyToTextRV_;
+
+ApplyToTextRV_* ApplyToTextRV__new(CGAppState* appState, unsigned int len, bool success) {
+    ApplyToTextRV_* this = malloc(sizeof(*this));
+    if (this != NULL) {
+    } else
+        CGAppState_THROW(appState, Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate ApplyToTextRV_");
+    return this;
+}
+
 static BNFToken* BNFScannerNode_applyFunctionToText_(CGAppState* appState, BNFScannerNode* this, const CGString* text, unsigned int(*func)(CGAppState*, BNFScannerNode*, const CGString*)) {
     unsigned int len = (*func)(appState, this, text);
     if (len > 0)
