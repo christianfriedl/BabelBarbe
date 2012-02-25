@@ -36,8 +36,8 @@ typedef struct {
     BNFScannerRule* currentRule;
 } BNFScanner;
 
-BNFScanner* BNFScanner__new(CGAppState* appState, BNFScannerRule* startRule, CGString* text);
-void BNFScanner_delete(CGAppState* appState, BNFScanner* this);
-BNFToken* BNFScanner_scanNextToken(CGAppState* appState, BNFScanner* this);
+BNFScanner* BNFScanner__new(BNFScannerRule* startRule, CGString* text);
+void BNFScanner_delete(BNFScanner* this);
+BNFToken* BNFScanner_scanNextToken(BNFScanner* this);
 
 #endif
