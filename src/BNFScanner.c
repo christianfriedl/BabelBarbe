@@ -4,10 +4,13 @@
 #include<assert.h>
 #include<cgenerics/CGException.h>
 #include<cgenerics/CGAppState.h>
+#include<cgenerics/CGArray.h>
 #include"BNF.h"
 #include"BNFToken.h"
 #include"BNFException.h"
 #include"BNFScanner.h"
+
+DEFINE_ARRAY_FUNCS(BNFToken)
 
 BNFScanner* BNFScanner__new(BNFScannerRule* startRule, CGString* text) {
     BNFScanner* this = malloc(sizeof(*this));
@@ -46,3 +49,10 @@ BNFToken* BNFScanner_scanNextToken(BNFScanner* this) {
     return token;
 }
 
+CGArray(BNFToken)* BNFScanner_scanAllTokens(BNFScanner* this) {
+	CGArray(BNFToken)* tokenList = CGArray__new(BNFToken, 64);
+	BNFToken* token = NULL;
+	while ((token = BNFScanner_scanNextToken(this)) != NULL)
+		CGArray_add(BNFToken, tokenList, token);
+	return tokenList;
+}

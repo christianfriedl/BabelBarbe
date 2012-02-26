@@ -153,6 +153,9 @@ static ApplyToTextRV_* BNFScannerNode_applyRegexToText_(BNFScannerNode* this, co
         return ApplyToTextRV__new(outputVector[1] - outputVector[0], true);
 }
 
+void BNFScannerNode_setFollowupRule(BNFScannerNode* this, BNFScannerRule* rule) {
+	this->followupRule = rule;
+}
 BNFScannerRule* BNFScannerNode_getFollowupRule(BNFScannerNode* this) {
     return this->followupRule;
 }

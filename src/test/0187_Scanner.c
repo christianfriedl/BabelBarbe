@@ -3,7 +3,9 @@
 #include<string.h>
 #include<cgenerics/CGAppState.h>
 #include<cgenerics/CGString.h>
+#include<cgenerics/CGArray.h>
 #include"CGArrayOfBNFScannerNode.h"
+#include"BNFToken.h"
 #include"BNFScannerRule.h"
 #include"BNFScanner.h"
 
@@ -126,6 +128,71 @@ void testComplexRuleset() {
 
     printf("ok\n");
 }
+void testScanSameToken() {
+    printf("%s...\n", __func__);
+
+    CGString* text = CGString__new("aaaaaaa");
+    CGArray(BNFScannerNode)* startNodes;
+    BNFScannerRule* startRule = NULL;
+	BNFScannerNode* startNode = BNFScannerNode__new(BNFScannerNodeType_string, "a", NULL, BNFTokenType_identifier, false);
+    startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
+						startNode,
+                        NULL);
+    startRule = BNFScannerRule__new(startNodes);
+	BNFScannerNode_setFollowupRule(startNode, startRule);
+
+    BNFScanner* scanner = BNFScanner__new(startRule, text);
+
+    BNFToken* token = BNFScanner_scanNextToken(scanner);
+    assert(token != NULL);
+	printf("-%s-\n", BNFToken_getText(token));
+	assert(!CGString__compare(BNFToken_getText(token), "a"));
+    assert(BNFToken_getType(token) == BNFTokenType_identifier);
+    BNFToken_delete(token);
+
+    token = BNFScanner_scanNextToken(scanner);
+    assert(token != NULL);
+	printf("-%s-\n", BNFToken_getText(token));
+	assert(!CGString__compare(BNFToken_getText(token), "a"));
+    assert(BNFToken_getType(token) == BNFTokenType_identifier);
+    BNFToken_delete(token);
+
+    token = BNFScanner_scanNextToken(scanner);
+    assert(token != NULL);
+	printf("-%s-\n", BNFToken_getText(token));
+	assert(!CGString__compare(BNFToken_getText(token), "a"));
+    assert(BNFToken_getType(token) == BNFTokenType_identifier);
+    BNFToken_delete(token);
+
+    BNFScanner_delete(scanner);
+
+    printf("%s ok\n", __func__);
+}
+void testScanAllTokens() {
+    printf("%s...\n", __func__);
+
+    CGString* text = CGString__new("aaaaaaa");
+    CGArray(BNFScannerNode)* startNodes;
+    BNFScannerRule* startRule;
+    startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
+                        // BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]", startRule, BNFTokenType_identifier, false), 
+                        BNFScannerNode__new(BNFScannerNodeType_string, "a", startRule, BNFTokenType_identifier, false), 
+                        NULL);
+    startRule = BNFScannerRule__new(startNodes);
+
+    BNFScanner* scanner = BNFScanner__new(startRule, text);
+	CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
+    assert(tokenList != NULL);
+	printf("%u %u\n", CGArray_getSize(BNFToken, tokenList), CGString_getSize(text));
+	printf("-%s- -%s-\n", BNFToken_getText(CGArray_getValueAt(BNFToken, tokenList, 0)),
+		BNFToken_getText(CGArray_getValueAt(BNFToken, tokenList, 1)));
+	assert(CGArray_getSize(BNFToken, tokenList) == CGString_getSize(text));
+	assert(!CGString__compare(BNFToken_getText(CGArray_getValueAt(BNFToken, tokenList, 0)), CGString__new("a")));
+
+    BNFScanner_delete(scanner);
+
+    printf("ok\n");
+}
 
 int main() {
     printf("=== %s ===\n", __FILE__);
@@ -138,6 +205,8 @@ int main() {
     testIdentifierWithError();
     testNoise();
     testComplexRuleset();
+    testScanSameToken();
+    testScanAllTokens();
 
     CGAppState__deInit();
 

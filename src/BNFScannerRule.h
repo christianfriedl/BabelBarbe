@@ -39,6 +39,7 @@ void BNFScannerNode_delete(BNFScannerNode* this);
 bool BNFScannerNode_setRegex(BNFScannerNode* this, CGString* pattern);
 BNFTokenType BNFScannerNode_getTokenType(BNFScannerNode* this);
 BNFScannerRule* BNFScannerNode_getFollowupRule(BNFScannerNode* this);
+void BNFScannerNode_setFollowupRule(BNFScannerNode* this, BNFScannerRule* rule);
 bool BNFScannerNode_getIsNoise(BNFScannerNode* this);
 BNFToken* BNFScannerNode_applyToText(BNFScannerNode* this, const CGString* text);
 

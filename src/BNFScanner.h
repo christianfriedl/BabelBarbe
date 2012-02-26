@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"CGArrayOfBNFScannerNode.h"
 #include"BNFScannerRuleset.h"
 
+DECLARE_ARRAY(BNFToken)
+
 typedef struct { 
     CGString* text;
     char* textPtr;
@@ -39,5 +41,6 @@ typedef struct {
 BNFScanner* BNFScanner__new(BNFScannerRule* startRule, CGString* text);
 void BNFScanner_delete(BNFScanner* this);
 BNFToken* BNFScanner_scanNextToken(BNFScanner* this);
+CGArray(BNFToken)* BNFScanner_scanAllTokens(BNFScanner* this);
 
 #endif

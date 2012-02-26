@@ -36,6 +36,10 @@ BNFToken* BNFToken__new(BNFTokenType type, CGString* text) {
     return this;
 }
 
+BNFToken* BNFToken_clone(BNFToken* this) {
+	return BNFToken__new(this->type, this->text);
+}
+
 void BNFToken_delete(BNFToken* this) {
     if (this->text != NULL) /* TODO: decide - will that ever be possible? */
         free(this->text);
