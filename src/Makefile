@@ -12,10 +12,9 @@ LDFLAGS=-ggdb -L/opt/local/lib -lpcre $(WARNINGS)
 
 
 STATIC_LIBRARY=libbnf.a 
-LIB_OBJECTS =  BNF.o BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o
-# ASTLeaf.o Logger.o Token.o Scanner.o BNF.o
+LIB_OBJECTS =  BNF.o BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o
 
-all-test: all tags test
+necessary-test: all tags test
 
 clean-all-test: clean all tags test
 
