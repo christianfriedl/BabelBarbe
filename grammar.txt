@@ -1,15 +1,13 @@
 /* TODO: comments, meta-information stuff, evaluation code */
 /* TODO: scanning??? - a block for terminals? */
 
-start ::= rules;
-
-rules ::= rule rule*;
+start ::= rule+;
 
 rule ::= rule_lhs '::=' rule_rhs ';' ;
 
 rule_lhs ::= identifier;
 
-rule_rhs ::= rule_phrase rule_phrase* ;
+rule_rhs ::= rule_phrase+ ;
 
 rule_phrase ::= term repetition_marker? ;
 

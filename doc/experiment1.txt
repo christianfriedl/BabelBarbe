@@ -1,0 +1,44 @@
+        id      F       T       *       +       E
+s,3
+        r(29)   r(27)   s,4
+                                s,5
+        r(29)   r(26)   r(24)                   s,6
+                                        s,7 
+        r(29)   r(27)   r(23)                   WIN!!
+
+
+
+
+
+
+id * id + id
+
+
+
+
+
+
+
+
+E ::= E + T
+    | T
+
+T ::= T * F
+    | F
+
+F ::= id
+
+
+()                  id * id + id
+id                  * id + id
+F                   * id + id
+T                   * id + id
+T *                 id + id
+T * id              + id
+T * F               + id
+T                   + id
+E                   + id
+E +                 id
+E + id
+E + F
+E + T

@@ -1,18 +1,25 @@
 include Makefile.local
-CFLAGS=-ggdb -Wall
-LDFLAGS=-ggdb -L../ -lbnf -Wall
+CFLAGS=-ggdb -save-temps -Wall -I../ -I/opt/local/include
+LDFLAGS=-ggdb -lcgenerics -L../ -lbnf -L/opt/local/lib -lpcre -Wall
 
-BINARIES=0500_ast
+BINARIES=0125_Token 0140_BNFScannerNode 0160_BNFScannerRule 0187_Scanner 0500_BNFAst 0750_BNF_RDParser
 
 
 STATIC_LIBRARY=../libbnf.a
 
-clean-all: clean all
+clean-all: all
 
-all: clean $(BINARIES) $(STATIC_LIBRARY)
+all: clean $(BINARIES) $(STATIC_LIBRARY) tags
 
 clean:
 	rm -f *.o $(BINARIES) 
 
-0500_ast: 0500_ast.o
+%.o: %.c
+	$(CC) $(CFLAGS) -o $@ -c $?
+
+%: %.o
 	$(CC)  -o $@ $< $(LDFLAGS)
+	rm -f *.i *.s
+
+tags: $(BINARIES)
+	ctags *.c ../../../CGenerics/src/*.{c,h}

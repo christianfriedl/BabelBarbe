@@ -1,0 +1,13 @@
+start ::= word* number
+
+
+==>
+
+start ::= word_1 number
+
+word_1 ::= word*
+
+
+^---- This is clearly impossible in a RD parser, since it would be a left-recursion.
+
+Therefore, the parser MUST support "repeated phrases" at any given point.
