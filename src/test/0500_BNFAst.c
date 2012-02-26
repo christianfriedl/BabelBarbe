@@ -2,7 +2,7 @@
 #include<time.h>
 #include<stdio.h>
 #include<string.h>
-#include"ASTLeaf.h"
+#include"BNFAst.h"
 #include"Token.h"
 
 /*

@@ -22,27 +22,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include"Token.h"
 
-struct ASTLeaf_struct;
-typedef struct ASTLeaf_struct {
+struct BNFAst_struct;
+typedef struct BNFAst_struct {
     Token* token;
-    struct ASTLeaf_struct* parent;
-    struct ASTLeaf_struct* left;
-    struct ASTLeaf_struct* right;
-} ASTLeaf;
+    struct BNFAst_struct* parent;
+    struct BNFAst_struct* left;
+    struct BNFAst_struct* right;
+} BNFAst;
 
-typedef enum { ASTLeafPosition_left = 0, ASTLeafPosition_right = 1, ASTLeafPosition_nowhere = 2 } ASTLeafPosition;
+typedef enum { BNFAstPosition_left = 0, BNFAstPosition_right = 1, BNFAstPosition_nowhere = 2 } BNFAstPosition;
 
-ASTLeaf* ASTLeaf__new(ASTLeaf* parent, Token* token, ASTLeafPosition where);
-void ASTLeaf_delete(ASTLeaf* this);
-void ASTLeaf_print(ASTLeaf* this);
-ASTLeaf* ASTLeaf_getParent(ASTLeaf* this);
-ASTLeaf* ASTLeaf_getLeft(ASTLeaf* this);
-ASTLeaf* ASTLeaf_getRight(ASTLeaf* this);
-Token* ASTLeaf_getToken(ASTLeaf* this);
-void ASTLeaf_setToken(ASTLeaf* this, Token* token);
-void ASTLeaf_setParent(ASTLeaf* this, ASTLeaf* parent);
-void ASTLeaf_setLeft(ASTLeaf* this, ASTLeaf* left);
-void ASTLeaf_setRight(ASTLeaf* this, ASTLeaf* right);
+BNFAst* BNFAst__new(BNFAst* parent, Token* token, BNFAstPosition where);
+void BNFAst_delete(BNFAst* this);
+void BNFAst_print(BNFAst* this);
+BNFAst* BNFAst_getParent(BNFAst* this);
+BNFAst* BNFAst_getLeft(BNFAst* this);
+BNFAst* BNFAst_getRight(BNFAst* this);
+Token* BNFAst_getToken(BNFAst* this);
+void BNFAst_setToken(BNFAst* this, Token* token);
+void BNFAst_setParent(BNFAst* this, BNFAst* parent);
+void BNFAst_setLeft(BNFAst* this, BNFAst* left);
+void BNFAst_setRight(BNFAst* this, BNFAst* right);
 
 #endif
 
