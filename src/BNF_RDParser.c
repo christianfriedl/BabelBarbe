@@ -2,7 +2,7 @@
 #include<time.h>
 #include<stdio.h>
 #include<string.h>
-#include"BNFParser.h"
+#include"BNF_RDParser.h"
 
 
 BNFPhrase* BNFPhrase__new(BNFPhraseRepeatSwitch repeatSwitch, CGArray(BNFSentence)* parts) {
@@ -49,7 +49,7 @@ void BNFAlternative_delete(BNFAlternative* this) {
     free(this);
 }
 
-BNFSentence* BNFSentence__new(CGString* name, BNFAst* (*parse)(BNFParser* parser), CGArray(BNFAlternative)* alternatives) {
+BNFSentence* BNFSentence__new(CGString* name, BNFAst* (*parse)(BNF_RDParser* parser), CGArray(BNFAlternative)* alternatives) {
     BNFSentence* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->name = name;
@@ -69,8 +69,8 @@ void BNFSentence_delete(BNFSentence* this) {
     free(this);
 }
 
-BNFParser* BNFParser__new(CGArray(BNFToken)* tokenList, BNFSentence* startSentence) {
-    BNFParser* this = malloc(sizeof(*this));
+BNF_RDParser* BNF_RDParser__new(CGArray(BNFToken)* tokenList, BNFSentence* startSentence) {
+    BNF_RDParser* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->tokenList = tokenList;
         this->startSentence = startSentence;
@@ -78,7 +78,7 @@ BNFParser* BNFParser__new(CGArray(BNFToken)* tokenList, BNFSentence* startSenten
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_ScannerError, "unable to allocate in %s", __func__);
     return this;
 }
-void BNFParser_delete(BNFParser* this) {
+void BNF_RDParser_delete(BNF_RDParser* this) {
     CGArray_deleteValues(BNFToken, this->tokenList);
     CGArray_delete(BNFToken, this->tokenList);
     BNFSentence_delete(this->startSentence);

@@ -6,8 +6,8 @@
 #include"BNFToken.h"
 #include"BNFAst.h"
 
-struct BNFParser_struct;
-typedef struct BNFParser_struct BNFParser;
+struct BNF_RDParser_struct;
+typedef struct BNF_RDParser_struct BNF_RDParser;
 struct BNFSentence_struct;
 typedef struct BNFSentence_struct BNFSentence;
 struct BNFPhrase_struct;
@@ -33,11 +33,11 @@ struct BNFAlternative_struct {
 
 struct BNFSentence_struct {
     CGString* name; /* for debugging, and for emitting c-code */
-    BNFAst* (*parse)(BNFParser* parser);
+    BNFAst* (*parse)(BNF_RDParser* parser);
     CGArray(BNFAlternative)* alternatives;
 };
 
-struct BNFParser_struct {
+struct BNF_RDParser_struct {
     BNFSentence* startSentence;
     BNFAst* rootAst;
     CGArray(BNFToken)* tokenList;
@@ -52,11 +52,11 @@ BNFAlternative* BNFAlternative__new(CGArray(BNFPhrase)* phrases);
 BNFAlternative* BNFAlternative_clone(BNFAlternative* this);
 void BNFAlternative_delete(BNFAlternative* this);
 
-BNFSentence* BNFSentence__new(CGString* name, BNFAst* (*parse)(BNFParser* parser), CGArray(BNFAlternative)* alternatives);
+BNFSentence* BNFSentence__new(CGString* name, BNFAst* (*parse)(BNF_RDParser* parser), CGArray(BNFAlternative)* alternatives);
 BNFSentence* BNFSentence_clone(BNFSentence* this);
 void BNFSentence_delete(BNFSentence* this);
 
-BNFParser* BNFParser__new(CGArray(BNFToken)* tokenList, BNFSentence* startSentence);
-void BNFParser_delete(BNFParser* this);
+BNF_RDParser* BNF_RDParser__new(CGArray(BNFToken)* tokenList, BNFSentence* startSentence);
+void BNF_RDParser_delete(BNF_RDParser* this);
 
 #endif

@@ -13,9 +13,9 @@ LDFLAGS=-ggdb -L/opt/local/lib -lpcre $(WARNINGS)
 
 HEADERS=*.h
 STATIC_LIBRARY=libbnf.a 
-LIB_OBJECTS =  BNF.o BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o BNFParser.o
+LIB_OBJECTS =  BNF.o BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o BNF_RDParser.o
 
-necessary-test: all tags test
+necessary-test: all tags manpages test
 
 clean-all-test: clean all tags test
 

@@ -1,7 +1,7 @@
 #include<assert.h>
 #include<stdio.h>
 #include<cgenerics/CGAppState.h>
-#include"BNFParser.h"
+#include"BNF_RDParser.h"
 
 
 DEFINE_ARRAY(BNFSentence);
@@ -10,7 +10,7 @@ DEFINE_ARRAY(BNFAlternative);
 
 CGAppState* appState;
 
-BNFAst* parseForTestNewDelete(BNFParser* parser) {
+BNFAst* parseForTestNewDelete(BNF_RDParser* parser) {
     return NULL;
 }
 
@@ -29,9 +29,9 @@ void testNewDelete() {
     BNFSentence* sentence = BNFSentence__new(CGString__new("test"), parseForTestNewDelete, CGArray__newFromInitializerList(BNFAlternative, alternative, NULL));
 
     BNFPhrase_setParts(phrase, CGArray__newFromInitializerList(BNFSentence, sentence, NULL));
-    BNFParser* parser = BNFParser__new(tokenList, sentence);
+    BNF_RDParser* parser = BNF_RDParser__new(tokenList, sentence);
 
-    BNFParser_delete(parser);
+    BNF_RDParser_delete(parser);
 
     printf("%s ok\n", __func__);
 }
