@@ -11,3 +11,5 @@ src/test/0250_Logger
 src/test/0500_BNFAst
 src/test/0140_BNFScannerNode
 src/test/0160_BNFScannerRule
+src/test/0750_BNFParser
+doc/man/

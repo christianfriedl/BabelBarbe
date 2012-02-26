@@ -8,32 +8,55 @@
 
 struct BNFParser_struct;
 typedef struct BNFParser_struct BNFParser;
-struct BNFSentence;
+struct BNFSentence_struct;
+typedef struct BNFSentence_struct BNFSentence;
+struct BNFPhrase_struct;
+typedef struct BNFPhrase_struct BNFPhrase;
+struct BNFAlternative_struct;
+typedef struct BNFAlternative_struct BNFAlternative;
+
+DECLARE_ARRAY(BNFSentence);
+DECLARE_ARRAY(BNFPhrase);
+DECLARE_ARRAY(BNFAlternative);
+
 
 typedef enum { BNFPhraseRepeat_once=0, BNFPhraseRepeat_many } BNFPhraseRepeatSwitch;
 
-typedef struct {
+struct BNFPhrase_struct {
     BNFPhraseRepeatSwitch repeatSwitch;
     CGArray(BNFSentence)* parts;
-} BNFPhrase;
+};
 
-typedef struct {
-    CGArray(BNFPhrase)* phrases[20];
-} BNFAlternative;
+struct BNFAlternative_struct {
+    CGArray(BNFPhrase)* phrases;
+};
 
-struct BNFSentence {
-    char name[255]; /* for debugging, and for emitting c-code */
+struct BNFSentence_struct {
+    CGString* name; /* for debugging, and for emitting c-code */
     BNFAst* (*parse)(BNFParser* parser);
-    BNFAlternative alternatives[20];
+    CGArray(BNFAlternative)* alternatives;
 };
 
 struct BNFParser_struct {
     BNFSentence* startSentence;
     BNFAst* rootAst;
-    CGArray(BNFToken)* tokens;
+    CGArray(BNFToken)* tokenList;
 }; 
 
-BNFParser* BNFParser__new(CGArray(BNFToken)* tokens, BNFSentence* startSentence);
-void BNFParser_delete(Parser* parser);
+BNFPhrase* BNFPhrase__new(BNFPhraseRepeatSwitch repeatSwitch, CGArray(BNFSentence)* parts);
+BNFPhrase* BNFPhrase_clone(BNFPhrase* this);
+void BNFPhrase_setParts(BNFPhrase* this, CGArray(BNFSentence)* parts);
+void BNFPhrase_delete(BNFPhrase* this);
+
+BNFAlternative* BNFAlternative__new(CGArray(BNFPhrase)* phrases);
+BNFAlternative* BNFAlternative_clone(BNFAlternative* this);
+void BNFAlternative_delete(BNFAlternative* this);
+
+BNFSentence* BNFSentence__new(CGString* name, BNFAst* (*parse)(BNFParser* parser), CGArray(BNFAlternative)* alternatives);
+BNFSentence* BNFSentence_clone(BNFSentence* this);
+void BNFSentence_delete(BNFSentence* this);
+
+BNFParser* BNFParser__new(CGArray(BNFToken)* tokenList, BNFSentence* startSentence);
+void BNFParser_delete(BNFParser* this);
 
 #endif

@@ -11,8 +11,9 @@ CFLAGS=-ggdb -save-temps -I/opt/local/include $(WARNINGS)
 LDFLAGS=-ggdb -L/opt/local/lib -lpcre $(WARNINGS) 
 
 
+HEADERS=*.h
 STATIC_LIBRARY=libbnf.a 
-LIB_OBJECTS =  BNF.o BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o
+LIB_OBJECTS =  BNF.o BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o BNFParser.o
 
 necessary-test: all tags test
 
@@ -49,3 +50,10 @@ pp-indent: pp
 tags: $(LIB_OBJECTS)
 	ctags *.{c,h} ../../CGenerics/src/*.{c,h}
 	(cd test; make tags)
+
+manpages: $(HEADERS)
+	rm -f ../doc/man/man3/*.3
+	for i in *.h; do makeman.pl $$i ../doc/man/man3/; done
+	gzip -f ../doc/man/man3/*.3
+	cp -R ../doc/man/* ~/man
+
