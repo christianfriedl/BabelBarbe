@@ -10,6 +10,13 @@ WARNINGS = $(NORMAL_WARNINGS)
 CFLAGS=-ggdb -save-temps -I/opt/local/include $(WARNINGS)
 LDFLAGS=-ggdb -L/opt/local/lib -lpcre $(WARNINGS) 
 
+LOCALMAN=../doc/man
+MANPATH=man3
+
+PREFIX=~
+INSTALLHEADERS=${PREFIX}/include
+INSTALLLIB=${PREFIX}/lib
+INSTALLMAN=${PREFIX}/man/${MANPATH}
 
 HEADERS=*.h
 STATIC_LIBRARY=libbnf.a 
@@ -52,8 +59,10 @@ tags: $(LIB_OBJECTS)
 	(cd test; make tags)
 
 manpages: $(HEADERS)
-	rm -f ../doc/man/man3/*.3
-	for i in *.h; do makeman.pl $$i ../doc/man/man3/; done
-	gzip -f ../doc/man/man3/*.3
-	cp -R ../doc/man/* ~/man
+	rm -f ${LOCALMAN}/${MANPATH}/*.3 ${LOCALMAN}/${MANPATH}/*.3.gz
+	for i in *.h; do makeman.pl $$i ${LOCALMAN}/${MANPATH}; done
+	gzip -f ${LOCALMAN}/${MANPATH}/*.3
+
+install:
+	cp ${LOCALMAN}/${MANPATH}/* ${INSTALLMAN}
 
