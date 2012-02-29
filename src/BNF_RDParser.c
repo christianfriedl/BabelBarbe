@@ -4,6 +4,11 @@
 #include<string.h>
 #include"BNF_RDParser.h"
 
+DEFINE_ARRAY(BNFSentence);
+DEFINE_ARRAY(BNFPhrase);
+DEFINE_ARRAY(BNFAlternative);
+DEFINE_ARRAY_ITERATOR(BNFToken);
+
 
 BNFPhrase* BNFPhrase__new(BNFPhraseRepeatSwitch repeatSwitch, CGArray(BNFSentence)* parts) {
     BNFPhrase* this = malloc(sizeof(*this));
@@ -32,6 +37,10 @@ void BNFPhrase_setParts(BNFPhrase* this, CGArray(BNFSentence)* parts) {
     this->parts = parts;
 }
 
+BNFAst* BNFPhrase_parse(BNFPhrase* this) {
+    return NULL;
+}
+
 BNFAlternative* BNFAlternative__new(CGArray(BNFPhrase)* phrases) {
     BNFAlternative* this = malloc(sizeof(*this));
     if (this != NULL) {
@@ -49,39 +58,56 @@ void BNFAlternative_delete(BNFAlternative* this) {
     free(this);
 }
 
-BNFSentence* BNFSentence__new(CGString* name, BNFAst* (*parse)(BNF_RDParser* parser), CGArray(BNFAlternative)* alternatives) {
+BNFSentence* BNFSentence__new(CGString* name, BNFTokenType tokenType, CGArray(BNFAlternative)* alternatives) {
     BNFSentence* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->name = name;
-        this->parse = parse;
+        this->tokenType = tokenType;
         this->alternatives = alternatives;
     } else
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_ScannerError, "unable to allocate in %s", __func__);
     return this;
 }
 BNFSentence* BNFSentence_clone(BNFSentence* this) {
-    return BNFSentence__new(this->name, this->parse, this->alternatives);
+    return BNFSentence__new(this->name, this->tokenType, this->alternatives);
+}
+CGString* BNFSentence_getName(BNFSentence* this) {
+    return this->name;
 }
 void BNFSentence_delete(BNFSentence* this) {
     CGString_delete(this->name);
-    CGArray_deleteValues(BNFAlternative, this->alternatives);
-    CGArray_delete(BNFAlternative, this->alternatives);
+    if (this->alternatives != NULL) {
+        CGArray_deleteValues(BNFAlternative, this->alternatives);
+        CGArray_delete(BNFAlternative, this->alternatives);
+    }
     free(this);
 }
 
-BNF_RDParser* BNF_RDParser__new(CGArray(BNFToken)* tokenList, BNFSentence* startSentence) {
+BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* iter) {
+    if (this->alternatives == NULL) { /* this is a terminal symbol */
+        BNFToken* token = CGArrayIterator_fetch(BNFToken, iter);
+        if (token == NULL)
+            return NULL;
+        if (BNFToken_getType(token) == this->tokenType)
+            return BNFAst__new(NULL, token, this);
+    }
+    return NULL;
+}
+
+BNF_RDParser* BNF_RDParser__new(BNFSentence* startSentence) {
     BNF_RDParser* this = malloc(sizeof(*this));
     if (this != NULL) {
-        this->tokenList = tokenList;
         this->startSentence = startSentence;
+        this->tokenListIterator = NULL;
     } else
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_ScannerError, "unable to allocate in %s", __func__);
     return this;
 }
 void BNF_RDParser_delete(BNF_RDParser* this) {
-    CGArray_deleteValues(BNFToken, this->tokenList);
-    CGArray_delete(BNFToken, this->tokenList);
     BNFSentence_delete(this->startSentence);
     free(this);
 }
-
+BNFAst* BNF_RDParser_parse(BNF_RDParser* this, CGArray(BNFToken)* tokenList) {
+    this->tokenListIterator = CGArrayIterator__new(BNFToken, tokenList);
+    return BNFSentence_parse(this->startSentence, this->tokenListIterator);
+}

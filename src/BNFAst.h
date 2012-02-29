@@ -3,19 +3,24 @@
 
 #include<cgenerics/CGTree.h>
 #include"BNFToken.h"
+struct BNFAst_struct;
+typedef struct BNFAst_struct BNFAst;
+#include"BNF_RDParser.h"
 
-/* **** PREMARK **** */
-DECLARE_TREE_TYPE(BNFToken)
-/* **** MARK **** */
-DECLARE_TREE_FUNCS(BNFToken)
-/* **** ENDMARK **** */
+DECLARE_TREE_TYPE(BNFAst)
+struct BNFAst_struct {
+    CGTree(BNFAst)* tree;
+    BNFToken* token;
+    BNFSentence* sentence;
+};
+DECLARE_TREE_FUNCS(BNFAst)
 
-typedef CGTree(BNFToken) BNFAst;
 
-BNFAst* BNFAst__new(BNFAst* parent, BNFToken* token);
+BNFAst* BNFAst__new(BNFAst* parent, BNFToken* token, BNFSentence* sentence);
 void BNFAst_delete(BNFAst* this);
 BNFToken* BNFAst_getToken(BNFAst* this);
-void BNFAst_print(BNFAst* this);
+BNFAst* BNFAst_getParent(BNFAst* this);
+BNFSentence* BNFAst_getSentence(BNFAst* this);
 
 #endif
 
