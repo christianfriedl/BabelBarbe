@@ -20,9 +20,11 @@ DECLARE_ARRAY(BNFPhrase);
 DECLARE_ARRAY(BNFAlternative);
 DECLARE_ARRAY_ITERATOR(BNFToken);
 DECLARE_ARRAY_ITERATOR(BNFAlternative);
+DECLARE_ARRAY_ITERATOR(BNFSentence);
+DECLARE_ARRAY_ITERATOR(BNFPhrase);
 
 
-typedef enum { BNFPhraseRepeat_once=0, BNFPhraseRepeat_many } BNFPhraseRepeatSwitch;
+typedef enum { BNFPhraseRepeat_once=0, BNFPhraseRepeat_zeroOrMore, BNFPhraseRepeat_many } BNFPhraseRepeatSwitch;
 
 struct BNFPhrase_struct {
     BNFPhraseRepeatSwitch repeatSwitch;

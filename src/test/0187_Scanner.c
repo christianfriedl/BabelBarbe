@@ -174,11 +174,10 @@ void testScanAllTokens() {
     CGString* text = CGString__new("aaaaaaa");
     CGArray(BNFScannerNode)* startNodes;
     BNFScannerRule* startRule;
-    startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
-                        // BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]", startRule, BNFTokenType_identifier, false), 
-                        BNFScannerNode__new(BNFScannerNodeType_string, "a", startRule, BNFTokenType_identifier, false), 
-                        NULL);
+    BNFScannerNode* aNode = BNFScannerNode__new(BNFScannerNodeType_string, "a", NULL, BNFTokenType_identifier, false);
+    startNodes = CGArray__newFromInitializerList(BNFScannerNode, aNode, NULL);
     startRule = BNFScannerRule__new(startNodes);
+    BNFScannerNode_setFollowupRule(aNode, startRule);
 
     BNFScanner* scanner = BNFScanner__new(startRule, text);
 	CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);

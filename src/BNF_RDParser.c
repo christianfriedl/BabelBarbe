@@ -4,11 +4,16 @@
 #include<string.h>
 #include"BNF_RDParser.h"
 
+DEFINE_ARRAY(BNFAst);
 DEFINE_ARRAY(BNFSentence);
 DEFINE_ARRAY(BNFPhrase);
 DEFINE_ARRAY(BNFAlternative);
 DEFINE_ARRAY_ITERATOR(BNFToken);
 DEFINE_ARRAY_ITERATOR(BNFAlternative);
+DEFINE_ARRAY_ITERATOR(BNFSentence);
+DEFINE_ARRAY_ITERATOR(BNFPhrase);
+
+BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIterator);
 
 
 BNFPhrase* BNFPhrase__new(BNFPhraseRepeatSwitch repeatSwitch, CGArray(BNFSentence)* parts) {
@@ -49,7 +54,7 @@ CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tok
     bool partIsParsed;
     do {
         partIsParsed = true;
-        while ((sentence = CGArrayIterator_fetch(BNFSentence, this->parts)) != NULL) {
+        while ((sentence = CGArrayIterator_fetch(BNFSentence, partsIterator)) != NULL) {
             if ((ast = BNFSentence_parse(sentence, tokenIterator)) != NULL) {
                 CGArray_add(BNFAst, asts, ast);
             } else {
@@ -87,7 +92,7 @@ CGArray(BNFAst)* BNFAlternative_parse(BNFAlternative* this, CGArrayIterator(BNFT
     CGArray(BNFAst)* phraseAsts;
     CGArrayIterator(BNFPhrase)* iter = CGArrayIterator__new(BNFPhrase, this->phrases);
     BNFPhrase* phrase = NULL;
-    while (phrase = CGArrayIterator_fetch(BNFPhrase, iter)) {
+    while ((phrase = CGArrayIterator_fetch(BNFPhrase, iter)) != NULL) {
         if ((phraseAsts = BNFPhrase_parse(phrase, tokenIterator)) != NULL)
             CGArray_append(BNFAst, asts, phraseAsts);
         else
@@ -137,11 +142,11 @@ BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIte
         BNFAst* ast = NULL;
         CGArrayIterator(BNFAlternative)* alternativesIterator = CGArrayIterator__new(BNFAlternative, this->alternatives);
         BNFAlternative* alternative = NULL;
-        while ((alternative = CGArrayIterator_fetch(BNFAlternative, alternativesIterator) != NULL)) {
+        while ((alternative = CGArrayIterator_fetch(BNFAlternative, alternativesIterator)) != NULL) {
             CGArray(BNFAst)* altAsts = BNFAlternative_parse(alternative, tokenIterator);
             if (altAsts != NULL) {
                 ast = BNFAst__new(NULL, BNFToken__new(this->tokenType, CGString__new("")), this);
-                BNFAst_setSubAsts(altAsts);
+                BNFAst_setSubAsts(ast, altAsts);
                 break;
             }
             /* Possible TODO: warn if there are multiple applicable alternatives */

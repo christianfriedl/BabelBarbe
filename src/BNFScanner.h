@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"BNF.h"
 #include"BNFException.h"
 #include"BNFToken.h"
-#include"CGArrayOfBNFScannerNode.h"
 #include"BNFScannerRuleset.h"
 
 DECLARE_ARRAY(BNFToken)

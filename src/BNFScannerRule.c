@@ -1,9 +1,10 @@
 #include<string.h>
-#include"CGArrayOfBNFScannerNode.h"
 #include"BNFException.h"
 #include"BNFScannerRule.h"
 DECLARE_ARRAY_FUNCS(BNFScannerNode)
+DEFINE_ARRAY_FUNCS(BNFScannerNode)
 DECLARE_ARRAY_ITERATOR_FUNCS(BNFScannerNode)
+DEFINE_ARRAY_ITERATOR_FUNCS(BNFScannerNode)
 
 typedef struct {
     unsigned int len;
@@ -21,6 +22,7 @@ BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, 
         if (type == BNFScannerNodeType_regex) {
             this->pattern = NULL;
             this->regex = NULL;
+            CGAppState_catchAndDeleteException(CGAppState__getInstance());
             BNFScannerNode_setRegex(this, pattern);
             if (CGAppState_isExceptionRaised(CGAppState__getInstance())) {
                 free(this);
@@ -34,7 +36,7 @@ BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, 
         this->tokenType = tokenType;
         this->isNoise = isNoise;
     } else
-        CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerNode"));
+        CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_fatal, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerNode"));
     return this;
 }
 
@@ -181,12 +183,12 @@ void BNFScannerRule_delete(BNFScannerRule* this) {
 
 BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text) {
     CGArrayIterator(BNFScannerNode)* iter = CGArrayIterator__new(BNFScannerNode, this->nodes);
-    while (CGArrayIterator_isInsideBounds(BNFScannerNode, iter)) {
-        this->node = CGArrayIterator_getCurrentElement(BNFScannerNode, iter);
+    BNFScannerNode* node = NULL;
+    while ((node = CGArrayIterator_fetch(BNFScannerNode, iter)) != NULL) {
+        this->node = node;
         BNFToken* token = BNFScannerNode_applyToText(this->node, text);
         if (token != NULL)
             return token;
-        CGArrayIterator_moveToNextElement(BNFScannerNode, iter);
     }
     return NULL;
 }
