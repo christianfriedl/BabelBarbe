@@ -1,0 +1,23 @@
+FETCH/UNFETCH only happens at exactly one place, in sentence
+
+
+sentence
+    if alternatives==null 
+        --> we are a terminal, fetch-and-return/unfetch
+    else
+        --> fetch first word 
+        --> get all first terminals from alternatives
+        --> compare against each
+        --> if there are none, return null
+        --> (if there are more than one, stop with an exception)
+        --> return the parse of the one that matches
+
+alternative
+    if phrases==null
+        --> ??? exception ???
+    else
+        return (phrase1 AND phrase2 ...)
+
+phrase
+    one-repetition:
+        return (sentence1 AND sentence2 ...)
