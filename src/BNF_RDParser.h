@@ -19,6 +19,7 @@ DECLARE_ARRAY(BNFSentence);
 DECLARE_ARRAY(BNFPhrase);
 DECLARE_ARRAY(BNFAlternative);
 DECLARE_ARRAY_ITERATOR(BNFToken);
+DECLARE_ARRAY_ITERATOR(BNFAlternative);
 
 
 typedef enum { BNFPhraseRepeat_once=0, BNFPhraseRepeat_many } BNFPhraseRepeatSwitch;

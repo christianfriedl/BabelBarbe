@@ -8,6 +8,7 @@ DEFINE_ARRAY(BNFSentence);
 DEFINE_ARRAY(BNFPhrase);
 DEFINE_ARRAY(BNFAlternative);
 DEFINE_ARRAY_ITERATOR(BNFToken);
+DEFINE_ARRAY_ITERATOR(BNFAlternative);
 
 
 BNFPhrase* BNFPhrase__new(BNFPhraseRepeatSwitch repeatSwitch, CGArray(BNFSentence)* parts) {
@@ -37,8 +38,32 @@ void BNFPhrase_setParts(BNFPhrase* this, CGArray(BNFSentence)* parts) {
     this->parts = parts;
 }
 
-BNFAst* BNFPhrase_parse(BNFPhrase* this) {
-    return NULL;
+CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tokenIterator) {
+    bool isParsed = false;
+    if (this->repeatSwitch == BNFPhraseRepeat_zeroOrMore)
+        isParsed = true;
+    CGArrayIterator(BNFSentence)* partsIterator = CGArrayIterator__new(BNFSentence, this->parts);
+    BNFSentence* sentence = NULL;
+    CGArray(BNFAst)* asts = CGArray__new(BNFAst, 1);
+    BNFAst* ast = NULL;
+    bool partIsParsed;
+    do {
+        partIsParsed = true;
+        while ((sentence = CGArrayIterator_fetch(BNFSentence, this->parts)) != NULL) {
+            if ((ast = BNFSentence_parse(sentence, tokenIterator)) != NULL) {
+                CGArray_add(BNFAst, asts, ast);
+            } else {
+                partIsParsed = false;
+                break;
+            }
+        }
+        if (this->repeatSwitch == BNFPhraseRepeat_once || this->repeatSwitch == BNFPhraseRepeat_many)
+            isParsed &= partIsParsed;
+    } while(this->repeatSwitch != BNFPhraseRepeat_once && partIsParsed);
+    if (isParsed)
+        return asts;
+    else
+        return NULL;
 }
 
 BNFAlternative* BNFAlternative__new(CGArray(BNFPhrase)* phrases) {
@@ -56,6 +81,19 @@ void BNFAlternative_delete(BNFAlternative* this) {
     CGArray_deleteValues(BNFPhrase, this->phrases);
     CGArray_delete(BNFPhrase, this->phrases);
     free(this);
+}
+CGArray(BNFAst)* BNFAlternative_parse(BNFAlternative* this, CGArrayIterator(BNFToken)* tokenIterator) {
+    CGArray(BNFAst)* asts = NULL;
+    CGArray(BNFAst)* phraseAsts;
+    CGArrayIterator(BNFPhrase)* iter = CGArrayIterator__new(BNFPhrase, this->phrases);
+    BNFPhrase* phrase = NULL;
+    while (phrase = CGArrayIterator_fetch(BNFPhrase, iter)) {
+        if ((phraseAsts = BNFPhrase_parse(phrase, tokenIterator)) != NULL)
+            CGArray_append(BNFAst, asts, phraseAsts);
+        else
+            return NULL;
+    }
+    return asts;
 }
 
 BNFSentence* BNFSentence__new(CGString* name, BNFTokenType tokenType, CGArray(BNFAlternative)* alternatives) {
@@ -83,15 +121,33 @@ void BNFSentence_delete(BNFSentence* this) {
     free(this);
 }
 
-BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* iter) {
+BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIterator) {
     if (this->alternatives == NULL) { /* this is a terminal symbol */
-        BNFToken* token = CGArrayIterator_fetch(BNFToken, iter);
-        if (token == NULL)
+        BNFToken* token = CGArrayIterator_fetch(BNFToken, tokenIterator);
+        if (token == NULL) {
+            CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_ScannerError, "unexpected EOF");
             return NULL;
-        if (BNFToken_getType(token) == this->tokenType)
+        } else if (BNFToken_getType(token) == this->tokenType)
             return BNFAst__new(NULL, token, this);
+        else {
+            CGArrayIterator_unFetch(BNFToken, tokenIterator);
+            return NULL;
+        }
+    } else {
+        BNFAst* ast = NULL;
+        CGArrayIterator(BNFAlternative)* alternativesIterator = CGArrayIterator__new(BNFAlternative, this->alternatives);
+        BNFAlternative* alternative = NULL;
+        while ((alternative = CGArrayIterator_fetch(BNFAlternative, alternativesIterator) != NULL)) {
+            CGArray(BNFAst)* altAsts = BNFAlternative_parse(alternative, tokenIterator);
+            if (altAsts != NULL) {
+                ast = BNFAst__new(NULL, BNFToken__new(this->tokenType, CGString__new("")), this);
+                BNFAst_setSubAsts(altAsts);
+                break;
+            }
+            /* Possible TODO: warn if there are multiple applicable alternatives */
+        }
+        return ast;
     }
-    return NULL;
 }
 
 BNF_RDParser* BNF_RDParser__new(BNFSentence* startSentence) {
@@ -111,5 +167,9 @@ void BNF_RDParser_delete(BNF_RDParser* this) {
 }
 BNFAst* BNF_RDParser_parse(BNF_RDParser* this, CGArray(BNFToken)* tokenList) {
     this->tokenListIterator = CGArrayIterator__new(BNFToken, tokenList);
-    return BNFSentence_parse(this->startSentence, this->tokenListIterator);
+    BNFAst* ast = BNFSentence_parse(this->startSentence, this->tokenListIterator);
+    if (CGArrayIterator_fetch(BNFToken, tokenList) == NULL)
+        return ast;
+    else
+        return NULL;
 }

@@ -1,4 +1,5 @@
 FETCH/UNFETCH only happens at exactly one place, in sentence
+    -> NOPE, repetitions!
 
 
 sentence
@@ -20,4 +21,16 @@ alternative
 
 phrase
     one-repetition:
-        return (sentence1 AND sentence2 ...)
+        if (sentence1 AND sentence2 ...) return ast
+        else rollback and return null
+    one-or-more-repetitions:
+        if (sentence1 AND sentence2 ...) we are parsed; 
+        repeat (sentence1 AND sentence2 ...) and add to ast;
+
+        if we are parsed, return ast
+        else rollback and return null
+    zero-or-more-repetitions:
+        we are parsed
+        repeat (sentence1 AND sentence2 ...) and add to ast;
+        return ast
+
