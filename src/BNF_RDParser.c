@@ -105,6 +105,8 @@ BNF_RDParser* BNF_RDParser__new(BNFSentence* startSentence) {
 }
 void BNF_RDParser_delete(BNF_RDParser* this) {
     BNFSentence_delete(this->startSentence);
+    if (this->tokenListIterator != NULL)
+        CGArrayIterator_delete(BNFToken, this->tokenListIterator);
     free(this);
 }
 BNFAst* BNF_RDParser_parse(BNF_RDParser* this, CGArray(BNFToken)* tokenList) {
