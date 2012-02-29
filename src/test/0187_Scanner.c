@@ -12,17 +12,17 @@
 CGAppState* appState;
 
 void testNewDelete() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
     CGString* text = CGString__new("");
     CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, NULL);
     BNFScannerRule* rule = BNFScannerRule__new(nodes);
     BNFScanner* scanner = BNFScanner__new(rule, text);
     BNFScanner_delete(scanner);
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 void testIdentifier() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     char* text = CGString__new("abcde");
     CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, BNFScannerNode__new(BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_identifier, false), NULL);
@@ -37,10 +37,10 @@ void testIdentifier() {
     BNFToken_delete(token);
     BNFScanner_delete(scanner);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 void testIdentifierWithError() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     CGString* text = CGString__new("abcde123");
     CGString* identText = CGString__new("abcde");
@@ -57,10 +57,10 @@ void testIdentifierWithError() {
     BNFToken_delete(token);
     BNFScanner_delete(scanner);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 void testNoise() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     CGString* text = CGString__new("     ");
     CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode,
@@ -78,7 +78,7 @@ void testNoise() {
     BNFScanner_delete(scanner);
 }
 void testComplexRuleset() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     CGString* text = CGString__new("abcde ::= fghi;");
     CGArray(BNFScannerNode)* startNodes;
@@ -126,10 +126,10 @@ void testComplexRuleset() {
     assert(token == NULL);
     BNFScanner_delete(scanner);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 void testScanSameToken() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     CGString* text = CGString__new("aaaaaaa");
     CGArray(BNFScannerNode)* startNodes;
@@ -169,7 +169,7 @@ void testScanSameToken() {
     printf("%s ok\n", __func__);
 }
 void testScanAllTokens() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     CGString* text = CGString__new("aaaaaaa");
     CGArray(BNFScannerNode)* startNodes;
@@ -191,7 +191,7 @@ void testScanAllTokens() {
 
     BNFScanner_delete(scanner);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 int main() {

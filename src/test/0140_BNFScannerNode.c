@@ -27,14 +27,14 @@ Copyright (C) 2011  Christian Friedl
 static CGAppState *appState;
 
 void testNewDelete() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_string, "", NULL, BNFTokenType_start, false);
     assert(node != NULL);
     assert(BNFScannerNode_getTokenType(node) == BNFTokenType_start);
     BNFScannerNode_delete(node);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 void _helpAssertEqual(BNFToken* token, BNFToken* token2) {
@@ -43,7 +43,7 @@ void _helpAssertEqual(BNFToken* token, BNFToken* token2) {
     BNFToken_delete(token2);
 }
 void testApplyStringPattern() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_string, "abcd", NULL, BNFTokenType_start, false);
     BNFToken* token = BNFToken__new(BNFTokenType_start, CGString__new("abcd"));
@@ -63,11 +63,11 @@ void testApplyStringPattern() {
 
     BNFScannerNode_delete(node);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 void testApplyRegexPattern() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_regex, "abcd", NULL, BNFTokenType_start, false);
     BNFToken* token = BNFToken__new(BNFTokenType_start, CGString__new("abcd"));
@@ -87,11 +87,11 @@ void testApplyRegexPattern() {
 
     BNFScannerNode_delete(node);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 void testApplyComplexRegexPattern() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_start, false);
     BNFToken* tokenAbcde = BNFToken__new(BNFTokenType_start, CGString__new("abcde"));
@@ -134,7 +134,7 @@ void testApplyComplexRegexPattern() {
     node = BNFScannerNode__new(BNFScannerNodeType_regex, "([a-z]{5,10}[a-z\\d]+", NULL, BNFTokenType_start, false);
     assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_PCRERegexError) == true);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 int main() {

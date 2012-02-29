@@ -6,26 +6,26 @@
 CGAppState* appState;
 
 void testNewDelete() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     char* text = "xyz";
     BNFToken* token = BNFToken__new(BNFTokenType_identifier, CGString__new(text));
     BNFToken_delete(token);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 void testPrint() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     char* text = "xyz";
     BNFToken* token = BNFToken__new(BNFTokenType_identifier, CGString__new(text));
     BNFToken_print(token);
     BNFToken_delete(token);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 void testGetters() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     char* text = "xyz";
     BNFToken* token = BNFToken__new(BNFTokenType_identifier, CGString__new(text));
@@ -43,7 +43,7 @@ void testGetters() {
     assert(!CGString__compare(string, CGString__new(text)));
     BNFToken_delete(token);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 int main() {

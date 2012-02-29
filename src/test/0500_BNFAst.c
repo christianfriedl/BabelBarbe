@@ -11,7 +11,7 @@
 CGAppState* appState;
 
 void testNewDelete() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     BNFToken* token1 = BNFToken__new(BNFTokenType_start, CGString__new("token1"));
     BNFToken* token2 = BNFToken__new(BNFTokenType_start, CGString__new("token2"));
