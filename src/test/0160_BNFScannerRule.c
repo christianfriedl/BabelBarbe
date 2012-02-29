@@ -50,7 +50,7 @@ void _helpAssertEqual(BNFToken* token, BNFToken* token2) {
 }
 
 void testNewDelete() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_string, "", NULL, BNFTokenType_start, false);
     BNFScannerRule* rule = BNFScannerRule__new(CGArray__newFromInitializerList(BNFScannerNode, node, NULL));
@@ -60,11 +60,11 @@ void testNewDelete() {
     BNFScannerNode_delete(node);
     BNFScannerRule_delete(rule);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 void testApplyStringPattern() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     BNFScannerNode* node1 = BNFScannerNode__new(BNFScannerNodeType_string, "abcd", NULL, BNFTokenType_start, false);
     BNFScannerNode* node2 = BNFScannerNode__new(BNFScannerNodeType_string, "efgh", NULL, BNFTokenType_start, false);
@@ -79,11 +79,11 @@ void testApplyStringPattern() {
     BNFScannerNode_delete(node2);
     BNFScannerNode_delete(node1);
 
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 void testApplyRegexPattern() {
-    printf("%s...\n", __func__);
+    printf("%s... ", __func__);
 
     BNFScannerNode* node1 = BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_start, false);
     BNFScannerNode* node2 = BNFScannerNode__new(BNFScannerNodeType_regex, "[0-9]+", NULL, BNFTokenType_start, false);
@@ -98,7 +98,7 @@ void testApplyRegexPattern() {
     BNFScannerNode_delete(node2);
     BNFScannerNode_delete(node1);
     
-    printf("ok\n");
+    printf("ok -- ");
 }
 
 int main() {
