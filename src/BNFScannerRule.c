@@ -171,7 +171,7 @@ BNFScannerRule* BNFScannerRule__new(CGArray(BNFScannerNode)* nodes) {
     BNFScannerRule* this = malloc(sizeof(*this));
     if (this) {
         this->nodes = nodes;
-        this->node = NULL;
+        this->successNode = NULL;
     } else
         CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerRule"));
     return this;
@@ -185,14 +185,15 @@ BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text)
     CGArrayIterator(BNFScannerNode)* iter = CGArrayIterator__new(BNFScannerNode, this->nodes);
     BNFScannerNode* node = NULL;
     while ((node = CGArrayIterator_fetch(BNFScannerNode, iter)) != NULL) {
-        this->node = node;
-        BNFToken* token = BNFScannerNode_applyToText(this->node, text);
+        this->successNode = node;
+        BNFToken* token = BNFScannerNode_applyToText(this->successNode, text);
         if (token != NULL)
             return token;
     }
+    this->successNode = NULL;
     return NULL;
 }
 
-BNFScannerNode* BNFScannerRule_getNode(BNFScannerRule* this) {
-    return this->node;
+BNFScannerNode* BNFScannerRule_getSuccessNode(BNFScannerRule* this) {
+    return this->successNode;
 }

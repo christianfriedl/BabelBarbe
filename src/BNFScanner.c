@@ -40,7 +40,7 @@ BNFToken* BNFScanner_scanNextToken(BNFScanner* this) {
         
     BNFToken* token = BNFScannerRule_applyToText(this->currentRule, this->textPtr);
     if (token != NULL) {
-        BNFScannerNode* node = BNFScannerRule_getNode(this->currentRule);
+        BNFScannerNode* node = BNFScannerRule_getSuccessNode(this->currentRule);
         this->textPtr += BNFToken_getTextLength(token);
         this->currentRule = BNFScannerNode_getFollowupRule(node);
     } else 

@@ -30,7 +30,7 @@ DECLARE_ARRAY_ITERATOR_FUNCS(BNFScannerNode)
 
 struct BNFScannerRule_struct {
     CGArray(BNFScannerNode)* nodes;
-    BNFScannerNode* node;
+    BNFScannerNode* successNode;
 };
 
 BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType, bool isNoise);
@@ -47,7 +47,7 @@ BNFScannerRule* BNFScannerRule__new(CGArray(BNFScannerNode)* nodes);
 BNFScannerRule* BNFScannerRule_clone(BNFScannerRule* this);
 void BNFScannerRule_delete(BNFScannerRule* this);
 BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text);
-BNFScannerNode* BNFScannerRule_getNode(BNFScannerRule* this);
+BNFScannerNode* BNFScannerRule_getSuccessNode(BNFScannerRule* this);
 
 
 #endif
