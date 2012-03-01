@@ -78,6 +78,7 @@ CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tok
                 break;
             }
         }
+        CGArrayIterator_reset(BNFSentence, partsIterator);
         if (this->repeatSwitch == BNFPhraseRepeat_once) {
             isParsed = partIsParsed;
             break;
@@ -132,8 +133,10 @@ CGArray(BNFAst)* BNFAlternative_parse(BNFAlternative* this, CGArrayIterator(BNFT
         } else
             break;
     }
-    printf("alternative - received asts from phrases:\n");
-    printf("%u\n", CGArray_getSize(BNFAst, asts));
+    if (asts != NULL) {
+        printf("alternative - received asts from phrases:\n");
+        printf("%u\n", CGArray_getSize(BNFAst, asts));
+    }
     return asts;
 }
 void BNFAlternative_print(BNFAlternative* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences) {
@@ -176,9 +179,8 @@ void BNFSentence_delete(BNFSentence* this) {
 BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIterator) {
     if (this->alternatives == NULL) { /* this is a terminal symbol */
         BNFToken* token = CGArrayIterator_fetch(BNFToken, tokenIterator);
-        printf("terminal symbol sentence for token %s %s\n", BNFToken_getTypeName(token), BNFToken_getText(token));
+        printf("terminal symbol sentence for token %s %s\n", token != NULL ? BNFToken_getTypeName(token): "(NULL)" , token != NULL ? BNFToken_getText(token) : "(NULL)");
         if (token == NULL) {
-            CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_ScannerError, "unexpected EOF");
             return NULL;
         } else if (BNFToken_getType(token) == this->tokenType)
             return BNFAst__new(NULL, token, this);
@@ -198,7 +200,8 @@ BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIte
                 printf("created ast @%ld with tokenType %s\n", ast, BNFTokenType_toString(this->tokenType));
                 BNFAst_setSubAsts(ast, altAsts);
                 break;
-            }
+            } else if (CGAppState_isExceptionRaisedWithID(CGAppState__getInstance(), BNFExceptionID_ScannerError))
+                return NULL;
             /* Possible TODO: warn if there are multiple applicable alternatives */
         }
         return ast;
@@ -224,6 +227,7 @@ void BNFSentence_print(BNFSentence* this, unsigned int indentationLevel, CGArray
         }
         CGString_delete(tokenTypeString);
         CGString_delete(indentation);
+        CGArray_removeValueAt(BNFSentence, seenSentences, CGArray_getSize(BNFSentence, seenSentences) - 1);
     }
 }
 
@@ -245,10 +249,13 @@ void BNF_RDParser_delete(BNF_RDParser* this) {
 BNFAst* BNF_RDParser_parse(BNF_RDParser* this, CGArray(BNFToken)* tokenList) {
     this->tokenListIterator = CGArrayIterator__new(BNFToken, tokenList);
     BNFAst* ast = BNFSentence_parse(this->startSentence, this->tokenListIterator);
-    if (CGArrayIterator_fetch(BNFToken, this->tokenListIterator) == NULL)
+    BNFToken* leftoverToken;
+    if ((leftoverToken = CGArrayIterator_fetch(BNFToken, this->tokenListIterator)) == NULL)
         return ast;
-    else
+    else {
+        CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_ScannerError, "leftover text after parse, '%s...'", BNFToken_getText(leftoverToken));
         return NULL;
+    }
 }
 
 void BNF_RDParser_print(BNF_RDParser* this) {
