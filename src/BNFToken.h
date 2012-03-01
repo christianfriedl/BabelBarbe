@@ -15,6 +15,8 @@ typedef struct {
     unsigned int textLength;
 } BNFToken;
 
+CGString* BNFTokenType_toString(BNFTokenType this);
+
 BNFToken* BNFToken__new(BNFTokenType type, CGString* text);
 BNFToken* BNFToken_clone(BNFToken* this);
 void BNFToken_delete(BNFToken* this);

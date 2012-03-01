@@ -25,6 +25,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"BNFException.h"
 #include"BNFToken.h"
 
+CGString* BNFTokenType_toString(BNFTokenType this) {
+    switch(this) {
+        case BNFTokenType_start: return CGString__new("BNFTokenType_start"); 
+        case BNFTokenType_noise: return CGString__new("BNFTokenType_noise"); 
+        case BNFTokenType_identifier: return CGString__new("BNFTokenType_identifier"); 
+        case BNFTokenType_definition: return CGString__new("BNFTokenType_definition"); 
+        case BNFTokenType_semicolon: return CGString__new("BNFTokenType_semicolon"); 
+        default: CGAppState_THROW(CGAppState__getInstance(), Severity_warning, CGExceptionID_GeneralNonfatalException, "no such BNFTokenType"); return NULL;
+    }
+}
+
 BNFToken* BNFToken__new(BNFTokenType type, CGString* text) {
     BNFToken* this = malloc(sizeof(*this));
     if (this != NULL) {

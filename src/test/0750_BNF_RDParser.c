@@ -53,6 +53,8 @@ void testOneTerminalDefinition() {
 /*
     definition ::= identifier;
     identifier ::= 'xyz';
+
+    --> 
 */
 void testOneAlternativeWithoutRepetition() {
     printf("%s...\n", __func__);
@@ -67,6 +69,7 @@ void testOneAlternativeWithoutRepetition() {
     BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definition, CGArray__newFromInitializerList(BNFAlternative, alternative, NULL));
 
     BNF_RDParser* parser = BNF_RDParser__new(definitionSentence);
+    BNF_RDParser_print(parser);
     BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
     assert(ast != NULL);
     assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_identifier);

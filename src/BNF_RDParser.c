@@ -15,6 +15,20 @@ DEFINE_ARRAY_ITERATOR(BNFPhrase);
 
 BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIterator);
 
+CGString* BNFPhraseRepeatSwitch_toString(BNFPhraseRepeatSwitch this) {
+    switch(this) {
+        case BNFPhraseRepeat_zeroOrMore:
+            return CGString__new("BNFPhraseRepeat_zeroOrMore");
+        case BNFPhraseRepeat_once:
+            return CGString__new("BNFPhraseRepeat_once");
+        case BNFPhraseRepeat_many:
+            return CGString__new("BNFPhraseRepeat_many");
+        default:
+            CGAppState_THROW(CGAppState__getInstance(), CGExceptionID_GeneralNonfatalException, Severity_warning, "no such BNFPhraseRepeatSwitch");
+            return NULL;
+    }
+}
+
 
 BNFPhrase* BNFPhrase__new(BNFPhraseRepeatSwitch repeatSwitch, CGArray(BNFSentence)* parts) {
     BNFPhrase* this = malloc(sizeof(*this));
@@ -70,6 +84,18 @@ CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tok
     else
         return NULL;
 }
+void BNFPhrase_print(BNFPhrase* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences) {
+    CGString* indentation = CGString__newFromLengthAndPreset(indentationLevel * BNF_INDENTATION_SIZE, ' ');
+    CGString* rsString = BNFPhraseRepeatSwitch_toString(this->repeatSwitch);
+    printf("%sBNFPhrase (repeatSwitch %s)\n", indentation, rsString);
+    CGArrayIterator(BNFSentence)* iter = CGArrayIterator__new(BNFSentence, this->parts);
+    BNFSentence* part = NULL;
+    while ((part = CGArrayIterator_fetch(BNFSentence, iter)) != NULL)
+        BNFSentence_print(part, indentationLevel + 1, seenSentences);
+    CGArrayIterator_delete(BNFSentence, iter);
+    CGString_delete(rsString);
+    CGString_delete(indentation);
+}
 
 BNFAlternative* BNFAlternative__new(CGArray(BNFPhrase)* phrases) {
     BNFAlternative* this = malloc(sizeof(*this));
@@ -100,6 +126,17 @@ CGArray(BNFAst)* BNFAlternative_parse(BNFAlternative* this, CGArrayIterator(BNFT
     }
     return asts;
 }
+void BNFAlternative_print(BNFAlternative* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences) {
+    CGString* indentation = CGString__newFromLengthAndPreset(indentationLevel * BNF_INDENTATION_SIZE, ' '); 
+    printf("%sBNFAlternative (%u BNFPhrases)\n", indentation, CGArray_getSize(BNFPhrase, this->phrases));
+    CGArrayIterator(BNFPhrase)* iter = CGArrayIterator__new(BNFPhrase, this->phrases);
+    BNFPhrase* phrase = NULL;
+    while ((phrase = CGArrayIterator_fetch(BNFPhrase, iter)) != NULL)
+        BNFPhrase_print(phrase, indentationLevel + 1, seenSentences);
+    CGArrayIterator_delete(BNFPhrase, iter);
+    CGString_delete(indentation);
+}
+
 
 BNFSentence* BNFSentence__new(CGString* name, BNFTokenType tokenType, CGArray(BNFAlternative)* alternatives) {
     BNFSentence* this = malloc(sizeof(*this));
@@ -155,6 +192,28 @@ BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIte
     }
 }
 
+int BNFSentence_compare(const BNFSentence** first, const BNFSentence** second) {
+    return (*second - *first);
+}
+
+void BNFSentence_print(BNFSentence* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences) {
+    if (CGArray_find(BNFSentence, seenSentences, this, BNFSentence_compare) == NULL) {
+        CGArray_add(BNFSentence, seenSentences, this);
+        CGString* indentation = CGString__newFromLengthAndPreset(indentationLevel * BNF_INDENTATION_SIZE, ' ');
+        CGString* tokenTypeString = BNFTokenType_toString(this->tokenType);
+        printf("%sSentence '%s' (TokenType '%s', %u alternatives)\n", indentation, this->name, tokenTypeString, (this->alternatives != NULL ? CGArray_getSize(BNFAlternative, this->alternatives) : 0));
+        if (this->alternatives != NULL) {
+            CGArrayIterator(BNFAlternative)* iter = CGArrayIterator__new(BNFAlternative, this->alternatives);
+            BNFAlternative* alternative = NULL;
+            while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL)
+                BNFAlternative_print(alternative, indentationLevel + 1, seenSentences);
+            CGArrayIterator_delete(BNFAlternative, iter);
+        }
+        CGString_delete(tokenTypeString);
+        CGString_delete(indentation);
+    }
+}
+
 BNF_RDParser* BNF_RDParser__new(BNFSentence* startSentence) {
     BNF_RDParser* this = malloc(sizeof(*this));
     if (this != NULL) {
@@ -173,8 +232,15 @@ void BNF_RDParser_delete(BNF_RDParser* this) {
 BNFAst* BNF_RDParser_parse(BNF_RDParser* this, CGArray(BNFToken)* tokenList) {
     this->tokenListIterator = CGArrayIterator__new(BNFToken, tokenList);
     BNFAst* ast = BNFSentence_parse(this->startSentence, this->tokenListIterator);
-    if (CGArrayIterator_fetch(BNFToken, tokenList) == NULL)
+    if (CGArrayIterator_fetch(BNFToken, this->tokenListIterator) == NULL)
         return ast;
     else
         return NULL;
+}
+
+void BNF_RDParser_print(BNF_RDParser* this) {
+    printf("Parser:\n"); 
+    CGArray(BNFSentence)* seenSentences = CGArray__new(BNFSentence, 10);
+    BNFSentence_print(this->startSentence, 1, seenSentences);
+    CGArray_delete(BNFSentence, seenSentences);
 }
