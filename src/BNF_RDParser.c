@@ -59,26 +59,32 @@ void BNFPhrase_setParts(BNFPhrase* this, CGArray(BNFSentence)* parts) {
 
 CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tokenIterator) {
     bool isParsed = false;
-    if (this->repeatSwitch == BNFPhraseRepeat_zeroOrMore)
-        isParsed = true;
     CGArrayIterator(BNFSentence)* partsIterator = CGArrayIterator__new(BNFSentence, this->parts);
     BNFSentence* sentence = NULL;
     CGArray(BNFAst)* asts = CGArray__new(BNFAst, 1);
     BNFAst* ast = NULL;
+    if (this->repeatSwitch == BNFPhraseRepeat_zeroOrMore)
+        isParsed = true;
     bool partIsParsed;
     do {
         partIsParsed = true;
         while ((sentence = CGArrayIterator_fetch(BNFSentence, partsIterator)) != NULL) {
+            printf("phrase found sentence\n");
             if ((ast = BNFSentence_parse(sentence, tokenIterator)) != NULL) {
+                printf("phrase received ast, partIsParsed is %i\n", partIsParsed);
                 CGArray_add(BNFAst, asts, ast);
             } else {
                 partIsParsed = false;
                 break;
             }
         }
-        if (this->repeatSwitch == BNFPhraseRepeat_once || this->repeatSwitch == BNFPhraseRepeat_many)
-            isParsed &= partIsParsed;
-    } while(this->repeatSwitch != BNFPhraseRepeat_once && partIsParsed);
+        if (this->repeatSwitch == BNFPhraseRepeat_once) {
+            isParsed = partIsParsed;
+            break;
+        } else if (this->repeatSwitch == BNFPhraseRepeat_many)
+            isParsed |= partIsParsed;
+    } while (partIsParsed);
+    printf("phrase claims parsed is %i\n", isParsed);
     if (isParsed)
         return asts;
     else
@@ -115,15 +121,19 @@ void BNFAlternative_delete(BNFAlternative* this) {
 }
 CGArray(BNFAst)* BNFAlternative_parse(BNFAlternative* this, CGArrayIterator(BNFToken)* tokenIterator) {
     CGArray(BNFAst)* asts = NULL;
-    CGArray(BNFAst)* phraseAsts;
+    CGArray(BNFAst)* phraseAsts = NULL;
     CGArrayIterator(BNFPhrase)* iter = CGArrayIterator__new(BNFPhrase, this->phrases);
     BNFPhrase* phrase = NULL;
     while ((phrase = CGArrayIterator_fetch(BNFPhrase, iter)) != NULL) {
-        if ((phraseAsts = BNFPhrase_parse(phrase, tokenIterator)) != NULL)
+        if ((phraseAsts = BNFPhrase_parse(phrase, tokenIterator)) != NULL) {
+            if (asts == NULL)
+                asts = CGArray__new(BNFAst, 3);
             CGArray_append(BNFAst, asts, phraseAsts);
-        else
-            return NULL;
+        } else
+            break;
     }
+    printf("alternative - received asts from phrases:\n");
+    printf("%u\n", CGArray_getSize(BNFAst, asts));
     return asts;
 }
 void BNFAlternative_print(BNFAlternative* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences) {
@@ -166,6 +176,7 @@ void BNFSentence_delete(BNFSentence* this) {
 BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIterator) {
     if (this->alternatives == NULL) { /* this is a terminal symbol */
         BNFToken* token = CGArrayIterator_fetch(BNFToken, tokenIterator);
+        printf("terminal symbol sentence for token %s %s\n", BNFToken_getTypeName(token), BNFToken_getText(token));
         if (token == NULL) {
             CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_ScannerError, "unexpected EOF");
             return NULL;
@@ -180,9 +191,11 @@ BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIte
         CGArrayIterator(BNFAlternative)* alternativesIterator = CGArrayIterator__new(BNFAlternative, this->alternatives);
         BNFAlternative* alternative = NULL;
         while ((alternative = CGArrayIterator_fetch(BNFAlternative, alternativesIterator)) != NULL) {
+            printf("trying alternative @%ld\n", alternative);
             CGArray(BNFAst)* altAsts = BNFAlternative_parse(alternative, tokenIterator);
             if (altAsts != NULL) {
                 ast = BNFAst__new(NULL, BNFToken__new(this->tokenType, CGString__new("")), this);
+                printf("created ast @%ld with tokenType %s\n", ast, BNFTokenType_toString(this->tokenType));
                 BNFAst_setSubAsts(ast, altAsts);
                 break;
             }

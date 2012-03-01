@@ -72,7 +72,7 @@ void testOneAlternativeWithoutRepetition() {
     BNF_RDParser_print(parser);
     BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
     assert(ast != NULL);
-    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_definition);
     assert(!CGString__compare(BNFSentence_getName(BNFAst_getSentence(ast)), "definitionSentence"));
     CGAppState_THROW(CGAppState__getInstance(), Severity_notice, CGExceptionID_GeneralNonfatalException, "please add tests for sub-sentence");
 
