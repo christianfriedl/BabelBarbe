@@ -25,6 +25,7 @@ BNFAst* BNFAst_getParent(BNFAst* this);
 void BNFAst_setParent(BNFAst* this, BNFAst* parent);
 BNFSentence* BNFAst_getSentence(BNFAst* this);
 void BNFAst_setSubAsts(BNFAst* this, CGArray(BNFAst)* subAsts);
+void BNFAst_print(BNFAst* this, unsigned int indentationLevel);
 
 #endif
 

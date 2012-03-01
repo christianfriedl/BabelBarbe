@@ -51,4 +51,19 @@ void BNFAst_setSubAsts(BNFAst* this, CGArray(BNFAst)* subAsts) {
         CGTree_addSubTree(BNFAst, this->tree, ast->tree);
 }
 
+void BNFAst_print(BNFAst* this, unsigned int indentationLevel) {
+    CGString* indentation = CGString__newFromLengthAndPreset(indentationLevel * BNF_INDENTATION_SIZE, ' ');
+    CGString* tokenString = BNFToken_toString(this->token);
+    CGString* sentenceName = BNFSentence_getName(this->sentence);
+    printf("%sBNFAst (token %s; sentence %s)\n", indentation, tokenString, sentenceName);
+    CGArrayOfCGTreeOfBNFAst* subTrees = CGTree_getSubTrees(BNFAst, this->tree);
+    CGArrayOfCGTreeOfBNFAstIterator* iter = CGArrayIterator__new(CGTreeOfBNFAst, subTrees);
+    CGTree(BNFAst)* astTree = NULL;
+    while ((astTree = CGArrayIterator_fetch(CGTreeOfBNFAst, iter)) != NULL)
+        BNFAst_print(CGTree_getValue(BNFAst, astTree), indentationLevel + 1);
+    CGArrayOfCGTreeOfBNFAstIterator_delete(iter);
+    CGString_delete(tokenString);
+    CGString_delete(indentation);
+}
+
 
