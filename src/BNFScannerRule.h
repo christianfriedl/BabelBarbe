@@ -29,6 +29,7 @@ DECLARE_ARRAY_FUNCS(BNFScannerNode)
 DECLARE_ARRAY_ITERATOR_FUNCS(BNFScannerNode)
 
 struct BNFScannerRule_struct {
+    CGString* name;
     CGArray(BNFScannerNode)* nodes;
     BNFScannerNode* successNode;
 };
@@ -43,9 +44,10 @@ void BNFScannerNode_setFollowupRule(BNFScannerNode* this, BNFScannerRule* rule);
 bool BNFScannerNode_getIsNoise(BNFScannerNode* this);
 BNFToken* BNFScannerNode_applyToText(BNFScannerNode* this, const CGString* text);
 
-BNFScannerRule* BNFScannerRule__new(CGArray(BNFScannerNode)* nodes);
+BNFScannerRule* BNFScannerRule__new(CGString* name, CGArray(BNFScannerNode)* nodes);
 BNFScannerRule* BNFScannerRule_clone(BNFScannerRule* this);
 void BNFScannerRule_delete(BNFScannerRule* this);
+CGString* BNFScannerRule_getName(BNFScannerRule* this);
 BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text);
 BNFScannerNode* BNFScannerRule_getSuccessNode(BNFScannerRule* this);
 void BNFScannerRule_setNodes(BNFScannerRule* this, CGArray(BNFScannerNode)* nodes);

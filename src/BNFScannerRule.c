@@ -164,12 +164,13 @@ BNFScannerRule* BNFScannerNode_getFollowupRule(BNFScannerNode* this) {
 
 
 BNFScannerRule* BNFScannerRule_clone(BNFScannerRule* this) {
-    return BNFScannerRule__new(this->nodes);
+    return BNFScannerRule__new(CGString__new(""), this->nodes);
 }
 
-BNFScannerRule* BNFScannerRule__new(CGArray(BNFScannerNode)* nodes) {
+BNFScannerRule* BNFScannerRule__new(CGString* name, CGArray(BNFScannerNode)* nodes) {
     BNFScannerRule* this = malloc(sizeof(*this));
     if (this) {
+        this->name = name;
         this->nodes = nodes;
         this->successNode = NULL;
     } else
@@ -178,7 +179,12 @@ BNFScannerRule* BNFScannerRule__new(CGArray(BNFScannerNode)* nodes) {
 }
 
 void BNFScannerRule_delete(BNFScannerRule* this) {
+    CGString_delete(this->name);
     free(this);
+}
+
+CGString* BNFScannerRule_getName(BNFScannerRule* this) {
+    return this->name;
 }
 
 BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text) {

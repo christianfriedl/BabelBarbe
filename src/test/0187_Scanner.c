@@ -15,7 +15,7 @@ void testNewDelete() {
     printf("%s... ", __func__);
     CGString* text = CGString__new("");
     CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, NULL);
-    BNFScannerRule* rule = BNFScannerRule__new(nodes);
+    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
     BNFScanner* scanner = BNFScanner__new(rule, text);
     BNFScanner_delete(scanner);
     printf("ok -- ");
@@ -26,7 +26,7 @@ void testIdentifier() {
 
     char* text = CGString__new("abcde");
     CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, BNFScannerNode__new(BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_identifier, false), NULL);
-    BNFScannerRule* rule = BNFScannerRule__new(nodes);
+    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
     BNFScanner* scanner = BNFScanner__new(rule, text);
     BNFToken* token = BNFScanner_scanNextToken(scanner);
     assert(token != NULL);
@@ -45,7 +45,7 @@ void testIdentifierWithError() {
     CGString* text = CGString__new("abcde123");
     CGString* identText = CGString__new("abcde");
     CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_identifier, false), NULL);
-    BNFScannerRule* rule = BNFScannerRule__new(nodes);
+    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
     BNFScanner* scanner = BNFScanner__new(rule, text);
     BNFToken* token = BNFScanner_scanNextToken(scanner);
     assert(token != NULL);
@@ -66,7 +66,7 @@ void testNoise() {
     CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode,
                                             BNFScannerNode__new(BNFScannerNodeType_regex, "\\s*", NULL, BNFTokenType_noise, true),
                                             NULL);
-    BNFScannerRule* rule = BNFScannerRule__new(nodes);
+    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
     BNFScanner* scanner = BNFScanner__new(rule, text);
     BNFToken* token = BNFScanner_scanNextToken(scanner);
     assert(token == NULL);
@@ -81,13 +81,13 @@ void testComplexRuleset() {
     CGArray(BNFScannerNode)* noiseNodes;
     noiseNodes = CGArray__new(BNFScannerNode, 1);
     BNFScannerRule* startRule;
-    BNFScannerRule* noiseRule = BNFScannerRule__new(noiseNodes);
+    BNFScannerRule* noiseRule = BNFScannerRule__new(CGString__new(""), noiseNodes);
     startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
                         BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", noiseRule, BNFTokenType_identifier, false), 
                         BNFScannerNode__new(BNFScannerNodeType_string, "::=", noiseRule, BNFTokenType_definitionSign, false), 
                         BNFScannerNode__new(BNFScannerNodeType_string, ";", noiseRule, BNFTokenType_semicolon, false), 
                         NULL);
-    startRule = BNFScannerRule__new(startNodes);
+    startRule = BNFScannerRule__new(CGString__new(""), startNodes);
     CGArray_add(BNFScannerNode, noiseNodes, BNFScannerNode__new(BNFScannerNodeType_regex, "\\s*", startRule, BNFTokenType_noise, true));
 
     BNFScanner* scanner = BNFScanner__new(startRule, text);
@@ -124,7 +124,7 @@ void testScanSameToken() {
     startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
 						startNode,
                         NULL);
-    startRule = BNFScannerRule__new(startNodes);
+    startRule = BNFScannerRule__new(CGString__new(""), startNodes);
 	BNFScannerNode_setFollowupRule(startNode, startRule);
 
     BNFScanner* scanner = BNFScanner__new(startRule, text);
@@ -162,7 +162,7 @@ void testScanAllTokens() {
     BNFScannerRule* startRule;
     BNFScannerNode* aNode = BNFScannerNode__new(BNFScannerNodeType_string, "a", NULL, BNFTokenType_identifier, false);
     startNodes = CGArray__newFromInitializerList(BNFScannerNode, aNode, NULL);
-    startRule = BNFScannerRule__new(startNodes);
+    startRule = BNFScannerRule__new(CGString__new(""), startNodes);
     BNFScannerNode_setFollowupRule(aNode, startRule);
 
     BNFScanner* scanner = BNFScanner__new(startRule, text);

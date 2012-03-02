@@ -13,7 +13,7 @@ void testNewDelete() {
     BNFToken* token = BNFToken__new(BNFTokenType_identifier, CGString__new(text));
     /*
     BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_string, "", NULL, BNFTokenType_start, false);
-    BNFScannerRule* rule = BNFScannerRule__new(CGArray__newFromInitializerList(BNFScannerNode, node, NULL));
+    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), CGArray__newFromInitializerList(BNFScannerNode, node, NULL));
     */
     BNFPhrase* phrase = BNFPhrase__new(BNFPhraseRepeat_once, NULL);
     BNFAlternative* alternative = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, phrase, NULL));

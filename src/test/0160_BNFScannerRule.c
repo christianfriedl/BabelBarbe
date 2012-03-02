@@ -34,7 +34,7 @@ void testNewDelete() {
     printf("%s... ", __func__);
 
     BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_string, "", NULL, BNFTokenType_start, false);
-    BNFScannerRule* rule = BNFScannerRule__new(CGArray__newFromInitializerList(BNFScannerNode, node, NULL));
+    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), CGArray__newFromInitializerList(BNFScannerNode, node, NULL));
     assert(rule != NULL);
     assert(CGAppState_catchAndDeleteException(appState) == false);
     assert(CGArray_getSize(BNFScannerNode, rule->nodes) == 1);
@@ -50,7 +50,7 @@ void testApplyStringPattern() {
     BNFScannerNode* node1 = BNFScannerNode__new(BNFScannerNodeType_string, "abcd", NULL, BNFTokenType_start, false);
     BNFScannerNode* node2 = BNFScannerNode__new(BNFScannerNodeType_string, "efgh", NULL, BNFTokenType_start, false);
 
-    BNFScannerRule* rule = BNFScannerRule__new(CGArray__newFromInitializerList(BNFScannerNode, node1, node2, NULL));
+    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), CGArray__newFromInitializerList(BNFScannerNode, node1, node2, NULL));
     
     _helpAssertEqual(BNFScannerRule_applyToText(rule, "abcde"), tokenAbcd);
     _helpAssertEqual(BNFScannerRule_applyToText(rule, "efghi"), tokenEfgh);
@@ -69,7 +69,7 @@ void testApplyRegexPattern() {
     BNFScannerNode* node1 = BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_start, false);
     BNFScannerNode* node2 = BNFScannerNode__new(BNFScannerNodeType_regex, "[0-9]+", NULL, BNFTokenType_start, false);
 
-    BNFScannerRule* rule = BNFScannerRule__new(CGArray__newFromInitializerList(BNFScannerNode, node1, node2, NULL));
+    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), CGArray__newFromInitializerList(BNFScannerNode, node1, node2, NULL));
     
     _helpAssertEqual(BNFScannerRule_applyToText(rule, "abcde"), tokenAbcde);
     _helpAssertEqual(BNFScannerRule_applyToText(rule, "123efghi"), token123);
