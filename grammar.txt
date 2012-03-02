@@ -1,28 +1,31 @@
 /* TODO: comments, meta-information stuff, evaluation code */
 /* TODO: scanning??? - a block for terminals? */
+/* TODO: definition(isNoise=true) or similar */
 
 start ::= rule+;
 
-rule ::= rule_lhs '::=' rule_rhs ';' ;
+rule ::= definition '::=' alternatives ';' ; /* scanner! */
 
-rule_lhs ::= identifier;
+definition ::= identifier;
 
-rule_rhs ::= rule_phrase+ ;
+alternatives ::= alternative ('|' alternative)+ ; /* scanner! */
 
-rule_phrase ::= term repetition_marker? ;
+alternative ::= phrase+
 
-term ::= symbol | '(' rule_rhs ')' ;
+phrase ::= term repetition_marker? ;
 
-repetition_marker ::= '?' | '*' | '+' ;
+term ::= symbol | '(' alternative ')' ; /* scanner! */
 
-symbol ::= terminal | nonterminal;
+repetition_marker ::= '?' | '*' | '+' ; /* scanner! */
 
-terminal ::= 'regex' literal | literal;
+symbol ::= terminal_symbol | nonterminal_symbol;
 
-nonterminal ::= identifier;
+terminal_symbol ::= string_literal | regex_literal;
 
-regex ::= 'm' \S+ ;
+nonterminal_symbol ::= identifier;
 
-literal ::= '\'' \S+ '\'' ; /* scanner! */
+regex_literal ::= /[^/]*/;			/* scanner! */
+
+string_literal ::= '\'' \S+ '\'' ; /* scanner! */
 
 identifier ::= m/[a-z][a-z_0-9\-]*/ ; /* scanner! */
