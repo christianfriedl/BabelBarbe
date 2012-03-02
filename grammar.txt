@@ -24,7 +24,7 @@ terminal_symbol ::= string_literal | regex_literal;
 
 nonterminal_symbol ::= identifier;
 
-regex_literal ::= /[^/]*/;			/* scanner! */
+regex_literal ::= '/' /[^\/]*/ '/';			/* scanner! */
 
 string_literal ::= '\'' \S+ '\'' ; /* scanner! */
 

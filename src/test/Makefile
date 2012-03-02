@@ -3,9 +3,13 @@ CFLAGS=-ggdb -save-temps -Wall -I../ -I/opt/local/include
 LDFLAGS=-ggdb -lcgenerics -L../ -lbnf -L/opt/local/lib -lpcre -Wall
 
 BINARIES=0125_Token 0140_BNFScannerNode 0160_BNFScannerRule 0187_Scanner 0200_BNFScannerWithRuleset 0500_BNFAst 0750_BNF_RDParser
+CURRENT_BINARIES=0200_BNFScannerWithRuleset 
 
 
 STATIC_LIBRARY=../libbnf.a
+
+current: $(CURRENT_BINARIES)
+	for i in $(CURRENT_BINARIES); do ./$$i; if [ $$? != 0 ]; then exit; fi; done
 
 clean-all: all
 

@@ -66,13 +66,13 @@ void testOneAlternativeWithoutRepetition() {
     BNFAlternative* alternative = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, phrase, NULL));
     BNFSentence* identifierSentence = BNFSentence__new(CGString__new("identifierSentence"), BNFTokenType_identifier, NULL);
     BNFPhrase_setParts(phrase, CGArray__newFromInitializerList(BNFSentence, identifierSentence, NULL));
-    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definition, CGArray__newFromInitializerList(BNFAlternative, alternative, NULL));
+    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definitionSign, CGArray__newFromInitializerList(BNFAlternative, alternative, NULL));
 
     BNF_RDParser* parser = BNF_RDParser__new(definitionSentence);
     BNF_RDParser_print(parser);
     BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
     assert(ast != NULL);
-    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_definition);
+    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_definitionSign);
     assert(!CGString__compare(BNFSentence_getName(BNFAst_getSentence(ast)), "definitionSentence"));
     CGAppState_THROW(CGAppState__getInstance(), Severity_notice, CGExceptionID_GeneralNonfatalException, "please add tests for sub-sentence");
     BNFAst_print(ast, 0);
@@ -102,13 +102,13 @@ void testTwoAlternativesWithoutRepetition() {
     BNFPhrase_setParts(semicolonPhrase, CGArray__newFromInitializerList(BNFSentence, semicolonSentence, NULL));
     BNFAlternative* identifierAlternative = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, identifierPhrase, NULL));
     BNFAlternative* semicolonAlternative = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, semicolonPhrase, NULL));
-    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definition, CGArray__newFromInitializerList(BNFAlternative, identifierAlternative, semicolonAlternative, NULL));
+    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definitionSign, CGArray__newFromInitializerList(BNFAlternative, identifierAlternative, semicolonAlternative, NULL));
 
     BNF_RDParser* parser = BNF_RDParser__new(definitionSentence);
     BNF_RDParser_print(parser);
     BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
     assert(ast != NULL);
-    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_definition);
+    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_definitionSign);
     assert(!CGString__compare(BNFSentence_getName(BNFAst_getSentence(ast)), "definitionSentence"));
     CGAppState_THROW(CGAppState__getInstance(), Severity_notice, CGExceptionID_GeneralNonfatalException, "please add tests for sub-sentence");
     BNFAst_print(ast, 0);
@@ -132,7 +132,7 @@ void testUnexpectedEOF() {
     BNFPhrase* identifierSemicolonPhrase = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, identifierSentence, semicolonSentence, NULL));
     BNFAlternative* identifierSemicolonAlternative = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, identifierSemicolonPhrase, NULL));
     BNFAlternative* semicolonAlternative = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, semicolonPhrase, NULL));
-    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definition, CGArray__newFromInitializerList(BNFAlternative, identifierSemicolonAlternative, semicolonAlternative, NULL));
+    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definitionSign, CGArray__newFromInitializerList(BNFAlternative, identifierSemicolonAlternative, semicolonAlternative, NULL));
 
     BNF_RDParser* parser = BNF_RDParser__new(definitionSentence);
     BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
@@ -169,13 +169,13 @@ void testTwoAlternativesAndTwoPhrasesWithoutRepetition() {
     BNFPhrase* identifierSemicolonPhrase = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, identifierSentence, semicolonSentence, NULL));
     BNFAlternative* identifierSemicolonAlternative = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, identifierSemicolonPhrase, NULL));
     BNFAlternative* semicolonAlternative = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, semicolonPhrase, NULL));
-    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definition, CGArray__newFromInitializerList(BNFAlternative, identifierSemicolonAlternative, semicolonAlternative, NULL));
+    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definitionSign, CGArray__newFromInitializerList(BNFAlternative, identifierSemicolonAlternative, semicolonAlternative, NULL));
 
     BNF_RDParser* parser = BNF_RDParser__new(definitionSentence);
     BNF_RDParser_print(parser);
     BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
     assert(ast != NULL);
-    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_definition);
+    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_definitionSign);
     assert(!CGString__compare(BNFSentence_getName(BNFAst_getSentence(ast)), "definitionSentence"));
     CGAppState_THROW(CGAppState__getInstance(), Severity_notice, CGExceptionID_GeneralNonfatalException, "please add tests for sub-sentence");
     BNFAst_print(ast, 0);
@@ -199,13 +199,13 @@ void testRepetition() {
     BNFSentence* identifierSentence = BNFSentence__new(CGString__new("identifierSentence"), BNFTokenType_identifier, NULL);
     BNFPhrase* identifierPhrase = BNFPhrase__new(BNFPhraseRepeat_many, CGArray__newFromInitializerList(BNFSentence, identifierSentence, NULL));
     BNFAlternative* identifierAlternative = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, identifierPhrase, NULL));
-    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definition, CGArray__newFromInitializerList(BNFAlternative, identifierAlternative, NULL));
+    BNFSentence* definitionSentence = BNFSentence__new(CGString__new("definitionSentence"), BNFTokenType_definitionSign, CGArray__newFromInitializerList(BNFAlternative, identifierAlternative, NULL));
 
     BNF_RDParser* parser = BNF_RDParser__new(definitionSentence);
     BNF_RDParser_print(parser);
     BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
     assert(ast != NULL);
-    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_definition);
+    assert(BNFToken_getType(BNFAst_getToken(ast)) == BNFTokenType_definitionSign);
     assert(!CGString__compare(BNFSentence_getName(BNFAst_getSentence(ast)), "definitionSentence"));
     CGAppState_THROW(CGAppState__getInstance(), Severity_notice, CGExceptionID_GeneralNonfatalException, "please add tests for sub-sentence");
     BNFAst_print(ast, 0);

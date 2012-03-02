@@ -24,6 +24,11 @@ LIB_OBJECTS =  BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.
 
 necessary-test: all tags manpages test
 
+current-test: $(STATIC_LIBRARY)
+	(cd test; make current)
+	rm -f *.i *.s
+	rm -f test/*.i test/*.s
+
 clean-all-test: clean all tags test
 
 localall: $(STATIC_LIBRARY)

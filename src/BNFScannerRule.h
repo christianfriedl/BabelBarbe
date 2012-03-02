@@ -48,6 +48,7 @@ BNFScannerRule* BNFScannerRule_clone(BNFScannerRule* this);
 void BNFScannerRule_delete(BNFScannerRule* this);
 BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text);
 BNFScannerNode* BNFScannerRule_getSuccessNode(BNFScannerRule* this);
+void BNFScannerRule_setNodes(BNFScannerRule* this, CGArray(BNFScannerNode)* nodes);
 
 
 #endif

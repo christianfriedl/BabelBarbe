@@ -197,3 +197,7 @@ BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text)
 BNFScannerNode* BNFScannerRule_getSuccessNode(BNFScannerRule* this) {
     return this->successNode;
 }
+
+void BNFScannerRule_setNodes(BNFScannerRule* this, CGArray(BNFScannerNode)* nodes) {
+    this->nodes = nodes;
+}

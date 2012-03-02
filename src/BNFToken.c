@@ -26,13 +26,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"BNFToken.h"
 
 CGString* BNFTokenType_toString(BNFTokenType this) {
-    switch(this) {
-        case BNFTokenType_start: return CGString__new("BNFTokenType_start"); 
-        case BNFTokenType_noise: return CGString__new("BNFTokenType_noise"); 
-        case BNFTokenType_identifier: return CGString__new("BNFTokenType_identifier"); 
-        case BNFTokenType_definition: return CGString__new("BNFTokenType_definition"); 
-        case BNFTokenType_semicolon: return CGString__new("BNFTokenType_semicolon"); 
-        default: CGAppState_THROW(CGAppState__getInstance(), Severity_warning, CGExceptionID_GeneralNonfatalException, "no such BNFTokenType"); return NULL;
+    switch (this) {
+        case BNFTokenType_start: return CGString__new("BNFTokenType_start"); break;
+        case BNFTokenType_noise: return CGString__new("BNFTokenType_noise"); break;
+        case BNFTokenType_identifier: return CGString__new("BNFTokenType_identifier"); break;
+        case BNFTokenType_definitionSign: return CGString__new("BNFTokenType_definitionSign"); break;
+        case BNFTokenType_semicolon: return CGString__new("BNFTokenType_semicolon"); break;
+        case BNFTokenType_OrSign: return CGString__new("BNFTokenType_OrSign"); break;
+        case BNFTokenType_openParen: return CGString__new("BNFTokenType_openParen"); break;
+        case BNFTokenType_closeParen: return CGString__new("BNFTokenType_closeParen"); break;
+        case BNFTokenType_repeatZeroOrMore: return CGString__new("BNFTokenType_repeatZeroOrMore"); break;
+        case BNFTokenType_repeatMany: return CGString__new("BNFTokenType_repeatMany"); break;
+        case BNFTokenType_stringLiteral: return CGString__new("BNFTokenType_stringLiteral"); break;
+        case BNFTokenType_regexLiteral : return CGString__new("BNFTokenType_regexLiteral "); break;
+        default: CGAppState_THROW(CGAppState__getInstance(), Severity_warning, BNFExceptionID_UnknownBNFTokenType, "No such BNFTokenType"); return CGString__new("unkown BNFTokenType"); break;
     }
 }
 
@@ -81,14 +88,14 @@ CGString* BNFToken_getTypeName(BNFToken* this) {
         case BNFTokenType_identifier: 
             return CGString__new("BNFTokenType_identifier");
             break;
-        case BNFTokenType_definition:
-            return CGString__new("BNFTokenType_definition");
+        case BNFTokenType_definitionSign:
+            return CGString__new("BNFTokenType_definitionSign");
             break;
         case BNFTokenType_semicolon: 
             return CGString__new("BNFTokenType_semicolon");
             break;
         default:
-            CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_UnknownTokenType, "unknown token type %u", this->type);
+            CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_UnknownBNFTokenType, "unknown token type %u", this->type);
             return CGString__new("Unknown Token Type");
     }
 }

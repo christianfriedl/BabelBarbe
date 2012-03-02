@@ -7,7 +7,7 @@
 #include<cgenerics/CGString.h>
 #include<cgenerics/CGAppState.h>
 
-typedef enum { BNFTokenType_start, BNFTokenType_noise, BNFTokenType_identifier, BNFTokenType_definition, BNFTokenType_semicolon, BNFTokenType_repeatZeroOrMore, BNFTokenType_repeatOnce, BNFTokenType_repeatMany } BNFTokenType;
+typedef enum { BNFTokenType_start, BNFTokenType_noise, BNFTokenType_identifier, BNFTokenType_definitionSign, BNFTokenType_semicolon, BNFTokenType_OrSign, BNFTokenType_openParen, BNFTokenType_closeParen, BNFTokenType_repeatZeroOrMore, BNFTokenType_repeatMany, BNFTokenType_stringLiteral, BNFTokenType_regexLiteral } BNFTokenType;
 
 typedef struct {
     BNFTokenType type;

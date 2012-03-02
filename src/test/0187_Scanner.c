@@ -69,12 +69,8 @@ void testNoise() {
     BNFScannerRule* rule = BNFScannerRule__new(nodes);
     BNFScanner* scanner = BNFScanner__new(rule, text);
     BNFToken* token = BNFScanner_scanNextToken(scanner);
-    assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_noise);
-    BNFToken_delete(token);
-    token = BNFScanner_scanNextToken(scanner);
     assert(token == NULL);
-    assert(CGAppState_isExceptionRaised(appState) == false);
+    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_ScannerError) == true);
     BNFScanner_delete(scanner);
 }
 void testComplexRuleset() {
@@ -88,7 +84,7 @@ void testComplexRuleset() {
     BNFScannerRule* noiseRule = BNFScannerRule__new(noiseNodes);
     startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
                         BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", noiseRule, BNFTokenType_identifier, false), 
-                        BNFScannerNode__new(BNFScannerNodeType_string, "::=", noiseRule, BNFTokenType_definition, false), 
+                        BNFScannerNode__new(BNFScannerNodeType_string, "::=", noiseRule, BNFTokenType_definitionSign, false), 
                         BNFScannerNode__new(BNFScannerNodeType_string, ";", noiseRule, BNFTokenType_semicolon, false), 
                         NULL);
     startRule = BNFScannerRule__new(startNodes);
@@ -101,22 +97,12 @@ void testComplexRuleset() {
     BNFToken_delete(token);
     token = BNFScanner_scanNextToken(scanner);
     assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_noise);
-    BNFToken_delete(token);
-    token = BNFScanner_scanNextToken(scanner);
-    assert(BNFToken_getType(token) == BNFTokenType_definition);
-    BNFToken_delete(token);
-    token = BNFScanner_scanNextToken(scanner);
-    assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_noise);
+    printf("token: %s\n", BNFToken_toString(token));
+    assert(BNFToken_getType(token) == BNFTokenType_definitionSign);
     BNFToken_delete(token);
     token = BNFScanner_scanNextToken(scanner);
     assert(token != NULL);
     assert(BNFToken_getType(token) == BNFTokenType_identifier);
-    BNFToken_delete(token);
-    token = BNFScanner_scanNextToken(scanner);
-    assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_noise);
     BNFToken_delete(token);
     token = BNFScanner_scanNextToken(scanner);
     assert(token != NULL);
