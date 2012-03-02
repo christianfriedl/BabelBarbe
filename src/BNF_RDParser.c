@@ -17,6 +17,8 @@ BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIte
 
 CGString* BNFPhraseRepeatSwitch_toString(BNFPhraseRepeatSwitch this) {
     switch(this) {
+        case BNFPhraseRepeat_zeroOrOnce:
+            return CGString__new("BNFPhraseRepeat_zeroOrOnce");
         case BNFPhraseRepeat_zeroOrMore:
             return CGString__new("BNFPhraseRepeat_zeroOrMore");
         case BNFPhraseRepeat_once:
@@ -63,7 +65,7 @@ CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tok
     BNFSentence* sentence = NULL;
     CGArray(BNFAst)* asts = CGArray__new(BNFAst, 1);
     BNFAst* ast = NULL;
-    if (this->repeatSwitch == BNFPhraseRepeat_zeroOrMore)
+    if (this->repeatSwitch == BNFPhraseRepeat_zeroOrMore || this->repeatSwitch == BNFPhraseRepeat_zeroOrOnce)
         isParsed = true;
     bool partIsParsed;
     do {
@@ -81,6 +83,8 @@ CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tok
         CGArrayIterator_reset(BNFSentence, partsIterator);
         if (this->repeatSwitch == BNFPhraseRepeat_once) {
             isParsed = partIsParsed;
+            break;
+        } else if (this->repeatSwitch == BNFPhraseRepeat_zeroOrOnce) {
             break;
         } else if (this->repeatSwitch == BNFPhraseRepeat_many)
             isParsed |= partIsParsed;
@@ -209,7 +213,13 @@ BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIte
 }
 
 int BNFSentence_compare(const BNFSentence** first, const BNFSentence** second) {
+    #ifdef DEBUG
+    printf("BNFSentence_compare comparing %ld and %ld, returning %ld\n", *second, *first, (*second-*first));
+    #endif
     return (*second - *first);
+}
+void BNFSentence_setAlternatives(BNFSentence* this, CGArray(BNFAlternative)* alternatives) {
+    this->alternatives = alternatives;
 }
 
 void BNFSentence_print(BNFSentence* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences) {

@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 CGString* BNFTokenType_toString(BNFTokenType this) {
     switch (this) {
-        case BNFTokenType_start: return CGString__new("BNFTokenType_start"); break;
+        case BNFTokenType_nonTerminal: return CGString__new("BNFTokenType_nonTerminal"); break;
         case BNFTokenType_noise: return CGString__new("BNFTokenType_noise"); break;
         case BNFTokenType_identifier: return CGString__new("BNFTokenType_identifier"); break;
         case BNFTokenType_definitionSign: return CGString__new("BNFTokenType_definitionSign"); break;
@@ -35,6 +35,7 @@ CGString* BNFTokenType_toString(BNFTokenType this) {
         case BNFTokenType_OrSign: return CGString__new("BNFTokenType_OrSign"); break;
         case BNFTokenType_openParen: return CGString__new("BNFTokenType_openParen"); break;
         case BNFTokenType_closeParen: return CGString__new("BNFTokenType_closeParen"); break;
+        case BNFTokenType_repeatZeroOrOnce: return CGString__new("BNFTokenType_repeatZeroOrOnce"); break;
         case BNFTokenType_repeatZeroOrMore: return CGString__new("BNFTokenType_repeatZeroOrMore"); break;
         case BNFTokenType_repeatMany: return CGString__new("BNFTokenType_repeatMany"); break;
         case BNFTokenType_stringLiteral: return CGString__new("BNFTokenType_stringLiteral"); break;
@@ -79,8 +80,8 @@ CGString* BNFToken_toString(BNFToken* this) {
 
 CGString* BNFToken_getTypeName(BNFToken* this) {
     switch (this->type) {
-        case BNFTokenType_start: 
-            return CGString__new("BNFTokenType_start");
+        case BNFTokenType_nonTerminal: 
+            return CGString__new("BNFTokenType_nonTerminal");
             break;
         case BNFTokenType_noise: 
             return CGString__new("BNFTokenType_noise");

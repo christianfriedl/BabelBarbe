@@ -4,13 +4,11 @@
 
 start ::= rule+;
 
-rule ::= definition '::=' alternatives ';' ; /* scanner! */
-
-definition ::= identifier;
+rule ::= identifier '::=' alternatives ';' ; /* scanner! */
 
 alternatives ::= alternative ('|' alternative)+ ; /* scanner! */
 
-alternative ::= phrase+
+alternative ::= phrase+ ;
 
 phrase ::= term repetition_marker? ;
 
@@ -18,11 +16,9 @@ term ::= symbol | '(' alternative ')' ; /* scanner! */
 
 repetition_marker ::= '?' | '*' | '+' ; /* scanner! */
 
-symbol ::= terminal_symbol | nonterminal_symbol;
+symbol ::= terminal_symbol | identifier;
 
 terminal_symbol ::= string_literal | regex_literal;
-
-nonterminal_symbol ::= identifier;
 
 regex_literal ::= '/' /[^\/]*/ '/';			/* scanner! */
 

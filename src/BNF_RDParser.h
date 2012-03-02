@@ -24,7 +24,7 @@ DECLARE_ARRAY_ITERATOR(BNFSentence);
 DECLARE_ARRAY_ITERATOR(BNFPhrase);
 
 
-typedef enum { BNFPhraseRepeat_once=0, BNFPhraseRepeat_zeroOrMore, BNFPhraseRepeat_many } BNFPhraseRepeatSwitch;
+typedef enum { BNFPhraseRepeat_once=0, BNFPhraseRepeat_zeroOrOnce, BNFPhraseRepeat_zeroOrMore, BNFPhraseRepeat_many } BNFPhraseRepeatSwitch;
 
 struct BNFPhrase_struct {
     BNFPhraseRepeatSwitch repeatSwitch;
@@ -64,6 +64,7 @@ CGString* BNFSentence_getName(BNFSentence* this);
 BNFSentence* BNFSentence_clone(BNFSentence* this);
 void BNFSentence_delete(BNFSentence* this);
 void BNFSentence_print(BNFSentence* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences);
+void BNFSentence_setAlternatives(BNFSentence* this, CGArray(BNFAlternative)* alternatives);
 
 BNF_RDParser* BNF_RDParser__new(BNFSentence* startSentence);
 BNFAst* BNF_RDParser_parse(BNF_RDParser* this, CGArray(BNFToken)* tokenList);

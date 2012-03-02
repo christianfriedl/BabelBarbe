@@ -1,166 +1,71 @@
-#include"Parser.h"
-#include"bnf_rules.h"
+#include"BNFParserRuleset.h"
 
-#define NULL_RULE { repeat_off, 0, { NULL } } 
-ParserRule rule_start = {
-    "rule_start",
-    NULL,
-    NULL,
-    {
-        { repeat_off, 0, { &rule_rules, NULL } },
-        NULL_RULE
-    }
-};
+BNFSentence* BNFParserRuleset__getInstance() {
 
-ParserRule rule_rules = {
-    "rule_rules",
-    NULL,
-    NULL,
-    {
-        { repeat_on, 0, { & rule_rule, NULL } },
-        NULL_RULE
-    }
-};
+    /* terminals */
+    BNFSentence* stringLiteralSentence = BNFSentence__new("stringLiteralSentence", BNFTokenType_stringLiteral, NULL);
+    BNFSentence* regexLiteralSentence = BNFSentence__new("regexLiteralSentence", BNFTokenType_regexLiteral, NULL);
+    BNFSentence* repetitionMarkerZeroOrOnceSentence = BNFSentence__new("repetitionMarkerZeroOrOnceSentence", BNFTokenType_repeatZeroOrOnce, NULL);
+    BNFSentence* repetitionMarkerZeroOrMoreSentence = BNFSentence__new("repetitionMarkerZeroOrMoreSentence", BNFTokenType_repeatZeroOrMore, NULL);
+    BNFSentence* repetitionMarkerManySentence = BNFSentence__new("repetitionMarkerManySentence", BNFTokenType_repeatMany, NULL);
+    BNFSentence* openParenSentence = BNFSentence__new("openParenSentence", BNFTokenType_openParen, NULL);
+    BNFSentence* closeParenSentence = BNFSentence__new("closeParenSentence", BNFTokenType_closeParen, NULL);
+    BNFSentence* orSignSentence = BNFSentence__new("orSignSentence", BNFTokenType_OrSign, NULL);
+    BNFSentence* semicolonSentence = BNFSentence__new("semicolonSentence", BNFTokenType_semicolon, NULL);
+    BNFSentence* definitionSignSentence = BNFSentence__new("definitionSignSentence", BNFTokenType_definitionSign, NULL);
+    BNFSentence* identifierSentence = BNFSentence__new("identifierSentence", BNFTokenType_identifier, NULL);
 
-ParserRule rule_rule = {
-    "rule_rule",
-    NULL,
-    NULL,
-    {
-        { repeat_off, 0, { &rule_rule_lhs, &rule_definition_sign, &rule_rule_rhs, &rule_semicolon, NULL } },
-        NULL_RULE
-    }
-};
+    /* nonterminals */
 
-ParserRule rule_rule_lhs = {
-    "rule_rule_lhs",
-    NULL,
-    NULL,
-    {
-        { repeat_off, 0, { &rule_identifier, NULL } },
-        NULL_RULE
-    }
-};
+    BNFPhrase* terminalSymbolAlternative1Phrase = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, stringLiteralSentence, NULL));
+    BNFPhrase* terminalSymbolAlternative2Phrase = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, regexLiteralSentence, NULL));
+    BNFAlternative* terminalSymbolAlternative1 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, terminalSymbolAlternative1Phrase, NULL));
+    BNFAlternative* terminalSymbolAlternative2 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, terminalSymbolAlternative2Phrase, NULL));
+    BNFSentence* terminalSymbolSentence = BNFSentence__new("terminalSymbolSentence", BNFTokenType_nonTerminal, CGArray__newFromInitializerList(BNFAlternative, terminalSymbolAlternative1, terminalSymbolAlternative2, NULL));
 
-ParserRule rule_rule_rhs = {
-    "rule_rule_rhs",
-    NULL,
-    NULL,
-    {
-        { repeat_on, 0, { &rule_rule_phrase, NULL } },
-        NULL_RULE
-    }
-};
+    BNFPhrase* symbolAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, terminalSymbolSentence, NULL));
+    BNFPhrase* symbolAlternative2Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, identifierSentence, NULL));
+    BNFAlternative* symbolAlternative1 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, symbolAlternative1Phrase1, NULL));
+    BNFAlternative* symbolAlternative2 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, symbolAlternative2Phrase1, NULL));
+    BNFSentence* symbolSentence = BNFSentence__new("symbolSentence", BNFTokenType_nonTerminal, CGArray__newFromInitializerList(BNFAlternative, symbolAlternative1, symbolAlternative2, NULL));
 
-ParserRule rule_rule_phrase = {
-    "rule_rule_phrase",
-    NULL,
-    NULL,
-    {
-        { repeat_off, 0, { &rule_term, &rule_repetition_marker, NULL } },
-        { repeat_off, 0, { &rule_term, NULL } },
-        NULL_RULE
-    }
-};
+    BNFPhrase* termAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, symbolSentence, NULL));
+    BNFSentence* alternativeSentence = BNFSentence__new("alternativeSentence", BNFTokenType_nonTerminal, NULL);
+    BNFPhrase* termAlternative2Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, openParenSentence, alternativeSentence, closeParenSentence, NULL)); /* recursion to alternativeSentence! */
+    BNFAlternative* termAlternative1 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, termAlternative1Phrase1, NULL));
+    BNFAlternative* termAlternative2 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, termAlternative2Phrase1, NULL));
+    BNFSentence* termSentence = BNFSentence__new("termSentence", BNFTokenType_nonTerminal, CGArray__newFromInitializerList(BNFAlternative, termAlternative1, termAlternative2, NULL));
 
-ParserRule rule_term = {
-    "rule_term",
-    NULL,
-    NULL,
-    {
-        { repeat_off, 0, { &rule_symbol, NULL } },
-        { repeat_off, 0, { &rule_openparen, &rule_rule_rhs, &rule_closeparen, NULL } },
-        NULL_RULE
-    }
-};
+    BNFPhrase* repetitionMarkerAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, repetitionMarkerZeroOrOnceSentence, NULL));
+    BNFPhrase* repetitionMarkerAlternative2Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, repetitionMarkerZeroOrMoreSentence, NULL));
+    BNFPhrase* repetitionMarkerAlternative3Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, repetitionMarkerManySentence, NULL));
+    BNFAlternative* repetitionMarkerAlternative1 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, repetitionMarkerAlternative1Phrase1, NULL));
+    BNFAlternative* repetitionMarkerAlternative2 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, repetitionMarkerAlternative2Phrase1, NULL));
+    BNFAlternative* repetitionMarkerAlternative3 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, repetitionMarkerAlternative3Phrase1, NULL));
+    BNFSentence* repetitionMarkerSentence = BNFSentence__new("repetitionMarkerSentence", BNFTokenType_nonTerminal, CGArray__newFromInitializerList(BNFAlternative, repetitionMarkerAlternative1, repetitionMarkerAlternative2, repetitionMarkerAlternative3, NULL));
 
-ParserRule rule_openparen = {
-    "rule_openparen",
-    Parser_parse_openparen,
-    NULL,
-    {
-        NULL_RULE
-    }
-};
+    BNFPhrase* phraseAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, termSentence, NULL));
+    BNFPhrase* phraseAlternative1Phrase2 = BNFPhrase__new(BNFPhraseRepeat_zeroOrOnce, CGArray__newFromInitializerList(BNFSentence, repetitionMarkerSentence, NULL));
+    BNFAlternative* phraseAlternative1 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, phraseAlternative1Phrase1, phraseAlternative1Phrase2, NULL));
+    BNFSentence* phraseSentence = BNFSentence__new("phraseSentence", BNFTokenType_nonTerminal, CGArray__newFromInitializerList(BNFAlternative, phraseAlternative1, NULL));
 
-ParserRule rule_closeparen = {
-    "rule_closeparen",
-    Parser_parse_closeparen,
-    NULL,
-    {
-        NULL_RULE
-    }
-};
+    BNFPhrase* alternativeAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_many, CGArray__newFromInitializerList(BNFSentence, phraseSentence, NULL));
+    BNFAlternative* alternativeAlternative1 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, alternativeAlternative1Phrase1, NULL));
+    BNFSentence_setAlternatives(alternativeSentence, CGArray__newFromInitializerList(BNFAlternative, alternativeAlternative1, NULL));
 
-ParserRule rule_repetition_marker = {
-    "rule_repetition_marker",
-    Parser_parse_repetition_marker,
-    NULL,
-    {
-        NULL_RULE
-    }
-};
+    BNFPhrase* alternativesAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, alternativeSentence, NULL));
+    BNFPhrase* alternativesAlternative1Phrase2 = BNFPhrase__new(BNFPhraseRepeat_many, CGArray__newFromInitializerList(BNFSentence, orSignSentence, alternativeSentence, NULL));
+    BNFAlternative* alternativesAlternative1 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, alternativesAlternative1Phrase1, alternativesAlternative1Phrase2, NULL));
+    BNFSentence* alternativesSentence = BNFSentence__new("alternativesSentence", BNFTokenType_nonTerminal, CGArray__newFromInitializerList(BNFAlternative, alternativesAlternative1, NULL));
+    
+    BNFPhrase* ruleAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__newFromInitializerList(BNFSentence, identifierSentence, definitionSignSentence, alternativesSentence, semicolonSentence, NULL));
+    BNFAlternative* ruleAlternative1 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, ruleAlternative1Phrase1, NULL));
+    BNFSentence* ruleSentence = BNFSentence__new("ruleSentence", BNFTokenType_nonTerminal, CGArray__newFromInitializerList(BNFAlternative, ruleAlternative1, NULL));
 
-ParserRule rule_symbol = {
-    "rule_symbol",
-    NULL,
-    NULL,
-    {
-        { repeat_off, 0, { &rule_terminal, NULL } },
-        { repeat_off, 0, { &rule_nonterminal, NULL } },
-        NULL_RULE
-    }
-};
+    BNFPhrase* startAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_many, CGArray__newFromInitializerList(BNFSentence, ruleSentence, NULL));
+    BNFAlternative* startAlternative1 = BNFAlternative__new(CGArray__newFromInitializerList(BNFPhrase, startAlternative1Phrase1, NULL));
+    BNFSentence* startSentence = BNFSentence__new("startSentence", BNFTokenType_nonTerminal, CGArray__newFromInitializerList(BNFAlternative, startAlternative1, NULL));
 
-ParserRule rule_terminal = {
-    "rule_terminal",
-    NULL,
-    NULL,
-    {
-        { repeat_off, 0, { &rule_keyword_regex, &rule_literal, NULL } },
-        { repeat_off, 0, { &rule_literal, NULL  } },
-        NULL_RULE
-    }
-};
+    return startSentence;
+}
 
-ParserRule rule_keyword_regex = {
-    "rule_keyword_regex",
-    Parser_parse_keyword_regex,
-    NULL,
-    {
-        NULL_RULE
-    }
-};
-
-ParserRule rule_literal = {
-    "rule_literal",
-    Parser_parse_literal,
-    NULL,
-    {
-        NULL_RULE
-    }
-};
-ParserRule rule_definition_sign = {
-    "rule_definition_sign",
-    Parser_parse_definition_sign,
-    NULL,
-    {
-        NULL_RULE
-    }
-};
-ParserRule rule_semicolon = {
-    "rule_semicolon",
-    Parser_parse_semicolon,
-    NULL,
-    {
-        NULL_RULE
-    }
-};
-ParserRule rule_identifier = {
-    "rule_identifier",
-    Parser_parse_identifier,
-    NULL,
-    {
-        NULL_RULE
-    }
-};

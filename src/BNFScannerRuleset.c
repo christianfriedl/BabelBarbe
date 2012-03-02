@@ -12,13 +12,14 @@ static BNFScannerRule* BNFScannerRuleset__new_() {
     BNFScannerNode* orSignNode = BNFScannerNode__new(BNFScannerNodeType_string, "|", noiseRule, BNFTokenType_OrSign, false);
     BNFScannerNode* openParenNode = BNFScannerNode__new(BNFScannerNodeType_string, "(", noiseRule, BNFTokenType_openParen, false);
     BNFScannerNode* closeParenNode = BNFScannerNode__new(BNFScannerNodeType_string, ")", noiseRule, BNFTokenType_closeParen, false);
+    BNFScannerNode* repeatZeroOrOnceNode = BNFScannerNode__new(BNFScannerNodeType_string, "?", noiseRule, BNFTokenType_repeatZeroOrOnce, false);
     BNFScannerNode* repeatZeroOrMoreNode = BNFScannerNode__new(BNFScannerNodeType_string, "*", noiseRule, BNFTokenType_repeatZeroOrMore, false);
     /* unneeded, this one is implied: BNFScannerNode* repeatOnceNode = BNFScannerNode__new(BNFScannerNodeType_string, "", noiseRule, BNFTokenType_repeatOnce, false); */
     BNFScannerNode* repeatManyNode = BNFScannerNode__new(BNFScannerNodeType_string, "+", noiseRule, BNFTokenType_repeatMany, false);
     BNFScannerNode* stringLiteralNode = BNFScannerNode__new(BNFScannerNodeType_regex, "\"[^\"]*\"", noiseRule, BNFTokenType_stringLiteral, false); /* TODO: escaping " */
     BNFScannerNode* regexLiteralNode = BNFScannerNode__new(BNFScannerNodeType_regex, "/[^\\/]+/", noiseRule, BNFTokenType_regexLiteral, false); /* possible TODO: we could conveniently return $1 from regex nodes, if there is one */
-    BNFScannerRule_setNodes(startRule, CGArray__newFromInitializerList(BNFScannerNode, identifierNode, definitionSignNode, semicolonNode, orSignNode, openParenNode, closeParenNode, repeatZeroOrMoreNode, repeatManyNode, stringLiteralNode, regexLiteralNode, noiseNode));
-    BNFScannerRule_setNodes(noiseRule, CGArray__newFromInitializerList(BNFScannerNode, identifierNode, definitionSignNode, semicolonNode, orSignNode, openParenNode, closeParenNode, repeatZeroOrMoreNode, repeatManyNode, stringLiteralNode, regexLiteralNode));
+    BNFScannerRule_setNodes(startRule, CGArray__newFromInitializerList(BNFScannerNode, identifierNode, definitionSignNode, semicolonNode, orSignNode, openParenNode, closeParenNode, repeatZeroOrOnceNode, repeatZeroOrMoreNode, repeatManyNode, stringLiteralNode, regexLiteralNode, noiseNode));
+    BNFScannerRule_setNodes(noiseRule, CGArray__newFromInitializerList(BNFScannerNode, identifierNode, definitionSignNode, semicolonNode, orSignNode, openParenNode, closeParenNode, repeatZeroOrOnceNode, repeatZeroOrMoreNode, repeatManyNode, stringLiteralNode, regexLiteralNode));
 
     return startRule;
 }

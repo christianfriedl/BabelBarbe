@@ -13,8 +13,8 @@ CGAppState* appState;
 void testNewDelete() {
     printf("%s... ", __func__);
 
-    BNFToken* token1 = BNFToken__new(BNFTokenType_start, CGString__new("token1"));
-    BNFToken* token2 = BNFToken__new(BNFTokenType_start, CGString__new("token2"));
+    BNFToken* token1 = BNFToken__new(BNFTokenType_nonTerminal, CGString__new("token1"));
+    BNFToken* token2 = BNFToken__new(BNFTokenType_nonTerminal, CGString__new("token2"));
     BNFAst* ast1 = BNFAst__new(NULL, token1, NULL);
     assert(ast1 != NULL);
     BNFAst* ast2 = BNFAst__new(ast1, token2, NULL);
@@ -30,10 +30,10 @@ void testNewDelete() {
 void testGetters() {
     printf("%s...\n", __func__);
 
-    BNFToken* token1 = BNFToken__new(BNFTokenType_start, NULL);
-    BNFToken* token2 = BNFToken__new(BNFTokenType_start, NULL);
-    BNFSentence* sentence1 = BNFSentence__new(NULL, BNFTokenType_start, NULL);
-    BNFSentence* sentence2 = BNFSentence__new(NULL, BNFTokenType_start, NULL);
+    BNFToken* token1 = BNFToken__new(BNFTokenType_nonTerminal, NULL);
+    BNFToken* token2 = BNFToken__new(BNFTokenType_nonTerminal, NULL);
+    BNFSentence* sentence1 = BNFSentence__new(NULL, BNFTokenType_nonTerminal, NULL);
+    BNFSentence* sentence2 = BNFSentence__new(NULL, BNFTokenType_nonTerminal, NULL);
     BNFAst* ast1 = BNFAst__new(NULL, token1, sentence1);
     assert(ast1 != NULL);
     BNFAst* ast2 = BNFAst__new(ast1, token2, sentence2);
