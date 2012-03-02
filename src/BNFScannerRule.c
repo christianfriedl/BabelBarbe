@@ -109,6 +109,10 @@ static BNFToken* BNFScannerNode_applyFunctionToText_(BNFScannerNode* this, const
         token = BNFScannerNode_createToken_(this, text, funcRv->len); 
     else
         token = NULL;
+    #ifdef DEBUG
+    if (funcRv->success == true)
+        printf("ApplyFunctionTotext_ success: %i len: %u; token: type %s, text %s, textlen %u\n", funcRv->success, funcRv->len, BNFToken_getTypeName(token), BNFToken_getText(token), BNFToken_getTextLength(token));
+    #endif
     ApplyToTextRV_delete(funcRv);
     return token;
 }
@@ -191,8 +195,14 @@ BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text)
     CGArrayIterator(BNFScannerNode)* iter = CGArrayIterator__new(BNFScannerNode, this->nodes);
     BNFScannerNode* node = NULL;
     while ((node = CGArrayIterator_fetch(BNFScannerNode, iter)) != NULL) {
+        #ifdef DEBUG
+        printf("applyToText reading node %s\n", BNFTokenType_toString(BNFScannerNode_getTokenType(node)));
+        #endif
         this->successNode = node;
         BNFToken* token = BNFScannerNode_applyToText(this->successNode, text);
+        #ifdef DEBUG
+        printf("applyToText received token %s\n", token ? BNFTokenType_toString(BNFToken_getType(token)) : "(NULL)");
+        #endif
         if (token != NULL)
             return token;
     }

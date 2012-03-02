@@ -16,7 +16,6 @@ void testScan() {
 
     CGAppState_catchAndDeleteException(appState);
 	BNFScannerRule* startRule = BNFScannerRuleset__getInstance();
-    printf("startRule = %ld\n", startRule);
 	CGString* text = CGString__new("  straw");
 	BNFScanner* scanner = BNFScanner__new(startRule, text);
     CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
@@ -34,16 +33,64 @@ void testScan() {
     CGString_delete(scanner);
     CGString_delete(tokenList);
 
+    printf("%s ok -- ", __func__);
+}
+
+void testScan2() {
+    printf("%s... ", __func__);
+
     CGAppState_catchAndDeleteException(appState);
-	text = CGString__new("straw ::= stem ;");
-	scanner = BNFScanner__new(startRule, text);
-    tokenList = BNFScanner_scanAllTokens(scanner);
+	BNFScannerRule* startRule = BNFScannerRuleset__getInstance();
+	CGString* text = CGString__new("straw ::= stem ;");
+	BNFScanner* scanner = BNFScanner__new(startRule, text);
+    CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
     assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 0)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 1)) == BNFTokenType_definitionSign);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 2)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 3)) == BNFTokenType_semicolon);
     CGString_delete(text);
     CGString_delete(scanner);
     CGString_delete(tokenList);
 
-    printf("ok -- ");
+    printf("%s ok -- ", __func__);
+}
+
+void testScan3() {
+    printf("%s... ", __func__);
+
+    CGAppState_catchAndDeleteException(appState);
+	BNFScannerRule* startRule = BNFScannerRuleset__getInstance();
+	CGString* text = CGString__new("straw ::= stem ; stem ::= (leaf haulm)* ; leaf ::= \"LEAF\" ; haulm ::= /[a-f]+[0-3]*/ ;");
+	BNFScanner* scanner = BNFScanner__new(startRule, text);
+    CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 0)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 1)) == BNFTokenType_definitionSign);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 2)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 3)) == BNFTokenType_semicolon);
+
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 4)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 5)) == BNFTokenType_definitionSign);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 6)) == BNFTokenType_openParen);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 7)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 8)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 9)) == BNFTokenType_closeParen);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 10)) == BNFTokenType_repeatZeroOrMore);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 11)) == BNFTokenType_semicolon);
+
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 12)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 13)) == BNFTokenType_definitionSign);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 14)) == BNFTokenType_stringLiteral);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 15)) == BNFTokenType_semicolon);
+
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 16)) == BNFTokenType_identifier);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 17)) == BNFTokenType_definitionSign);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 18)) == BNFTokenType_regexLiteral);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 19)) == BNFTokenType_semicolon);
+    CGString_delete(text);
+    CGString_delete(scanner);
+    CGString_delete(tokenList);
+
+    printf("%s ok -- ", __func__);
 }
 
 int main() {
@@ -53,6 +100,8 @@ int main() {
     appState = CGAppState__getInstance();
 
     testScan();
+    testScan2();
+    testScan3();
 
     CGAppState__deInit();
 

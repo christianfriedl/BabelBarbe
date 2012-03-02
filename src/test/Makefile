@@ -8,7 +8,7 @@ CURRENT_BINARIES=0200_BNFScannerWithRuleset
 
 STATIC_LIBRARY=../libbnf.a
 
-current: $(CURRENT_BINARIES)
+current: clean $(CURRENT_BINARIES)
 	for i in $(CURRENT_BINARIES); do ./$$i; if [ $$? != 0 ]; then exit; fi; done
 
 clean-all: all

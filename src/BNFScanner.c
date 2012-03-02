@@ -31,7 +31,9 @@ void BNFScanner_delete(BNFScanner* this) {
 }
 
 BNFToken* BNFScanner_scanNextToken(BNFScanner* this) {
-    printf("scanner::scanNextToken called with currentRule = %ld (%s)\n", this->currentRule, BNFScannerRule_getName(this->currentRule));
+    #ifdef DEBUG
+    printf("scanner::scanNextToken called with currentRule = %ld (%s) @text '%s'\n", this->currentRule, BNFScannerRule_getName(this->currentRule), this->textPtr);
+    #endif
     if (this->textPtr == this->textEndPtr) /* end of text reached, so no more tokens */
         return NULL;
     if (this->currentRule == NULL) { /* we are not at EOT, and we have no rule to follow -> error */
