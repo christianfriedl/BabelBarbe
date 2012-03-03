@@ -71,9 +71,9 @@ CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tok
     do {
         partIsParsed = true;
         while ((sentence = CGArrayIterator_fetch(BNFSentence, partsIterator)) != NULL) {
-            printf("phrase found sentence\n");
+            //printf("phrase found sentence\n");
             if ((ast = BNFSentence_parse(sentence, tokenIterator)) != NULL) {
-                printf("phrase received ast, partIsParsed is %i\n", partIsParsed);
+                //printf("phrase received ast, partIsParsed is %i\n", partIsParsed);
                 CGArray_add(BNFAst, asts, ast);
             } else {
                 partIsParsed = false;
@@ -89,7 +89,7 @@ CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tok
         } else if (this->repeatSwitch == BNFPhraseRepeat_many)
             isParsed |= partIsParsed;
     } while (partIsParsed);
-    printf("phrase claims parsed is %i\n", isParsed);
+    //printf("phrase claims parsed is %i\n", isParsed);
     if (isParsed)
         return asts;
     else
@@ -197,11 +197,11 @@ BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIte
         CGArrayIterator(BNFAlternative)* alternativesIterator = CGArrayIterator__new(BNFAlternative, this->alternatives);
         BNFAlternative* alternative = NULL;
         while ((alternative = CGArrayIterator_fetch(BNFAlternative, alternativesIterator)) != NULL) {
-            printf("trying alternative @%ld\n", alternative);
+            //printf("trying alternative @%ld\n", alternative);
             CGArray(BNFAst)* altAsts = BNFAlternative_parse(alternative, tokenIterator);
             if (altAsts != NULL) {
                 ast = BNFAst__new(NULL, BNFToken__new(this->tokenType, CGString__new("")), this);
-                printf("created ast @%ld with tokenType %s\n", ast, BNFTokenType_toString(this->tokenType));
+                //printf("created ast @%ld with tokenType %s\n", ast, BNFTokenType_toString(this->tokenType));
                 BNFAst_setSubAsts(ast, altAsts);
                 break;
             } else if (CGAppState_isExceptionRaisedWithID(CGAppState__getInstance(), BNFExceptionID_ScannerError))
@@ -213,9 +213,7 @@ BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIte
 }
 
 int BNFSentence_compare(const BNFSentence** first, const BNFSentence** second) {
-    #ifdef DEBUG
-    printf("BNFSentence_compare comparing %ld and %ld, returning %ld\n", *second, *first, (*second-*first));
-    #endif
+    //printf("BNFSentence_compare comparing %ld and %ld, returning %ld\n", *second, *first, (*second-*first));
     return (*second - *first);
 }
 void BNFSentence_setAlternatives(BNFSentence* this, CGArray(BNFAlternative)* alternatives) {

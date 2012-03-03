@@ -93,6 +93,25 @@ void testScan3() {
     printf("%s ok -- ", __func__);
 }
 
+void testScanWithNoiseAtEnd() {
+    printf("%s... ", __func__);
+
+    CGAppState_catchAndDeleteException(appState);
+	BNFScannerRule* startRule = BNFScannerRuleset__getInstance();
+	CGString* text = CGString__new("  straw ::=\tirxn \n; ");
+	BNFScanner* scanner = BNFScanner__new(startRule, text);
+    CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
+    assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 0)) == BNFTokenType_identifier);
+    int i;
+    for (i=0;i<CGArray_getSize(BNFToken, tokenList); ++i)
+        printf("%s: '%s'\n", BNFToken_getTypeName(CGArray_getValueAt(BNFToken, tokenList, i)), BNFToken_getText(CGArray_getValueAt(BNFToken, tokenList, i)));
+    CGString_delete(text);
+    CGString_delete(scanner);
+    CGString_delete(tokenList);
+
+    printf("%s ok -- ", __func__);
+}
+
 int main() {
     printf("=== %s ===\n", __FILE__);
 
@@ -102,6 +121,7 @@ int main() {
     testScan();
     testScan2();
     testScan3();
+    testScanWithNoiseAtEnd();
 
     CGAppState__deInit();
 

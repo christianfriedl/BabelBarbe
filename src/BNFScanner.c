@@ -45,7 +45,6 @@ BNFToken* BNFScanner_scanNextToken(BNFScanner* this) {
         token = BNFScannerRule_applyToText(this->currentRule, this->textPtr);
         if (token != NULL) {
                 node = BNFScannerRule_getSuccessNode(this->currentRule);
-				printf("textlength %u\n", BNFToken_getTextLength(token));
                 this->textPtr += BNFToken_getTextLength(token);
                 this->currentRule = BNFScannerNode_getFollowupRule(node);
                 if (this->currentRule == NULL && BNFScannerNode_getIsNoise(node) == true) {
@@ -61,7 +60,7 @@ BNFToken* BNFScanner_scanNextToken(BNFScanner* this) {
     return token;
 }
 
-CGArray(BNFToken)* BNFScanner_scanAllTokens(BNFScanner* this) { /* TODO: handling of noise-nodes should be more generic (tokentype should know if it's noise) */
+CGArray(BNFToken)* BNFScanner_scanAllTokens(BNFScanner* this) { 
 	CGArray(BNFToken)* tokenList = CGArray__new(BNFToken, 64);
 	BNFToken* token = NULL;
 	while ((token = BNFScanner_scanNextToken(this)) != NULL)
