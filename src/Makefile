@@ -29,7 +29,7 @@ current-test: $(STATIC_LIBRARY)
 	rm -f *.i *.s
 	rm -f test/*.i test/*.s
 
-compiler: compiler.o $(STATIC_LIBRARY)
+compiler: Main.o $(STATIC_LIBRARY)
 	$(CC) $(LDFLAGS) -o $@ $< -L./ -lbnf $(LDFLAGS) -lcgenerics
 
 clean-all-test: clean all tags test

@@ -79,26 +79,7 @@ CGString* BNFToken_toString(BNFToken* this) {
 }
 
 CGString* BNFToken_getTypeName(BNFToken* this) {
-    switch (this->type) {
-        case BNFTokenType_nonTerminal: 
-            return CGString__new("BNFTokenType_nonTerminal");
-            break;
-        case BNFTokenType_noise: 
-            return CGString__new("BNFTokenType_noise");
-            break;
-        case BNFTokenType_identifier: 
-            return CGString__new("BNFTokenType_identifier");
-            break;
-        case BNFTokenType_definitionSign:
-            return CGString__new("BNFTokenType_definitionSign");
-            break;
-        case BNFTokenType_semicolon: 
-            return CGString__new("BNFTokenType_semicolon");
-            break;
-        default:
-            CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_UnknownBNFTokenType, "unknown token type %u", this->type);
-            return CGString__new("Unknown Token Type");
-    }
+    return BNFTokenType_toString(this->type);
 }
 
 BNFTokenType BNFToken_getType(BNFToken* this) {
