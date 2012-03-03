@@ -1,5 +1,6 @@
 #include<assert.h>
 #include<stdio.h>
+#define DEBUG 
 #include<cgenerics/CGAppState.h>
 #include"BNFScanner.h"
 #include"BNFScannerRuleset.h"
@@ -7,12 +8,13 @@
 #include"BNFParserRuleset.h"
 
 
+
 CGAppState* appState;
 
 void testParse() {
     printf("%s... ", __func__);
 
-    char* text = "xyz ::= abc ;";
+    char* text = "xyz ::= abc ; ";
     CGArray(BNFSentence)* seenSentences = CGArray__new(BNFSentence, 1);
     BNFSentence_print(BNFParserRuleset__getInstance(), 0, seenSentences);
 
