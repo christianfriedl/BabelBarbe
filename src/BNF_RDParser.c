@@ -98,7 +98,9 @@ CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tok
 void BNFPhrase_print(BNFPhrase* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences) {
     CGString* indentation = CGString__newFromLengthAndPreset(indentationLevel * BNF_INDENTATION_SIZE, ' ');
     CGString* rsString = BNFPhraseRepeatSwitch_toString(this->repeatSwitch);
+    #ifdef DEBUG
     printf("%sBNFPhrase (repeatSwitch %s)\n", indentation, rsString);
+    #endif
     CGArrayIterator(BNFSentence)* iter = CGArrayIterator__new(BNFSentence, this->parts);
     BNFSentence* part = NULL;
     while ((part = CGArrayIterator_fetch(BNFSentence, iter)) != NULL)
@@ -137,10 +139,12 @@ CGArray(BNFAst)* BNFAlternative_parse(BNFAlternative* this, CGArrayIterator(BNFT
         } else
             break;
     }
+    #ifdef DEBUG
     if (asts != NULL) {
         printf("alternative - received asts from phrases:\n");
         printf("%u\n", CGArray_getSize(BNFAst, asts));
     }
+    #endif
     return asts;
 }
 void BNFAlternative_print(BNFAlternative* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences) {
@@ -183,7 +187,9 @@ void BNFSentence_delete(BNFSentence* this) {
 BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIterator) {
     if (this->alternatives == NULL) { /* this is a terminal symbol */
         BNFToken* token = CGArrayIterator_fetch(BNFToken, tokenIterator);
+        #ifdef DEBUG
         printf("terminal symbol sentence for token %s %s\n", token != NULL ? BNFToken_getTypeName(token): "(NULL)" , token != NULL ? BNFToken_getText(token) : "(NULL)");
+        #endif
         if (token == NULL) {
             return NULL;
         } else if (BNFToken_getType(token) == this->tokenType)

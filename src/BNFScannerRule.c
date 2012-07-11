@@ -139,10 +139,10 @@ static ApplyToTextRV_* BNFScannerNode_applyStringToText_(BNFScannerNode* this, c
 static ApplyToTextRV_* BNFScannerNode_applyRegexToText_(BNFScannerNode* this, const CGString* text) {
     CGString* errorString = CGString__newFromLengthAndPreset(255, ' ');
     int errorOffset = 0;
-    int outputVector[3];
+    int outputVector[BNFScannerNode__PCRE_OVECTOR_COUNT]; /* this is a hardcoded number, which is a severe limitation */
     int reResult = 0;
     
-    reResult = pcre_exec(this->regex, NULL, text, strlen(text), 0, PCRE_ANCHORED, outputVector, 3);
+    reResult = pcre_exec(this->regex, NULL, text, strlen(text), 0, PCRE_ANCHORED, outputVector, BNFScannerNode__PCRE_OVECTOR_COUNT);
     if (reResult < 0) { /* not found, but also possible error */
         switch (reResult) {
             case PCRE_ERROR_NOMATCH:
@@ -153,7 +153,7 @@ static ApplyToTextRV_* BNFScannerNode_applyRegexToText_(BNFScannerNode* this, co
                 return ApplyToTextRV__new(0, false);
         }
     } else if (reResult == 0) {
-        CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE cannot write into outputVector because it is too small (pattern '%s', text '%s')", this->pattern, text));
+        CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE cannot write into outputVector because it is too small (pattern '%s', text '%s' ---- maximum number of sub-parts for regex is %i)", this->pattern, text, BNFScannerNode__PCRE_OVECTOR_COUNT / 3));
         return ApplyToTextRV__new(0, false);
     } else
         return ApplyToTextRV__new(outputVector[1] - outputVector[0], true);

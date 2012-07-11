@@ -9,6 +9,8 @@
 #include<cgenerics/CGString.h>
 #include"BNFToken.h"
 
+#define BNFScannerNode__PCRE_OVECTOR_COUNT (30)
+
 struct BNFScannerRule_struct;
 typedef struct BNFScannerRule_struct BNFScannerRule;
 

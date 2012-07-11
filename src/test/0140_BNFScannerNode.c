@@ -124,10 +124,8 @@ void testApplyComplexRegexPattern() {
     assert(BNFScannerNode_applyToText(node, "abc") == NULL);
     BNFScannerNode_delete(node);
 
-    /* this should fail w/exception because we cannot deal with more than one parentheses pair */
     node = BNFScannerNode__new(BNFScannerNodeType_regex, "([a-z]{5,10})(Y+)([a-z\\d]+)", NULL, BNFTokenType_nonTerminal, false);
-    assert(BNFScannerNode_applyToText(node, "abcdeYYYa20") == NULL);
-    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_PCRERegexError) == true);
+    assert(BNFScannerNode_applyToText(node, "abcdeYYYa20") != NULL);
     BNFScannerNode_delete(node);
     
     /* this should fail w/exception because the regex has a syntax error */
