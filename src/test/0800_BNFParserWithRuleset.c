@@ -75,8 +75,33 @@ void testParseWithLiterals() {
 
     printf("%s ok\n", __func__);
 }
-void testParseComplete() {
+char* getBNFGrammar_() {
+    FILE* file = fopen("grammar.bnf", "r");
+    char* text = malloc(1025 * sizeof(char));
+    fread(text, 1024, 1, file);
+    fclose(file);
+    return text;
+}
+void testParseCompleteBNFGrammar() {
     printf("%s... ", __func__);
+
+    char* text = getBNFGrammar_();
+    CGArray(BNFSentence)* seenSentences = CGArray__new(BNFSentence, 1);
+    BNFSentence_print(BNFParserRuleset__getInstance(), 0, seenSentences);
+
+    BNFScannerRule* scannerStartRule = BNFScannerRuleset__getInstance();
+    BNFScanner* scanner = BNFScanner__new(scannerStartRule, text);
+    BNF_RDParser* parser = BNF_RDParser__new(BNFParserRuleset__getInstance());
+
+    CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
+    BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
+
+    printf("Resulting Ast:\n");
+    BNFAst_print(ast, 0);
+
+    BNF_RDParser_delete(parser);
+
+    printf("%s ok\n", __func__);
 }
 
 int main() {
@@ -87,6 +112,7 @@ int main() {
     testParse();
     testParseTwoSentences();
     testParseWithLiterals();
+    testParseCompleteBNFGrammar();
 
     printf("=== %s ok ===\n", __FILE__);
     CGAppState__deInit();
