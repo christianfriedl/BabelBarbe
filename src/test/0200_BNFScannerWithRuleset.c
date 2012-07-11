@@ -14,7 +14,7 @@ static CGAppState *appState;
 void testScan() {
     printf("%s... ", __func__);
 
-    CGAppState_catchAndDeleteException(appState);
+    CGAppState_reset(appState);
 	BNFScannerRule* startRule = BNFScannerRuleset__getInstance();
 	CGString* text = CGString__new("  straw");
 	BNFScanner* scanner = BNFScanner__new(startRule, text);
@@ -24,7 +24,7 @@ void testScan() {
     CGString_delete(scanner);
     CGString_delete(tokenList);
 
-    CGAppState_catchAndDeleteException(appState);
+    CGAppState_reset(appState);
 	text = CGString__new("straw");
 	scanner = BNFScanner__new(startRule, text);
     tokenList = BNFScanner_scanAllTokens(scanner);
@@ -39,7 +39,7 @@ void testScan() {
 void testScan2() {
     printf("%s... ", __func__);
 
-    CGAppState_catchAndDeleteException(appState);
+    CGAppState_reset(appState);
 	BNFScannerRule* startRule = BNFScannerRuleset__getInstance();
 	CGString* text = CGString__new("straw ::= stem ;");
 	BNFScanner* scanner = BNFScanner__new(startRule, text);
@@ -58,9 +58,9 @@ void testScan2() {
 void testScan3() {
     printf("%s... ", __func__);
 
-    CGAppState_catchAndDeleteException(appState);
+    CGAppState_reset(appState);
 	BNFScannerRule* startRule = BNFScannerRuleset__getInstance();
-	CGString* text = CGString__new("straw ::= stem ; stem ::= (leaf haulm)* ; leaf ::= \"LEAF\" ; haulm ::= /[a-f]+[0-3]*/ ;");
+	CGString* text = CGString__new("straw ::= stem ; stem ::= (leaf haulm)* ; leaf ::= 'LEAF' ; haulm ::= /[a-f]+[0-3]*/ ;");
 	BNFScanner* scanner = BNFScanner__new(startRule, text);
     CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
     assert(BNFToken_getType(CGArray_getValueAt(BNFToken, tokenList, 0)) == BNFTokenType_identifier);
@@ -96,7 +96,7 @@ void testScan3() {
 void testScanWithNoiseAtEnd() {
     printf("%s... ", __func__);
 
-    CGAppState_catchAndDeleteException(appState);
+    CGAppState_reset(appState);
 	BNFScannerRule* startRule = BNFScannerRuleset__getInstance();
 	CGString* text = CGString__new("  straw ::=\tirxn \n; ");
 	BNFScanner* scanner = BNFScanner__new(startRule, text);

@@ -15,12 +15,12 @@ typedef struct BNFScannerRule_struct BNFScannerRule;
 typedef enum { BNFScannerNodeType_string = 0, BNFScannerNodeType_regex = 1 } BNFScannerNodeType;
 
 typedef struct {
-    BNFScannerNodeType type;
-    CGString* pattern;
-    pcre* regex;
-    BNFScannerRule* followupRule;
-    BNFTokenType tokenType;
-    bool isNoise;
+    BNFScannerNodeType type;        /* this scanner node can represent a static string literal, or regular expression */
+    CGString* pattern;              /* the pattern, represented as a string - either literal, or regex */
+    pcre* regex;                    /* the compiled regex, used internally */
+    BNFScannerRule* followupRule;   /* if this node matches, then the scanner should move to this rule */
+    BNFTokenType tokenType;         /* if this node matches, then this is its resulting token type */
+    bool isNoise;                   /* true if this node represents "noise", i.e. whitespace */
 } BNFScannerNode;
 
 DECLARE_ARRAY_TYPE(BNFScannerNode)
@@ -29,9 +29,9 @@ DECLARE_ARRAY_FUNCS(BNFScannerNode)
 DECLARE_ARRAY_ITERATOR_FUNCS(BNFScannerNode)
 
 struct BNFScannerRule_struct {
-    CGString* name;
-    CGArray(BNFScannerNode)* nodes;
-    BNFScannerNode* successNode;
+    CGString* name;                 /* used for debugging, but will also be good for error detection */
+    CGArray(BNFScannerNode)* nodes; /* the alternative nodes that can be applied at this point in the scanning process */
+    BNFScannerNode* successNode;    /* the resulting node, (uh, where is the node text actually?) */
 };
 
 BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType, bool isNoise);

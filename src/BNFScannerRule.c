@@ -93,7 +93,7 @@ static ApplyToTextRV_* ApplyToTextRV__new(unsigned int len, bool success) {
         this->len = len;
         this->success = success;
     } else
-        CGAppState_THROW(CGAppState__getInstance(), Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate ApplyToTextRV_");
+        CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, CGExceptionID_CannotAllocate, "Cannot allocate ApplyToTextRV_");
     return this;
 }
 
@@ -195,14 +195,14 @@ BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text)
     CGArrayIterator(BNFScannerNode)* iter = CGArrayIterator__new(BNFScannerNode, this->nodes);
     BNFScannerNode* node = NULL;
     while ((node = CGArrayIterator_fetch(BNFScannerNode, iter)) != NULL) {
-        #ifdef DEBUG
+#ifdef DEBUG
         printf("applyToText reading node %s\n", BNFTokenType_toString(BNFScannerNode_getTokenType(node)));
-        #endif
+#endif
         this->successNode = node;
         BNFToken* token = BNFScannerNode_applyToText(this->successNode, text);
-        #ifdef DEBUG
+#ifdef DEBUG
         printf("applyToText received token %s\n", token ? BNFTokenType_toString(BNFToken_getType(token)) : "(NULL)");
-        #endif
+#endif
         if (token != NULL)
             return token;
     }

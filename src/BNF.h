@@ -9,4 +9,6 @@
 
 #define BNF_INDENTATION_SIZE (4)
 
+#undef DEBUG 
+
 #endif
