@@ -1,0 +1,23 @@
+start ::= rule ;
+
+rule ::= identifier '::=' alternatives ';' ; 
+
+alternatives ::= alternative ('|' alternative)+ ; 
+
+alternative ::= phrase+ ;
+
+phrase ::= term repetition_marker? ;
+
+term ::= symbol | '(' alternative ')' ; 
+
+repetition_marker ::= '?' | '*' | '+' ; 
+
+symbol ::= terminal_symbol | identifier;
+
+terminal_symbol ::= string_literal | regex_literal;
+
+regex_literal ::= '
+
+string_literal ::= '\'' \S+ '\'' ; 
+
+identifier ::= /[a-z][a-z_0-9\-]*/ ; 
