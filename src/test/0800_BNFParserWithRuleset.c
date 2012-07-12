@@ -76,7 +76,7 @@ void testParseWithLiterals() {
     printf("%s ok\n", __func__);
 }
 static char* getBNFGrammar_() {
-    FILE* file = fopen("grammar.bnf", "r");
+    FILE* file = fopen("bnf.bnf", "r");
     char* text = malloc(1025 * sizeof(char));
     size_t size = fread(text, 1, 1024, file);
     text[size] = '\0';
