@@ -99,5 +99,23 @@ bool BNFToken_isEQual(BNFToken* this, BNFToken* other) {
     return toBool((this->type == other->type && !CGString__compare(this->text, other->text)));
 }
 
-BNFToken* BNFToken_removeQuotationMarks(BNFToken* token) {
+/* NOTE: this is a function specific to the BNF parser, not the framework */
+BNFToken* BNFToken_removeQuotationMarks(BNFToken* this) {
+    char *newText = NULL;
+    if (CGString_getCharAt(this->text, 0) == '\'' && CGString_getCharAt(this->text, CGString_getSize(this->text) - 1) == '\'') 
+        newText = CGString_createSubstring(this->text, 1, CGString_getSize(this->text) - 2);
+    else
+        newText = CGString_clone(this->text); /* has to be cloned because the old text will be destroyed by delete'ing the old token */
+    return BNFToken__new(this->type, newText);
+    
+}
+/* NOTE: this is a function specific to the BNF parser, not the framework */
+BNFToken* BNFToken_removeRegexSlashes(BNFToken* this) {
+    char *newText = NULL;
+    if (CGString_getCharAt(this->text, 0) == '/' && CGString_getCharAt(this->text, CGString_getSize(this->text) - 1) == '/') 
+        newText = CGString_createSubstring(this->text, 1, CGString_getSize(this->text) - 2);
+    else
+        newText = CGString_clone(this->text); /* has to be cloned because the old text will be destroyed by delete'ing the old token */
+    return BNFToken__new(this->type, newText);
+    
 }

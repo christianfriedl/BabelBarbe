@@ -56,6 +56,7 @@ CGString* BNFScannerRule_getName(BNFScannerRule* this);
 BNFToken* BNFScannerRule_applyToText(BNFScannerRule* this, const CGString* text);
 BNFScannerNode* BNFScannerRule_getSuccessNode(BNFScannerRule* this);
 void BNFScannerRule_setNodes(BNFScannerRule* this, CGArray(BNFScannerNode)* nodes);
+BNFToken* BNFScannerNode_runOnAfterScanToken(BNFScannerNode* this, BNFToken* token);
 
 
 #endif

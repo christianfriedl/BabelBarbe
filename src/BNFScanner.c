@@ -45,6 +45,7 @@ BNFToken* BNFScanner_scanNextToken(BNFScanner* this) {
         if (token != NULL) {
             node = BNFScannerRule_getSuccessNode(this->currentRule);
             this->textPtr += BNFToken_getTextLength(token);
+            token = BNFScannerNode_runOnAfterScanToken(node, token);
             this->currentRule = BNFScannerNode_getFollowupRule(node);
             if (this->currentRule == NULL && BNFScannerNode_getIsNoise(node) == true) {
                 CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_ScannerError, "Noise node without followupRule detected.");

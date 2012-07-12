@@ -140,20 +140,6 @@ BNFToken* postProduction(BNFToken* token) {
     CGString* newText = CGString_createSubstring(text, 0, CGString_getSize(text)-1);
     return BNFToken__new(BNFToken_getType(token), newText);
 }
-void testApplyStringPatternWithOnAfterScanFunction() {
-    printf("%s... ", __func__);
-
-    BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_string, "abcde", NULL, BNFTokenType_nonTerminal, false, postProduction);
-    BNFToken* token = BNFToken__new(BNFTokenType_nonTerminal, CGString__new("abcd"));
-    
-    BNFToken* token2 = BNFScannerNode_applyToText(node, "abcde");
-    _helpAssertEqual(token, token2);
-
-    BNFScannerNode_delete(node);
-
-    printf("ok -- ");
-}
-
 int main() {
     printf("=== %s ===\n", __FILE__);
 
@@ -164,7 +150,6 @@ int main() {
     testApplyStringPattern();
     testApplyRegexPattern();
     testApplyComplexRegexPattern();
-    testApplyStringPatternWithOnAfterScanFunction();
 
     CGAppState__deInit(appState);
 

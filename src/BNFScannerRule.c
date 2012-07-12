@@ -85,15 +85,16 @@ static BNFToken* BNFScannerNode_createToken_(BNFScannerNode* this, const CGStrin
         token = BNFToken__new(this->tokenType, CGString__new(""));
         BNFToken_setTextLength(token, len);
         return token;
-    } else {
-        token = BNFToken__new(this->tokenType, CGString_createSubstring(text, 0, len));
-        if (this->onAfterScanToken != NULL) {
-            BNFToken* token2 = this->onAfterScanToken(token);
-            BNFToken_delete(token);
-            token = token2;
-        }
+    } else
+        return BNFToken__new(this->tokenType, CGString_createSubstring(text, 0, len));
+}
+BNFToken* BNFScannerNode_runOnAfterScanToken(BNFScannerNode* this, BNFToken* token) {
+    if (this->onAfterScanToken != NULL) {
+        BNFToken* token2 = this->onAfterScanToken(token);
+        BNFToken_delete(token);
+        return token2;
+    } else
         return token;
-    }
 }
 
 static ApplyToTextRV_* ApplyToTextRV__new(unsigned int len, bool success) {
