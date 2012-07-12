@@ -67,7 +67,7 @@ void BNFToken_delete(BNFToken* this) {
 
 void BNFToken_print(BNFToken* this) {
     char* type_name = BNFToken_getTypeName(this);
-    printf("token @%ld: type='%s', text='%s'\n", (long int)this, type_name, this->text);
+    printf("token @%ld (type='%s', text='%s')", (long int)this, type_name, this->text);
     free(type_name);
 }
 

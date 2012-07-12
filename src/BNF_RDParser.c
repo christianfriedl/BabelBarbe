@@ -278,3 +278,13 @@ void BNF_RDParser_print(BNF_RDParser* this) {
     BNFSentence_print(this->startSentence, 1, seenSentences);
     CGArray_delete(BNFSentence, seenSentences);
 }
+
+void BNF_RDParser__printTokenList(CGArray(BNFToken)* tokenList) {
+    CGArrayIterator(BNFToken)* iter = CGArrayIterator__new(BNFToken, tokenList);
+    BNFToken* token = NULL;
+    printf("Token List:\n");
+    while ((token = CGArrayIterator_fetch(BNFToken, iter)) != NULL) {
+        BNFToken_print(token);
+        printf("\n");
+    }
+}

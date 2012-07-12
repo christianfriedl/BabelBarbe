@@ -75,10 +75,11 @@ void testParseWithLiterals() {
 
     printf("%s ok\n", __func__);
 }
-char* getBNFGrammar_() {
+static char* getBNFGrammar_() {
     FILE* file = fopen("grammar.bnf", "r");
     char* text = malloc(1025 * sizeof(char));
-    fread(text, 1024, 1, file);
+    size_t size = fread(text, 1, 1024, file);
+    text[size] = '\0';
     fclose(file);
     return text;
 }
@@ -100,6 +101,39 @@ void testParseCompleteBNFGrammar() {
     BNFAst_print(ast, 0);
 
     BNF_RDParser_delete(parser);
+    free(text);
+
+    printf("%s ok\n", __func__);
+}
+
+static char* getCalcGrammar_() {
+    FILE* file = fopen("calc.bnf", "r");
+    char* text = malloc(1025 * sizeof(char));
+    size_t size = fread(text, 1, 1024, file);
+    text[size] = '\0';
+    fclose(file);
+    return text;
+}
+void testParseCompleteCalcGrammar() {
+    printf("%s... ", __func__);
+
+    char* text = getCalcGrammar_();
+    CGArray(BNFSentence)* seenSentences = CGArray__new(BNFSentence, 1);
+    BNFSentence_print(BNFParserRuleset__getInstance(), 0, seenSentences);
+
+    BNFScannerRule* scannerStartRule = BNFScannerRuleset__getInstance();
+    BNFScanner* scanner = BNFScanner__new(scannerStartRule, text);
+    BNF_RDParser* parser = BNF_RDParser__new(BNFParserRuleset__getInstance());
+
+    CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
+    BNF_RDParser__printTokenList(tokenList);
+    BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
+
+    printf("Resulting Ast:\n");
+    BNFAst_print(ast, 0);
+
+    BNF_RDParser_delete(parser);
+    free(text);
 
     printf("%s ok\n", __func__);
 }
@@ -113,6 +147,7 @@ int main() {
     testParseTwoSentences();
     testParseWithLiterals();
     testParseCompleteBNFGrammar();
+    testParseCompleteCalcGrammar();
 
     printf("=== %s ok ===\n", __FILE__);
     CGAppState__deInit();

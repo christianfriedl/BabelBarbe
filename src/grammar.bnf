@@ -1,4 +1,4 @@
-start ::= rule ;
+start ::= rule +;
 
 rule ::= identifier '::=' alternatives ';' ; 
 
