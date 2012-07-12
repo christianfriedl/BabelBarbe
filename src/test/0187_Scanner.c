@@ -25,7 +25,7 @@ void testIdentifier() {
     printf("%s... ", __func__);
 
     char* text = CGString__new("abcde");
-    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, BNFScannerNode__new(BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_identifier, false), NULL);
+    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, BNFScannerNode__new(BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_identifier, false, NULL), NULL);
     BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
     BNFScanner* scanner = BNFScanner__new(rule, text);
     BNFToken* token = BNFScanner_scanNextToken(scanner);
@@ -44,7 +44,7 @@ void testIdentifierWithError() {
 
     CGString* text = CGString__new("abcde123");
     CGString* identText = CGString__new("abcde");
-    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_identifier, false), NULL);
+    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_identifier, false, NULL), NULL);
     BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
     BNFScanner* scanner = BNFScanner__new(rule, text);
     BNFToken* token = BNFScanner_scanNextToken(scanner);
@@ -64,7 +64,7 @@ void testNoise() {
 
     CGString* text = CGString__new("     ");
     CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode,
-                                            BNFScannerNode__new(BNFScannerNodeType_regex, "\\s*", NULL, BNFTokenType_noise, true),
+                                            BNFScannerNode__new(BNFScannerNodeType_regex, "\\s*", NULL, BNFTokenType_noise, true, NULL),
                                             NULL);
     BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
     BNFScanner* scanner = BNFScanner__new(rule, text);
@@ -83,12 +83,12 @@ void testComplexRuleset() {
     BNFScannerRule* startRule;
     BNFScannerRule* noiseRule = BNFScannerRule__new(CGString__new(""), noiseNodes);
     startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
-                        BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", noiseRule, BNFTokenType_identifier, false), 
-                        BNFScannerNode__new(BNFScannerNodeType_string, "::=", noiseRule, BNFTokenType_definitionSign, false), 
-                        BNFScannerNode__new(BNFScannerNodeType_string, ";", noiseRule, BNFTokenType_semicolon, false), 
+                        BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", noiseRule, BNFTokenType_identifier, false, NULL), 
+                        BNFScannerNode__new(BNFScannerNodeType_string, "::=", noiseRule, BNFTokenType_definitionSign, false, NULL), 
+                        BNFScannerNode__new(BNFScannerNodeType_string, ";", noiseRule, BNFTokenType_semicolon, false, NULL), 
                         NULL);
     startRule = BNFScannerRule__new(CGString__new(""), startNodes);
-    CGArray_add(BNFScannerNode, noiseNodes, BNFScannerNode__new(BNFScannerNodeType_regex, "\\s*", startRule, BNFTokenType_noise, true));
+    CGArray_add(BNFScannerNode, noiseNodes, BNFScannerNode__new(BNFScannerNodeType_regex, "\\s*", startRule, BNFTokenType_noise, true, NULL));
 
     BNFScanner* scanner = BNFScanner__new(startRule, text);
     BNFToken* token = BNFScanner_scanNextToken(scanner);
@@ -120,7 +120,7 @@ void testScanSameToken() {
     CGString* text = CGString__new("aaaaaaa");
     CGArray(BNFScannerNode)* startNodes;
     BNFScannerRule* startRule = NULL;
-	BNFScannerNode* startNode = BNFScannerNode__new(BNFScannerNodeType_string, "a", NULL, BNFTokenType_identifier, false);
+	BNFScannerNode* startNode = BNFScannerNode__new(BNFScannerNodeType_string, "a", NULL, BNFTokenType_identifier, false, NULL);
     startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
 						startNode,
                         NULL);
@@ -160,7 +160,7 @@ void testScanAllTokens() {
     CGString* text = CGString__new("aaaaaaa");
     CGArray(BNFScannerNode)* startNodes;
     BNFScannerRule* startRule;
-    BNFScannerNode* aNode = BNFScannerNode__new(BNFScannerNodeType_string, "a", NULL, BNFTokenType_identifier, false);
+    BNFScannerNode* aNode = BNFScannerNode__new(BNFScannerNodeType_string, "a", NULL, BNFTokenType_identifier, false, NULL);
     startNodes = CGArray__newFromInitializerList(BNFScannerNode, aNode, NULL);
     startRule = BNFScannerRule__new(CGString__new(""), startNodes);
     BNFScannerNode_setFollowupRule(aNode, startRule);

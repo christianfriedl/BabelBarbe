@@ -31,7 +31,6 @@ void BNFScanner_delete(BNFScanner* this) {
 }
 
 BNFToken* BNFScanner_scanNextToken(BNFScanner* this) {
-    //printf("scanner::scanNextToken called with currentRule = %ld (%s) @text '%s' %ld (end = %ld)\n", this->currentRule, BNFScannerRule_getName(this->currentRule), this->textPtr, this->textPtr, this->textEndPtr);
     if (this->textPtr == this->textEndPtr) /* end of text reached, so no more tokens */
         return NULL;
     if (this->currentRule == NULL) { /* we are not at EOT, and we have no rule to follow -> error */
@@ -44,13 +43,13 @@ BNFToken* BNFScanner_scanNextToken(BNFScanner* this) {
         node = NULL;
         token = BNFScannerRule_applyToText(this->currentRule, this->textPtr);
         if (token != NULL) {
-                node = BNFScannerRule_getSuccessNode(this->currentRule);
-                this->textPtr += BNFToken_getTextLength(token);
-                this->currentRule = BNFScannerNode_getFollowupRule(node);
-                if (this->currentRule == NULL && BNFScannerNode_getIsNoise(node) == true) {
-                    CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_ScannerError, "Noise node without followupRule detected.");
-                    return NULL;
-                }
+            node = BNFScannerRule_getSuccessNode(this->currentRule);
+            this->textPtr += BNFToken_getTextLength(token);
+            this->currentRule = BNFScannerNode_getFollowupRule(node);
+            if (this->currentRule == NULL && BNFScannerNode_getIsNoise(node) == true) {
+                CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_ScannerError, "Noise node without followupRule detected.");
+                return NULL;
+            }
         } else 
             /* no token, not noise, but not EOT, therefore there was an error */
             CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_ScannerError, "Scanner error at %d, near '%s ...'", (this->textPtr - this->text), CGString_createSubstring(this->textPtr, 0, 20));

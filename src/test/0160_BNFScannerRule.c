@@ -33,7 +33,7 @@ void _helpAssertEqual(BNFToken* token, BNFToken* token2) {
 void testNewDelete() {
     printf("%s... ", __func__);
 
-    BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_string, "", NULL, BNFTokenType_nonTerminal, false);
+    BNFScannerNode* node = BNFScannerNode__new(BNFScannerNodeType_string, "", NULL, BNFTokenType_nonTerminal, false, NULL);
     BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), CGArray__newFromInitializerList(BNFScannerNode, node, NULL));
     assert(rule != NULL);
     assert(CGAppState_catchAndDeleteException(appState) == false);
@@ -47,8 +47,8 @@ void testNewDelete() {
 void testApplyStringPattern() {
     printf("%s... ", __func__);
 
-    BNFScannerNode* node1 = BNFScannerNode__new(BNFScannerNodeType_string, "abcd", NULL, BNFTokenType_nonTerminal, false);
-    BNFScannerNode* node2 = BNFScannerNode__new(BNFScannerNodeType_string, "efgh", NULL, BNFTokenType_nonTerminal, false);
+    BNFScannerNode* node1 = BNFScannerNode__new(BNFScannerNodeType_string, "abcd", NULL, BNFTokenType_nonTerminal, false, NULL);
+    BNFScannerNode* node2 = BNFScannerNode__new(BNFScannerNodeType_string, "efgh", NULL, BNFTokenType_nonTerminal, false, NULL);
 
     BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), CGArray__newFromInitializerList(BNFScannerNode, node1, node2, NULL));
     
@@ -66,8 +66,8 @@ void testApplyStringPattern() {
 void testApplyRegexPattern() {
     printf("%s... ", __func__);
 
-    BNFScannerNode* node1 = BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_nonTerminal, false);
-    BNFScannerNode* node2 = BNFScannerNode__new(BNFScannerNodeType_regex, "[0-9]+", NULL, BNFTokenType_nonTerminal, false);
+    BNFScannerNode* node1 = BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_nonTerminal, false, NULL);
+    BNFScannerNode* node2 = BNFScannerNode__new(BNFScannerNodeType_regex, "[0-9]+", NULL, BNFTokenType_nonTerminal, false, NULL);
 
     BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), CGArray__newFromInitializerList(BNFScannerNode, node1, node2, NULL));
     

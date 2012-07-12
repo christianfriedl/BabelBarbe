@@ -15,7 +15,7 @@ static ApplyToTextRV_* BNFScannerNode_applyStringToText_(BNFScannerNode* this, c
 static ApplyToTextRV_* BNFScannerNode_applyRegexToText_(BNFScannerNode* this, const CGString* text);
 static BNFToken* BNFScannerNode_applyFunctionToText_(BNFScannerNode* this, const CGString* text, ApplyToTextRV_*(*func)(BNFScannerNode*, const CGString*));
 
-BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType, bool isNoise) {
+BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType, bool isNoise, BNFToken* (*onAfterScanToken)(BNFToken*)) {
     BNFScannerNode* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->type = type;
@@ -35,13 +35,14 @@ BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, 
         this->followupRule = followupRule;
         this->tokenType = tokenType;
         this->isNoise = isNoise;
+        this->onAfterScanToken = onAfterScanToken;
     } else
         CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_fatal, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerNode"));
     return this;
 }
 
 BNFScannerNode* BNFScannerNode_clone(BNFScannerNode* this) {
-    return BNFScannerNode__new(this->type, this->pattern, this->followupRule, this->tokenType, this->isNoise);
+    return BNFScannerNode__new(this->type, this->pattern, this->followupRule, this->tokenType, this->isNoise, this->onAfterScanToken);
 }
 
 bool BNFScannerNode_setRegex(BNFScannerNode* this, CGString* pattern) {
@@ -79,12 +80,20 @@ bool BNFScannerNode_getIsNoise(BNFScannerNode* this) {
 }
 
 static BNFToken* BNFScannerNode_createToken_(BNFScannerNode* this, const CGString* text, const unsigned int len) {
+    BNFToken* token  = NULL;
     if (this->isNoise) {
-        BNFToken* token = BNFToken__new(this->tokenType, CGString__new(""));
+        token = BNFToken__new(this->tokenType, CGString__new(""));
         BNFToken_setTextLength(token, len);
         return token;
-    } else
-        return BNFToken__new(this->tokenType, CGString_createSubstring(text, 0, len));
+    } else {
+        token = BNFToken__new(this->tokenType, CGString_createSubstring(text, 0, len));
+        if (this->onAfterScanToken != NULL) {
+            BNFToken* token2 = this->onAfterScanToken(token);
+            BNFToken_delete(token);
+            token = token2;
+        }
+        return token;
+    }
 }
 
 static ApplyToTextRV_* ApplyToTextRV__new(unsigned int len, bool success) {
