@@ -23,7 +23,9 @@ typedef struct {
     BNFScannerRule* followupRule;   /* if this node matches, then the scanner should move to this rule */
     BNFTokenType tokenType;         /* if this node matches, then this is its resulting token type */
     bool isNoise;                   /* true if this node represents "noise", i.e. whitespace */
-    BNFToken* (*onAfterScanToken)(BNFToken*);    /* callback function to do postprocessing on the token */
+    BNFToken* (*onAfterScanToken)(BNFToken*);    /* callback function to do postprocessing on the token; can be NULL
+                                                        NOTE: this HAS to create a new token from the old one - the old one gets delete'd in the scanner
+                                                  */
 } BNFScannerNode;
 
 DECLARE_ARRAY_TYPE(BNFScannerNode)

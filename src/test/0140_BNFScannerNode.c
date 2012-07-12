@@ -138,7 +138,6 @@ void testApplyComplexRegexPattern() {
 BNFToken* postProduction(BNFToken* token) {
     CGString* text = BNFToken_getText(token);
     CGString* newText = CGString_createSubstring(text, 0, CGString_getSize(text)-1);
-    printf("---- %s ---- \n", newText);
     return BNFToken__new(BNFToken_getType(token), newText);
 }
 void testApplyStringPatternWithOnAfterScanFunction() {

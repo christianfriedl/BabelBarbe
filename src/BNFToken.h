@@ -29,4 +29,10 @@ unsigned int BNFToken_getTextLength(BNFToken* this);
 void BNFToken_setTextLength(BNFToken* this, unsigned int length);
 bool BNFToken_isEQual(BNFToken* this, BNFToken* other);
 
+/* NOTE: this is a function specific to the BNF parser, not the framework */
+/* this removes the quotation marks from the START and the END of the token text (if any), returning a new token */
+BNFToken* BNFToken_removeQuotationMarks(BNFToken* token);
+/* NOTE: this is a function specific to the BNF parser, not the framework */
+/* this removes the slashes from the START and the END of the token text (if any), returning a new token */
+BNFToken* BNFToken_removeRegexSlashes(BNFToken* token);
 #endif

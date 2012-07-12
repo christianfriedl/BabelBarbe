@@ -37,7 +37,7 @@ BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, 
         this->isNoise = isNoise;
         this->onAfterScanToken = onAfterScanToken;
     } else
-        CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_fatal, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerNode"));
+        CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerNode");
     return this;
 }
 
@@ -57,7 +57,7 @@ bool BNFScannerNode_setRegex(BNFScannerNode* this, CGString* pattern) {
     if (this->regex != NULL)
         success = true;
     else {
-        CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE reported a compilation error at offset %i, message: '%s' (pattern '%s')", errorOffset, errorString, this->pattern));
+        CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_PCRERegexError, "PCRE reported a compilation error at offset %i, message: '%s' (pattern '%s')", errorOffset, errorString, this->pattern);
         free(this->pattern);
         this->pattern = NULL;
         success = false;
@@ -158,11 +158,11 @@ static ApplyToTextRV_* BNFScannerNode_applyRegexToText_(BNFScannerNode* this, co
                 return ApplyToTextRV__new(0, false);
                 break;
             default:
-                CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE reported an error, message '%s' at offset %i, resultcode was %i (pattern '%s', text '%s')", errorString, errorOffset, reResult, this->pattern, text));
+                CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_PCRERegexError, "PCRE reported an error, message '%s' at offset %i, resultcode was %i (pattern '%s', text '%s')", errorString, errorOffset, reResult, this->pattern, text);
                 return ApplyToTextRV__new(0, false);
         }
     } else if (reResult == 0) {
-        CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, BNFExceptionID_PCRERegexError, "PCRE cannot write into outputVector because it is too small (pattern '%s', text '%s' ---- maximum number of sub-parts for regex is %i)", this->pattern, text, BNFScannerNode__PCRE_OVECTOR_COUNT / 3));
+        CGAppState_THROW(CGAppState__getInstance(), Severity_error, BNFExceptionID_PCRERegexError, "PCRE cannot write into outputVector because it is too small (pattern '%s', text '%s' ---- maximum number of sub-parts for regex is %i)", this->pattern, text, BNFScannerNode__PCRE_OVECTOR_COUNT / 3);
         return ApplyToTextRV__new(0, false);
     } else
         return ApplyToTextRV__new(outputVector[1] - outputVector[0], true);
@@ -187,7 +187,7 @@ BNFScannerRule* BNFScannerRule__new(CGString* name, CGArray(BNFScannerNode)* nod
         this->nodes = nodes;
         this->successNode = NULL;
     } else
-        CGAppState_throwException(CGAppState__getInstance(), CGException__new(Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerRule"));
+        CGAppState_THROW(CGAppState__getInstance(), Severity_error, CGExceptionID_CannotAllocate, "Cannot allocate BNFScannerRule");
     return this;
 }
 

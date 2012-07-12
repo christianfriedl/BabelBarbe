@@ -98,3 +98,6 @@ void BNFToken_setTextLength(BNFToken* this, unsigned int length) {
 bool BNFToken_isEQual(BNFToken* this, BNFToken* other) {
     return toBool((this->type == other->type && !CGString__compare(this->text, other->text)));
 }
+
+BNFToken* BNFToken_removeQuotationMarks(BNFToken* token) {
+}
