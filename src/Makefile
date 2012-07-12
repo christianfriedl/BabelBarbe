@@ -20,7 +20,7 @@ INSTALLMAN=${PREFIX}/usr/man/${MANPATH}
 
 HEADERS=*.h
 STATIC_LIBRARY=libbnf.a 
-LIB_OBJECTS =  BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o BNF_RDParser.o BNFParserRuleset.o
+LIB_OBJECTS =  BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o BNF_RDParser.o BNFParserRuleset.o BNFCodeGenerator.o
 
 necessary-test: all tags manpages test
 
@@ -47,7 +47,7 @@ $(STATIC_LIBRARY): $(LIB_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $?
 
 clean:
-	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY) *.e.c *.BAK *.i *.s
+	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY) *.e.c *.BAK *.i *.s compiler
 	(cd test; make clean)
 
 .PHONY: test

@@ -50,6 +50,17 @@ void BNFAst_setSubAsts(BNFAst* this, CGArray(BNFAst)* subAsts) {
     while ((ast = CGArrayIterator_fetch(BNFAst, iter)) != NULL)
         CGTree_addSubTree(BNFAst, this->tree, ast->tree);
 }
+CGArrayOfCGTreeOfBNFAstIterator* BNFAst_getSubAstIterator(BNFAst* this) {
+    CGArrayOfCGTreeOfBNFAst* subTrees = CGTree_getSubTrees(BNFAst, this->tree);
+    CGArrayOfCGTreeOfBNFAstIterator* iter = CGArrayIterator__new(CGTreeOfBNFAst, subTrees);
+    return iter;
+}
+BNFAst* BNFAst_getSubAstAt(BNFAst* this, unsigned int index) {
+    CGArrayOfCGTreeOfBNFAst* subTrees = CGTree_getSubTrees(BNFAst, this->tree);
+    CGTreeOfBNFAst* subAstTree = CGArrayOfCGTreeOfBNFAst_getValueAt(subTrees, index);
+    BNFAst* subAst = CGTree_getValue(BNFAst, subAstTree);
+    return subAst;
+}
 
 void BNFAst_print(BNFAst* this, unsigned int indentationLevel) {
     CGString* indentation = CGString__newFromLengthAndPreset(indentationLevel * BNF_INDENTATION_SIZE, ' ');

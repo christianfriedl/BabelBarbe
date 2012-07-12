@@ -6,11 +6,12 @@
 #include"BNFScannerRuleset.h"
 #include"BNF_RDParser.h"
 #include"BNFParserRuleset.h"
+#include"BNFCodeGenerator.h"
 
 
 CGAppState* appState;
 
-void Main__parse(CGString* text) {
+static BNFAst* Main__parse_(CGString* text) {
     BNFScannerRule* scannerStartRule = BNFScannerRuleset__getInstance();
     BNFScanner* scanner = BNFScanner__new(scannerStartRule, text);
     BNF_RDParser* parser = BNF_RDParser__new(BNFParserRuleset__getInstance());
@@ -24,6 +25,8 @@ void Main__parse(CGString* text) {
     BNF_RDParser_delete(parser);
 
     printf("ok\n");
+
+    return ast;
 }
 
 void Main__printUsage() {
@@ -59,7 +62,10 @@ int main(int argc, char *argv[]) {
     printf("%s\n", argv[1]);
 
     CGString* text = Main__readInputFile(argv[1]);
-    Main__parse(text);
+    BNFAst* ast = Main__parse_(text);
+    BNFCodeGenerator* cg = BNFCodeGenerator__new(ast);
+    char *code = BNFCodeGenerator_createCode(cg);
+    BNFCodeGenerator_delete(cg);
     CGAppState__deInit();
 	return 0;
 }
