@@ -66,6 +66,14 @@ BNFAst* BNFAst_getSubAstAt(BNFAst* this, unsigned int index) {
     return subAst;
 }
 
+unsigned int BNFAst_getSubAstsSize(BNFAst* this) {
+    CGArrayOfCGTreeOfBNFAst* subTrees = CGTree_getSubTrees(BNFAst, this->tree);
+	return CGArray_getSize(CGTreeOfBNFAst, subTrees);
+}
+CGArrayOfCGTreeOfBNFAst* BNFAst_getSubAsts(BNFAst* this) {
+    return CGTree_getSubTrees(BNFAst, this->tree);
+}
+
 void BNFAst_print(BNFAst* this, unsigned int indentationLevel) {
     CGString* indentation = CGString__newFromLengthAndPreset(indentationLevel * BNF_INDENTATION_SIZE, ' ');
     CGString* tokenString = BNFToken_toString(this->token);

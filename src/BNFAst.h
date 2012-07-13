@@ -29,6 +29,7 @@ void BNFAst_setSubAsts(BNFAst* this, CGArray(BNFAst)* subAsts);
 void BNFAst_print(BNFAst* this, unsigned int indentationLevel);
 CGArrayOfCGTreeOfBNFAstIterator* BNFAst_getSubAstIterator(BNFAst* this);
 BNFAst* BNFAst_getSubAstAt(BNFAst* this, unsigned int index);
+unsigned int BNFAst_getSubAstsSize(BNFAst* this);
+CGArrayOfCGTreeOfBNFAst* BNFAst_getSubAsts(BNFAst* this);
 
 #endif
-
