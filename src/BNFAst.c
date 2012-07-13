@@ -40,6 +40,10 @@ void BNFAst_setParent(BNFAst* this, BNFAst* parent) {
     CGTree_setParent(BNFAst, this->tree, parent->tree);
 }
 
+CGTree(BNFAst)* BNFAst_getTree(BNFAst* this) {
+    return this->tree;
+}
+
 BNFSentence* BNFAst_getSentence(BNFAst* this) {
     return this->sentence;
 }

@@ -37,7 +37,23 @@ static void BNFCodeGenerator_handleStartSentence_(BNFCodeGenerator* this, BNFAst
 }
 
 
+static bool BNFCodeGenerator_handleSentence_(const BNFAst* ast, void* userData) {
+    char *sentenceName, *tokenTypeName, *tokenText;
+    if (BNFAst_getSentence(ast) && BNFSentence_getName(BNFAst_getSentence(ast)))
+        sentenceName = BNFSentence_getName(BNFAst_getSentence(ast));
+    else
+        sentenceName = "(null)";
+    if (BNFAst_getToken(ast)) {
+        tokenTypeName = BNFToken_getTypeName(BNFAst_getToken(ast));
+        tokenText = BNFToken_getText(BNFAst_getToken(ast));
+    } else {
+        tokenTypeName = tokenText = "(null)";
+    }
+    printf("handling sentence: %s %s %s\n", sentenceName, tokenTypeName, tokenText);
+}
 CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
+    CGTree_mapConstant(BNFAst, this->ast->tree, BNFCodeGenerator_handleSentence_, CGTreeStrategy_breadthFirst, NULL);
+    return;
     if (BNFAst_getSentence(this->ast) == startSentence)
         BNFCodeGenerator_handleStartSentence_(this, this->ast);
     else

@@ -22,8 +22,6 @@ static BNFAst* Main__parse_(CGString* text) {
     printf("Resulting Ast:\n");
     BNFAst_print(ast, 0);
 
-    BNF_RDParser_delete(parser);
-
     printf("ok\n");
 
     return ast;

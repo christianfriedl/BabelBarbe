@@ -20,6 +20,7 @@ DECLARE_TREE_FUNCS(BNFAst)
 BNFAst* BNFAst__new(BNFAst* parent, BNFToken* token, BNFSentence* sentence);
 BNFAst* BNFAst_clone(BNFAst* this);
 void BNFAst_delete(BNFAst* this);
+CGTree(BNFAst)* BNFAst_getTree(BNFAst* this);
 BNFToken* BNFAst_getToken(BNFAst* this);
 BNFAst* BNFAst_getParent(BNFAst* this);
 void BNFAst_setParent(BNFAst* this, BNFAst* parent);
