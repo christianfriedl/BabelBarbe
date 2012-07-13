@@ -6,28 +6,72 @@ BNFCodeGenerator* BNFCodeGenerator__new(BNFAst* ast) {
     BNFCodeGenerator* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->ast = ast;
-        this->identifiers = CGArray__new(CGString, 16);
+        this->startSentence = NULL;
+        this->currentSentenceStack = CGArray__new(BNFSentence, 4);
+        this->nextTokenType = 0;
     } else
         CGAppState_THROW(CGAppState__getInstance(), Severity_error, CGExceptionID_CannotAllocate, "unable to allocate BNFCodeGenerator");
     return this;
 }
 
 void BNFCodeGenerator_delete(BNFCodeGenerator* this) {
-    CGArray_deleteValues(CGString, this->identifiers);
-    CGArray_delete(CGString, this->identifiers);
     free(this);
     /* TODO ast?? */
 }
 
+unsigned int BNFCodeGenerator_createTokenType(BNFCodeGenerator* this) {
+    return this->nextTokenType++;
+}
 
+
+static BNFSentence* BNFCodeGenerator_getCurrentSentence_(BNFCodeGenerator* this) {
+    return CGArray_getValueAt(BNFSentence, this->currentSentenceStack, CGArray_getSize(BNFSentence, this->currentSentenceStack) - 1);
+}
+static void BNFCodeGenerator_handleAlternativeSentence_(BNFCodeGenerator* this, BNFAst* ast) {
+    BNFAlternative* alternative = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
+    BNFSentence_addAlternative(BNFCodeGenerator_getCurrentSentence_(this), alternative);
+}
+static void BNFCodeGenerator_handleAlternativesSentence_(BNFCodeGenerator* this, BNFAst* ast) {
+    CGTree(BNFAst)* astTree = NULL;
+    CGArrayOfCGTreeOfBNFAstIterator* iter = BNFAst_getSubAstIterator(ast);
+
+    // we don't have to amend the current sentence because it is a nonterminal and already has an alternatives array
+
+    while ((astTree = CGArrayIterator_fetch(CGTreeOfBNFAst, iter)) != NULL)
+        if (BNFAst_getSentence(CGTree_getValue(BNFAst, astTree)) == alternativeSentence)
+            BNFCodeGenerator_handleAlternativeSentence_(this, CGTree_getValue(BNFAst, astTree));
+    CGArrayOfCGTreeOfBNFAstIterator_delete(iter);
+}
 static void BNFCodeGenerator_handleRuleSentence_(BNFCodeGenerator* this, BNFAst* ast) {
     BNFAst* identifierAst = BNFAst_getSubAstAt(ast, 0);
-    if (BNFAst_getSentence(identifierAst) == identifierSentence)
-        CGArray_push(CGString, this->identifiers, BNFToken_getText(BNFAst_getToken(identifierAst)));
-    else
+    BNFAst* alternativesAst = BNFAst_getSubAstAt(ast, 2);
+    if (BNFAst_getSentence(identifierAst) == identifierSentence) {
+        /* create new sentence */
+        CGString* name = NULL;
+        asprintf(&name, "%sSentence", BNFToken_getText(BNFAst_getToken(identifierAst)));
+        BNFSentence* sentence = BNFSentence__newNonTerminalSymbol(name, 0);
+
+        /* add new sentence to start rule */
+        CGArray(BNFSentence)* parts = CGArray__newFromInitializerList(BNFSentence, sentence, NULL);
+        BNFPhrase* phrase = BNFPhrase__new(BNFPhraseRepeat_once, parts);
+        CGArray(BNFPhrase)* phrases = CGArray__newFromInitializerList(BNFPhrase, phrase, NULL);
+        BNFAlternative* alternative = BNFAlternative__new(phrases);
+        BNFSentence* currentSentence = BNFCodeGenerator_getCurrentSentence_(this);
+        BNFSentence_addAlternative(currentSentence, alternative);
+
+        CGArray_push(BNFSentence, this->currentSentenceStack, sentence); 
+
+        BNFCodeGenerator_handleAlternativesSentence_(this, alternativesAst);
+
+        CGArray_pop(BNFSentence, this->currentSentenceStack);
+    } else
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_CCUnexpectedSentence, "Identifier expected");
 }
+
 static void BNFCodeGenerator_handleStartSentence_(BNFCodeGenerator* this, BNFAst* ast) {
+    this->startSentence = BNFSentence__newNonTerminalSymbol("startSentence", BNFCodeGenerator_createTokenType(this)); 
+    CGArray_push(BNFSentence, this->currentSentenceStack, this->startSentence); 
+    
     CGTree(BNFAst)* astTree = NULL;
     CGArrayOfCGTreeOfBNFAstIterator* iter = BNFAst_getSubAstIterator(ast);
 
@@ -37,28 +81,15 @@ static void BNFCodeGenerator_handleStartSentence_(BNFCodeGenerator* this, BNFAst
 }
 
 
-static bool BNFCodeGenerator_handleSentence_(const BNFAst* ast, void* userData) {
-    char *sentenceName, *tokenTypeName, *tokenText;
-    if (BNFAst_getSentence(ast) && BNFSentence_getName(BNFAst_getSentence(ast)))
-        sentenceName = BNFSentence_getName(BNFAst_getSentence(ast));
-    else
-        sentenceName = "(null)";
-    if (BNFAst_getToken(ast)) {
-        tokenTypeName = BNFToken_getTypeName(BNFAst_getToken(ast));
-        tokenText = BNFToken_getText(BNFAst_getToken(ast));
-    } else {
-        tokenTypeName = tokenText = "(null)";
-    }
-    printf("handling sentence: %s %s %s\n", sentenceName, tokenTypeName, tokenText);
-}
+
+
 CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
-    CGTree_mapConstant(BNFAst, this->ast->tree, BNFCodeGenerator_handleSentence_, CGTreeStrategy_breadthFirst, NULL);
-    return;
     if (BNFAst_getSentence(this->ast) == startSentence)
         BNFCodeGenerator_handleStartSentence_(this, this->ast);
     else
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_CCUnexpectedSentence, "No start sentence found.");
-    printf("identifiers:");
-    CGArray_print(CGString, this->identifiers, "%s");
+    printf("----> resulting ruleset: \n");
+    CGArray(BNFSentence)* seenSentences = CGArray__new(BNFSentence, 16);
+    BNFSentence_print(this->startSentence, 0, seenSentences);
     return "";
 }

@@ -15,4 +15,5 @@ src/test/0750_BNF_RDParser
 src/compiler
 src/test/0200_BNFScannerWithRuleset
 src/test/0800_BNFParserWithRuleset
+src/test/0000_BNFCodeGenerator
 doc/man/

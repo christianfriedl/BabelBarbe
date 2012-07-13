@@ -60,11 +60,14 @@ void BNFAlternative_delete(BNFAlternative* this);
 void BNFAlternative_print(BNFAlternative* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences);
 
 BNFSentence* BNFSentence__new(CGString* name, BNFTokenType tokenType, CGArray(BNFAlternative)* alternatives);
+BNFSentence* BNFSentence__newTerminalSymbol(CGString* name, BNFTokenType tokenType);
+BNFSentence* BNFSentence__newNonTerminalSymbol(CGString* name, BNFTokenType tokenType);
 CGString* BNFSentence_getName(BNFSentence* this);
 BNFSentence* BNFSentence_clone(BNFSentence* this);
 void BNFSentence_delete(BNFSentence* this);
 void BNFSentence_print(BNFSentence* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences);
 void BNFSentence_setAlternatives(BNFSentence* this, CGArray(BNFAlternative)* alternatives);
+void BNFSentence_addAlternative(BNFSentence* this, BNFAlternative* alternative);
 
 BNF_RDParser* BNF_RDParser__new(BNFSentence* startSentence);
 BNFAst* BNF_RDParser_parse(BNF_RDParser* this, CGArray(BNFToken)* tokenList);

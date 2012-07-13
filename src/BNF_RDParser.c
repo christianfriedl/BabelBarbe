@@ -159,6 +159,7 @@ void BNFAlternative_print(BNFAlternative* this, unsigned int indentationLevel, C
 }
 
 
+/* if alternatives is NULL, then this is a terminal symbol! */
 BNFSentence* BNFSentence__new(CGString* name, BNFTokenType tokenType, CGArray(BNFAlternative)* alternatives) {
     BNFSentence* this = malloc(sizeof(*this));
     if (this != NULL) {
@@ -168,6 +169,21 @@ BNFSentence* BNFSentence__new(CGString* name, BNFTokenType tokenType, CGArray(BN
     } else
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_ScannerError, "unable to allocate in %s", __func__);
     return this;
+}
+BNFSentence* BNFSentence__newTerminalSymbol(CGString* name, BNFTokenType tokenType) {
+    return BNFSentence__new(name, tokenType, NULL);
+}
+BNFSentence* BNFSentence__newNonTerminalSymbol(CGString* name, BNFTokenType tokenType) {
+    return BNFSentence__new(name, tokenType, CGArray__new(BNFAlternative, 1));
+}
+BNFSentence* BNFSentence__newFromBNFAst(BNFAst* ast, int tokenType) {
+    char *sentenceName = NULL, *tokenText = NULL;
+    char *name = NULL;
+
+    sentenceName = BNFSentence_getName(BNFAst_getSentence(ast));
+    asprintf(&name, "%sSentence", tokenText); 
+    /* token type is, of course, NOT one of "our" BNFParser token types, but a newly generated one */
+    return BNFSentence__new(name, tokenType, NULL);
 }
 BNFSentence* BNFSentence_clone(BNFSentence* this) {
     return BNFSentence__new(this->name, this->tokenType, this->alternatives);
@@ -224,6 +240,10 @@ int BNFSentence_compare(const BNFSentence** first, const BNFSentence** second) {
 }
 void BNFSentence_setAlternatives(BNFSentence* this, CGArray(BNFAlternative)* alternatives) {
     this->alternatives = alternatives;
+}
+
+void BNFSentence_addAlternative(BNFSentence* this, BNFAlternative* alternative) {
+    CGArray_add(BNFAlternative, this->alternatives, alternative);
 }
 
 void BNFSentence_print(BNFSentence* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences) {

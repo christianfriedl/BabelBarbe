@@ -2,7 +2,7 @@ include Makefile.local
 CFLAGS=-ggdb -save-temps -Wall -I../ -I/opt/local/include
 LDFLAGS=-ggdb -lcgenerics -L../ -lbnf -L/opt/local/lib -lpcre -Wall
 
-BINARIES=0125_Token 0140_BNFScannerNode 0160_BNFScannerRule 0187_Scanner 0200_BNFScannerWithRuleset 0500_BNFAst 0750_BNF_RDParser 0800_BNFParserWithRuleset
+BINARIES=0125_Token 0140_BNFScannerNode 0160_BNFScannerRule 0187_Scanner 0200_BNFScannerWithRuleset 0500_BNFAst 0750_BNF_RDParser 0800_BNFParserWithRuleset 0900_BNFCodeGenerator
 CURRENT_BINARIES=0800_BNFParserWithRuleset
 
 

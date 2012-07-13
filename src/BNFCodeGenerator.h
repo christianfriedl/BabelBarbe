@@ -10,12 +10,15 @@ DECLARE_ARRAY(CGString)
 
 typedef struct {
     BNFAst* ast;
-    CGArray(CGString)* identifiers;
+    BNFSentence* startSentence;
+    CGArray(BNFSentence)* currentSentenceStack;
+    unsigned int nextTokenType;
 } BNFCodeGenerator;
 
 BNFCodeGenerator* BNFCodeGenerator__new(BNFAst* ast);
 void BNFCodeGenerator_delete(BNFCodeGenerator* this);
 CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this);
+unsigned int BNFCodeGenerator_createTokenType(BNFCodeGenerator* this); /* TODO this should be private, I made it public for testing */
 
 #endif
 
