@@ -27,18 +27,19 @@ unsigned int BNFCodeGenerator_createTokenType(BNFCodeGenerator* this) {
 static BNFSentence* BNFCodeGenerator_getCurrentSentence_(BNFCodeGenerator* this) {
     return CGArray_getValueAt(BNFSentence, this->currentSentenceStack, CGArray_getSize(BNFSentence, this->currentSentenceStack) - 1);
 }
-static repeatSwitch getRepeatSwitchFromRepetitionMarkerSentence_(BNFAst* ast) {
-    BNFSentence* sentence = BNFAst_getSentence(BNFAst_getSubAstAt(BNFAst_getSentence(ast), 0));
-    switch(sentence) {
-        case repetitionMarkerZeroOrOnceSentence:
-            return BNFPhraseRepeat_zeroOrOnce;
-        case repetitionMarkerZeroOrMoreSentence:
-            return BNFPhraseRepeat_zeroOrMore;
-        case repetitionMarkerManySentence:
-            return BNFPhraseRepeat_many;
-        default:
-            CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_CCUnexpectedSentence, "Repetition marker expected");
-    }
+static int getRepeatSwitchFromRepetitionMarkerSentence_(BNFAst* ast) {
+    BNFSentence* sentence = BNFAst_getSentence(BNFAst_getSubAstAt(ast, 0));
+    if (sentence == repetitionMarkerZeroOrOnceSentence)
+        return BNFPhraseRepeat_zeroOrOnce;
+    else if (sentence == repetitionMarkerZeroOrMoreSentence)
+        return BNFPhraseRepeat_zeroOrMore;
+    else if (sentence == repetitionMarkerManySentence)
+        return BNFPhraseRepeat_many;
+    else
+        CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_CCUnexpectedSentence, "Repetition marker expected");
+    return 0;
+}
+static void BNFCodeGenerator_handleTermSentence_(BNFCodeGenerator* this, BNFAst* ast) {
 }
 /*
  *  phrase ::= term repetition_marker? ;
