@@ -19,6 +19,9 @@ static BNFAst* Main__parse_(CGString* text) {
     CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
     BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
 
+    printf("Dumpin Ruleset:\n");
+    BNF_RDParser_print(parser);
+    printf("\n\n");
     printf("Resulting Ast:\n");
     BNFAst_print(ast, 0);
 

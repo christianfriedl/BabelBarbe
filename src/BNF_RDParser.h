@@ -56,6 +56,7 @@ void BNFPhrase_print(BNFPhrase* this, unsigned int indentationLevel, CGArray(BNF
 
 BNFAlternative* BNFAlternative__new(CGArray(BNFPhrase)* phrases);
 BNFAlternative* BNFAlternative_clone(BNFAlternative* this);
+void BNFAlternative_addPhrase(BNFAlternative* this, BNFPhrase* phrase);
 void BNFAlternative_delete(BNFAlternative* this);
 void BNFAlternative_print(BNFAlternative* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences);
 

@@ -118,6 +118,9 @@ BNFAlternative* BNFAlternative__new(CGArray(BNFPhrase)* phrases) {
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_ScannerError, "unable to allocate in %s", __func__);
     return this;
 }
+void BNFAlternative_addPhrase(BNFAlternative* this, BNFPhrase* phrase) {
+    CGArray_add(BNFPhrase, this->phrases, phrase);
+}
 BNFAlternative* BNFAlternative_clone(BNFAlternative* this) {
     return BNFAlternative__new(this->phrases);
 }

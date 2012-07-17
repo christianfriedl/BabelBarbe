@@ -39,26 +39,75 @@ static int getRepeatSwitchFromRepetitionMarkerSentence_(BNFAst* ast) {
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_CCUnexpectedSentence, "Repetition marker expected");
     return 0;
 }
-static void BNFCodeGenerator_handleTermSentence_(BNFCodeGenerator* this, BNFAst* ast) {
+/* end helper functions */
+
+static void BNFCodeGenerator_handleStringLiteralSentence_(BNFCodeGenerator* this, BNFAst* ast, BNFPhrase* phrase) {
+        CGString* name = NULL;
+        asprintf(&name, "%sSentence", BNFToken_getText(BNFAst_getToken(ast)));
+        BNFSentence* sentence = BNFSentence__newTerminalSymbol(name, BNFCodeGenerator_createTokenType(this));
+        CGArray(BNFSentence)* parts = CGArray__newFromInitializerList(BNFSentence, sentence, NULL);
+        BNFPhrase_setParts(phrase, parts);
+}
+static void BNFCodeGenerator_handleRegexLiteralSentence_(BNFCodeGenerator* this, BNFAst* ast, BNFPhrase* phrase) {
+        CGString* name = NULL;
+        asprintf(&name, "%sSentence", BNFToken_getText(BNFAst_getToken(ast)));
+        BNFSentence* sentence = BNFSentence__newTerminalSymbol(name, BNFCodeGenerator_createTokenType(this));
+        CGArray(BNFSentence)* parts = CGArray__newFromInitializerList(BNFSentence, sentence, NULL);
+        BNFPhrase_setParts(phrase, parts);
+}
+static void BNFCodeGenerator_handleTerminalSymbolSentence_(BNFCodeGenerator* this, BNFAst* ast, BNFPhrase* phrase) {
+    BNFSentence* sentence = BNFAst_getSentence(BNFAst_getSubAstAt(ast, 0));
+    if (sentence == stringLiteralSentence)
+        BNFCodeGenerator_handleStringLiteralSentence_(this, BNFAst_getSubAstAt(ast, 0), phrase);
+    else if (sentence == regexLiteralSentence)
+        BNFCodeGenerator_handleRegexLiteralSentence_(this, BNFAst_getSubAstAt(ast, 0), phrase);
+    else
+        CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_CCUnexpectedSentence, "String or Regex literal expected");
+}
+static void BNFCodeGenerator_handleIdentifierSentence_(BNFCodeGenerator* this, BNFAst* ast, BNFPhrase* phrase) {
+        CGString* name = NULL;
+        asprintf(&name, "%sSentence", BNFToken_getText(BNFAst_getToken(ast)));
+        BNFSentence* sentence = BNFSentence__newTerminalSymbol(name, BNFCodeGenerator_createTokenType(this)); /* TODO iis this really a terminal?? */
+        CGArray(BNFSentence)* parts = CGArray__newFromInitializerList(BNFSentence, sentence, NULL);
+        BNFPhrase_setParts(phrase, parts);
+}
+static void BNFCodeGenerator_handleSymbolSentence_(BNFCodeGenerator* this, BNFAst* ast, BNFPhrase* phrase) {
+    BNFSentence* sentence = BNFAst_getSentence(BNFAst_getSubAstAt(ast, 0));
+    if (sentence == terminalSymbolSentence)
+        BNFCodeGenerator_handleTerminalSymbolSentence_(this, BNFAst_getSubAstAt(ast, 0), phrase);
+    else if (sentence == identifierSentence)
+        BNFCodeGenerator_handleIdentifierSentence_(this, BNFAst_getSubAstAt(ast, 0), phrase);
+    else
+        CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_CCUnexpectedSentence, "Symbol or Identifier expected");
+}
+static void BNFCodeGenerator_handleTermSentence_(BNFCodeGenerator* this, BNFAst* ast, BNFPhrase* phrase) {
+    BNFSentence* firstSentence = BNFAst_getSentence(BNFAst_getSubAstAt(ast, 0));
+    if (firstSentence == openParenSentence) { /* '(' alternative ')' */ /* TODO create new sentence, call handleAlternative */
+        // BNFCodeGenerator_handleAlternativeSentence_(this, BNFAst_getSubAstAt(ast, 1));
+    } else /* symbol */
+        BNFCodeGenerator_handleSymbolSentence_(this, BNFAst_getSubAstAt(ast, 0), phrase);
 }
 /*
  *  phrase ::= term repetition_marker? ;
  */
-static void BNFCodeGenerator_handlePhraseSentence_(BNFCodeGenerator* this, BNFAst* ast) {
+static void BNFCodeGenerator_handlePhraseSentence_(BNFCodeGenerator* this, BNFAst* ast, BNFAlternative* alternative) {
     BNFPhraseRepeatSwitch repeatSwitch = BNFPhraseRepeat_once;
     BNFAst* termAst = BNFAst_getSubAstAt(ast, 0);
     if (BNFAst_getSubAstsSize(ast) > 1) /* determine repeat switch */
         repeatSwitch = getRepeatSwitchFromRepetitionMarkerSentence_(BNFAst_getSubAstAt(ast, 1));
         
     BNFPhrase* phrase = BNFPhrase__new(repeatSwitch, CGArray__new(BNFSentence, 1)); /* sentences could lead upwards! */
+    BNFAlternative_addPhrase(alternative, phrase);
     CGTree(BNFAst)* astTree = NULL;
     CGArrayOfCGTreeOfBNFAstIterator* iter = BNFAst_getSubAstIterator(ast);
     while ((astTree = CGArrayIterator_fetch(CGTreeOfBNFAst, iter)) != NULL)
-        if (BNFAst_getSentence(CGTree_getValue(BNFAst, astTree)) == phraseSentence)
-            BNFCodeGenerator_handleTermSentence_(this, CGTree_getValue(BNFAst, astTree));
+        if (BNFAst_getSentence(CGTree_getValue(BNFAst, astTree)) == termSentence)
+            BNFCodeGenerator_handleTermSentence_(this, CGTree_getValue(BNFAst, astTree), phrase);
 }
 /*
  * alternative ::= phrase+ ;
+ *
+ * for each alternative in a rule, add a new alternative to the current rule
  */
 static void BNFCodeGenerator_handleAlternativeSentence_(BNFCodeGenerator* this, BNFAst* ast) {
     BNFAlternative* alternative = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
@@ -68,7 +117,7 @@ static void BNFCodeGenerator_handleAlternativeSentence_(BNFCodeGenerator* this, 
     CGArrayOfCGTreeOfBNFAstIterator* iter = BNFAst_getSubAstIterator(ast);
     while ((astTree = CGArrayIterator_fetch(CGTreeOfBNFAst, iter)) != NULL)
         if (BNFAst_getSentence(CGTree_getValue(BNFAst, astTree)) == phraseSentence)
-            BNFCodeGenerator_handlePhraseSentence_(this, CGTree_getValue(BNFAst, astTree));
+            BNFCodeGenerator_handlePhraseSentence_(this, CGTree_getValue(BNFAst, astTree), alternative);
 }
 static void BNFCodeGenerator_handleAlternativesSentence_(BNFCodeGenerator* this, BNFAst* ast) {
     CGTree(BNFAst)* astTree = NULL;
@@ -98,6 +147,7 @@ static void BNFCodeGenerator_handleRuleSentence_(BNFCodeGenerator* this, BNFAst*
         BNFSentence* currentSentence = BNFCodeGenerator_getCurrentSentence_(this);
         BNFSentence_addAlternative(currentSentence, alternative);
 
+        /* lower bandlers will work on our new sentence */
         CGArray_push(BNFSentence, this->currentSentenceStack, sentence); 
 
         BNFCodeGenerator_handleAlternativesSentence_(this, alternativesAst);
@@ -118,9 +168,6 @@ static void BNFCodeGenerator_handleStartSentence_(BNFCodeGenerator* this, BNFAst
         BNFCodeGenerator_handleRuleSentence_(this, CGTree_getValue(BNFAst, astTree));
     CGArrayOfCGTreeOfBNFAstIterator_delete(iter);
 }
-
-
-
 
 CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
     if (BNFAst_getSentence(this->ast) == startSentence)

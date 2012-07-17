@@ -7,7 +7,7 @@
 
 #define bool__to_string(a) (((a) == true) ? "true" : "false")
 
-#define BNF_INDENTATION_SIZE (4)
+#define BNF_INDENTATION_SIZE (2)
 
 #undef DEBUG 
 
