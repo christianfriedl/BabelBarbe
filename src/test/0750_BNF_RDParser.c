@@ -5,6 +5,7 @@
 
 
 CGAppState* appState;
+BNFScannerRule* startRule = NULL;
 
 void testNewDelete() {
     printf("%s... ", __func__);
@@ -220,6 +221,7 @@ int main() {
     CGAppState__init(__FILE__);
     appState = CGAppState__getInstance();
     printf("=== %s ===\n", __FILE__);
+    startRule = BNFScannerRuleset__getInstance();
 
     testNewDelete();
     testOneTerminalDefinition();

@@ -163,7 +163,7 @@ void BNFAlternative_print(BNFAlternative* this, unsigned int indentationLevel, C
 
 
 /* if alternatives is NULL, then this is a terminal symbol! */
-BNFSentence* BNFSentence__new(CGString* name, BNFTokenType tokenType, CGArray(BNFAlternative)* alternatives) {
+BNFSentence* BNFSentence__new(CGString* name, BNFTokenType* tokenType, CGArray(BNFAlternative)* alternatives) {
     BNFSentence* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->name = name;
@@ -173,13 +173,13 @@ BNFSentence* BNFSentence__new(CGString* name, BNFTokenType tokenType, CGArray(BN
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_ScannerError, "unable to allocate in %s", __func__);
     return this;
 }
-BNFSentence* BNFSentence__newTerminalSymbol(CGString* name, BNFTokenType tokenType) {
+BNFSentence* BNFSentence__newTerminalSymbol(CGString* name, BNFTokenType* tokenType) {
     return BNFSentence__new(name, tokenType, NULL);
 }
-BNFSentence* BNFSentence__newNonTerminalSymbol(CGString* name, BNFTokenType tokenType) {
+BNFSentence* BNFSentence__newNonTerminalSymbol(CGString* name, BNFTokenType* tokenType) {
     return BNFSentence__new(name, tokenType, CGArray__new(BNFAlternative, 1));
 }
-BNFSentence* BNFSentence__newFromBNFAst(BNFAst* ast, int tokenType) {
+BNFSentence* BNFSentence__newFromBNFAst(BNFAst* ast, BNFTokenType* tokenType) {
     char *sentenceName = NULL, *tokenText = NULL;
     char *name = NULL;
 
@@ -211,7 +211,7 @@ BNFAst* BNFSentence_parse(BNFSentence* this, CGArrayIterator(BNFToken)* tokenIte
         #endif
         if (token == NULL) {
             return NULL;
-        } else if (BNFToken_getType(token) == this->tokenType)
+        } else if (BNFTokenType_isEqual(BNFToken_getType(token), this->tokenType))
             return BNFAst__new(NULL, token, this);
         else {
             CGArrayIterator_unFetch(BNFToken, tokenIterator);

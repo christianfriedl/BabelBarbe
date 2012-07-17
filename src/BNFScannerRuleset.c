@@ -3,6 +3,23 @@
 static BNFScannerRule* bnfScannerRuleset_instance = NULL;
 
 static BNFScannerRule* BNFScannerRuleset__new_() {
+	BNFTokenTypeFactory *ttf = BNFTokenTypeFactory__getInstance();
+	BNFTokenType_nonTerminal = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_nonTerminal");
+	BNFTokenType_noise = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_noise");
+	BNFTokenType_identifier = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_identifier");
+	BNFTokenType_definitionSign = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_definitionSign");
+	BNFTokenType_semicolon = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_semicolon");
+
+	BNFTokenType_OrSign = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_OrSign");
+	BNFTokenType_openParen = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_openParen");
+	BNFTokenType_closeParen = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_closeParen");
+	BNFTokenType_repeatZeroOrOnce = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_repeatZeroOrOnce");
+	BNFTokenType_repeatZeroOrMore = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_repeatZeroOrMore");
+
+	BNFTokenType_repeatMany = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_repeatMany");
+	BNFTokenType_stringLiteral = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_stringLiteral");
+	BNFTokenType_regexLiteral = BNFTokenTypeFactory_createBNFTokenType(ttf, "BNFTokenType_regexLiteral");
+
     BNFScannerRule* startRule = BNFScannerRule__new(CGString__new("startRule"), NULL);
     BNFScannerRule* noiseRule = BNFScannerRule__new(CGString__new("noiseRule"), NULL);
     BNFScannerNode* identifierNode = BNFScannerNode__new(BNFScannerNodeType_regex, "\\w+", noiseRule, BNFTokenType_identifier, false, NULL);

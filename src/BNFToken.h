@@ -6,25 +6,27 @@
 #include<string.h>
 #include<cgenerics/CGString.h>
 #include<cgenerics/CGAppState.h>
+#include"BNFTokenType.h"
+#include"BNFTokenTypeFactory.h"
 
-typedef enum { BNFTokenType_nonTerminal, BNFTokenType_noise, BNFTokenType_identifier, BNFTokenType_definitionSign, BNFTokenType_semicolon, BNFTokenType_OrSign, BNFTokenType_openParen, BNFTokenType_closeParen, BNFTokenType_repeatZeroOrOnce, BNFTokenType_repeatZeroOrMore, BNFTokenType_repeatMany, BNFTokenType_stringLiteral, BNFTokenType_regexLiteral } BNFTokenType;
+BNFTokenType *BNFTokenType_nonTerminal, *BNFTokenType_noise, *BNFTokenType_identifier, *BNFTokenType_definitionSign, *BNFTokenType_semicolon, 
+             *BNFTokenType_OrSign, *BNFTokenType_openParen, *BNFTokenType_closeParen, *BNFTokenType_repeatZeroOrOnce, *BNFTokenType_repeatZeroOrMore, 
+             *BNFTokenType_repeatMany, *BNFTokenType_stringLiteral, *BNFTokenType_regexLiteral;
 
 typedef struct {
-    BNFTokenType type;
+    BNFTokenType* type;
     CGString* text;
     unsigned int textLength;
 } BNFToken;
 
-CGString* BNFTokenType_toString(BNFTokenType this);
-
-BNFToken* BNFToken__new(BNFTokenType type, CGString* text);
+BNFToken* BNFToken__new(BNFTokenType* type, CGString* text);
 BNFToken* BNFToken_clone(BNFToken* this);
 void BNFToken_delete(BNFToken* this);
 void BNFToken_print(BNFToken* this);
 CGString* BNFToken_toString(BNFToken* this);
 CGString* BNFToken_getTypeName(BNFToken* this);
 CGString* BNFToken_getText(BNFToken* this);
-BNFTokenType BNFToken_getType(BNFToken* this);
+BNFTokenType* BNFToken_getType(BNFToken* this);
 unsigned int BNFToken_getTextLength(BNFToken* this);
 void BNFToken_setTextLength(BNFToken* this, unsigned int length);
 bool BNFToken_isEQual(BNFToken* this, BNFToken* other);

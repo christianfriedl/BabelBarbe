@@ -37,7 +37,7 @@ struct BNFAlternative_struct {
 
 struct BNFSentence_struct {
     CGString* name; /* for debugging, and for emitting c-code */
-    BNFTokenType tokenType;
+    BNFTokenType* tokenType;
     CGArray(BNFAlternative)* alternatives;
 };
 
@@ -60,9 +60,9 @@ void BNFAlternative_addPhrase(BNFAlternative* this, BNFPhrase* phrase);
 void BNFAlternative_delete(BNFAlternative* this);
 void BNFAlternative_print(BNFAlternative* this, unsigned int indentationLevel, CGArray(BNFSentence)* seenSentences);
 
-BNFSentence* BNFSentence__new(CGString* name, BNFTokenType tokenType, CGArray(BNFAlternative)* alternatives);
-BNFSentence* BNFSentence__newTerminalSymbol(CGString* name, BNFTokenType tokenType);
-BNFSentence* BNFSentence__newNonTerminalSymbol(CGString* name, BNFTokenType tokenType);
+BNFSentence* BNFSentence__new(CGString* name, BNFTokenType* tokenType, CGArray(BNFAlternative)* alternatives);
+BNFSentence* BNFSentence__newTerminalSymbol(CGString* name, BNFTokenType* tokenType);
+BNFSentence* BNFSentence__newNonTerminalSymbol(CGString* name, BNFTokenType* tokenType);
 CGString* BNFSentence_getName(BNFSentence* this);
 BNFSentence* BNFSentence_clone(BNFSentence* this);
 void BNFSentence_delete(BNFSentence* this);
@@ -74,6 +74,7 @@ BNF_RDParser* BNF_RDParser__new(BNFSentence* startSentence);
 BNFAst* BNF_RDParser_parse(BNF_RDParser* this, CGArray(BNFToken)* tokenList);
 void BNF_RDParser_delete(BNF_RDParser* this);
 void BNF_RDParser_print(BNF_RDParser* this);
+void BNF_RDParser__printTokenList(CGArray(BNFToken)* tokenList);
 
 
 #endif

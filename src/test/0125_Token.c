@@ -2,8 +2,10 @@
 #include<stdio.h>
 #include<cgenerics/CGAppState.h>
 #include"BNFToken.h"
+#include"BNFScannerRuleset.h"
 
 CGAppState* appState;
+BNFScannerRule* startRule = NULL;
 
 void testNewDelete() {
     printf("%s... ", __func__);
@@ -33,11 +35,9 @@ void testGetters() {
     string = BNFToken_getTypeName(token);
     assert(string != NULL);
     printf("'%s' should contain a stringified token type\n", string);
-    CGString_delete(string);
     string = BNFToken_toString(token);
     assert(string != NULL);
     printf("'%s' should contain a stringified token\n", string);
-    CGString_delete(string);
     string = BNFToken_getText(token);
     assert(string != NULL);
     assert(!CGString__compare(string, CGString__new(text)));
@@ -49,9 +49,14 @@ void testGetters() {
 int main() {
     printf("=== %s ===\n", __FILE__);
 
+    CGAppState__init(__FILE__);
+    startRule = BNFScannerRuleset__getInstance(); /* so that we initialize the token types */
+
     testNewDelete();
     testPrint();
     testGetters();
+
+    CGAppState__deInit();
 
     printf("=== %s ok ===\n", __FILE__);
 	return 0;

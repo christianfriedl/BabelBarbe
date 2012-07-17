@@ -25,26 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include"BNFException.h"
 #include"BNFToken.h"
 
-CGString* BNFTokenType_toString(BNFTokenType this) {
-    switch (this) {
-        case BNFTokenType_nonTerminal: return CGString__new("BNFTokenType_nonTerminal"); break;
-        case BNFTokenType_noise: return CGString__new("BNFTokenType_noise"); break;
-        case BNFTokenType_identifier: return CGString__new("BNFTokenType_identifier"); break;
-        case BNFTokenType_definitionSign: return CGString__new("BNFTokenType_definitionSign"); break;
-        case BNFTokenType_semicolon: return CGString__new("BNFTokenType_semicolon"); break;
-        case BNFTokenType_OrSign: return CGString__new("BNFTokenType_OrSign"); break;
-        case BNFTokenType_openParen: return CGString__new("BNFTokenType_openParen"); break;
-        case BNFTokenType_closeParen: return CGString__new("BNFTokenType_closeParen"); break;
-        case BNFTokenType_repeatZeroOrOnce: return CGString__new("BNFTokenType_repeatZeroOrOnce"); break;
-        case BNFTokenType_repeatZeroOrMore: return CGString__new("BNFTokenType_repeatZeroOrMore"); break;
-        case BNFTokenType_repeatMany: return CGString__new("BNFTokenType_repeatMany"); break;
-        case BNFTokenType_stringLiteral: return CGString__new("BNFTokenType_stringLiteral"); break;
-        case BNFTokenType_regexLiteral : return CGString__new("BNFTokenType_regexLiteral "); break;
-        default: CGAppState_THROW(CGAppState__getInstance(), Severity_warning, BNFExceptionID_UnknownBNFTokenType, "No such BNFTokenType"); return CGString__new("unkown BNFTokenType"); break;
-    }
-}
-
-BNFToken* BNFToken__new(BNFTokenType type, CGString* text) {
+BNFToken* BNFToken__new(BNFTokenType* type, CGString* text) {
     BNFToken* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->type = type;
@@ -68,21 +49,19 @@ void BNFToken_delete(BNFToken* this) {
 void BNFToken_print(BNFToken* this) {
     char* type_name = BNFToken_getTypeName(this);
     printf("token @%ld (type='%s', text='%s')", (long int)this, type_name, this->text);
-    free(type_name);
 }
 
 CGString* BNFToken_toString(BNFToken* this) {
     CGString* type_name = BNFToken_getTypeName(this);
     CGString* string = CGString__newWithSprintf("token @%ld: type='%s', text='%s'", (long int)this, type_name, this->text);
-    CGString_delete(type_name);
     return string;
 }
 
 CGString* BNFToken_getTypeName(BNFToken* this) {
-    return BNFTokenType_toString(this->type);
+    return BNFTokenType_getName(this->type);
 }
 
-BNFTokenType BNFToken_getType(BNFToken* this) {
+BNFTokenType* BNFToken_getType(BNFToken* this) {
     return this->type;
 }
 CGString* BNFToken_getText(BNFToken* this) {

@@ -19,8 +19,8 @@ void BNFCodeGenerator_delete(BNFCodeGenerator* this) {
     /* TODO ast?? */
 }
 
-unsigned int BNFCodeGenerator_createTokenType(BNFCodeGenerator* this) {
-    return this->nextTokenType++;
+BNFTokenType* BNFCodeGenerator_createTokenType(BNFCodeGenerator* this) {
+    return BNFTokenTypeFactory_createBNFTokenType(BNFTokenTypeFactory__getInstance(), CGString__new("xyz"));
 }
 
 
@@ -137,7 +137,7 @@ static void BNFCodeGenerator_handleRuleSentence_(BNFCodeGenerator* this, BNFAst*
         /* create new sentence */
         CGString* name = NULL;
         asprintf(&name, "%sSentence", BNFToken_getText(BNFAst_getToken(identifierAst)));
-        BNFSentence* sentence = BNFSentence__newNonTerminalSymbol(name, 0);
+        BNFSentence* sentence = BNFSentence__newNonTerminalSymbol(name, BNFCodeGenerator_createTokenType(this));
 
         /* add new sentence to start rule */
         CGArray(BNFSentence)* parts = CGArray__newFromInitializerList(BNFSentence, sentence, NULL);
@@ -170,6 +170,7 @@ static void BNFCodeGenerator_handleStartSentence_(BNFCodeGenerator* this, BNFAst
 }
 
 CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
+    BNFScannerRuleset__getInstance();
     if (BNFAst_getSentence(this->ast) == startSentence)
         BNFCodeGenerator_handleStartSentence_(this, this->ast);
     else

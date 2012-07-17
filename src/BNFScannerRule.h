@@ -21,7 +21,7 @@ typedef struct {
     CGString* pattern;              /* the pattern, represented as a string - either literal, or regex */
     pcre* regex;                    /* the compiled regex, used internally */
     BNFScannerRule* followupRule;   /* if this node matches, then the scanner should move to this rule */
-    BNFTokenType tokenType;         /* if this node matches, then this is its resulting token type */
+    BNFTokenType* tokenType;         /* if this node matches, then this is its resulting token type */
     bool isNoise;                   /* true if this node represents "noise", i.e. whitespace */
     BNFToken* (*onAfterScanToken)(BNFToken*);    /* callback function to do postprocessing on the token; can be NULL
                                                         NOTE: this HAS to create a new token from the old one - the old one gets delete'd in the scanner
@@ -39,11 +39,11 @@ struct BNFScannerRule_struct {
     BNFScannerNode* successNode;    /* the resulting node, (uh, where is the node text actually?) */
 };
 
-BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType, bool isNoise, BNFToken* (*onAfterScanToken)(BNFToken*));
+BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType* tokenType, bool isNoise, BNFToken* (*onAfterScanToken)(BNFToken*));
 BNFScannerNode* BNFScannerNode_clone(BNFScannerNode* this);
 void BNFScannerNode_delete(BNFScannerNode* this);
 bool BNFScannerNode_setRegex(BNFScannerNode* this, CGString* pattern);
-BNFTokenType BNFScannerNode_getTokenType(BNFScannerNode* this);
+BNFTokenType* BNFScannerNode_getTokenType(BNFScannerNode* this);
 BNFScannerRule* BNFScannerNode_getFollowupRule(BNFScannerNode* this);
 void BNFScannerNode_setFollowupRule(BNFScannerNode* this, BNFScannerRule* rule);
 bool BNFScannerNode_getIsNoise(BNFScannerNode* this);

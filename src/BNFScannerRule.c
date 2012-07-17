@@ -15,7 +15,7 @@ static ApplyToTextRV_* BNFScannerNode_applyStringToText_(BNFScannerNode* this, c
 static ApplyToTextRV_* BNFScannerNode_applyRegexToText_(BNFScannerNode* this, const CGString* text);
 static BNFToken* BNFScannerNode_applyFunctionToText_(BNFScannerNode* this, const CGString* text, ApplyToTextRV_*(*func)(BNFScannerNode*, const CGString*));
 
-BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType tokenType, bool isNoise, BNFToken* (*onAfterScanToken)(BNFToken*)) {
+BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType* tokenType, bool isNoise, BNFToken* (*onAfterScanToken)(BNFToken*)) {
     BNFScannerNode* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->type = type;
@@ -72,7 +72,7 @@ void BNFScannerNode_delete(BNFScannerNode* this) {
     free(this);
 }
 
-BNFTokenType BNFScannerNode_getTokenType(BNFScannerNode* this) {
+BNFTokenType* BNFScannerNode_getTokenType(BNFScannerNode* this) {
     return this->tokenType;
 }
 bool BNFScannerNode_getIsNoise(BNFScannerNode* this) {

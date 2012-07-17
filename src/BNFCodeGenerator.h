@@ -18,7 +18,7 @@ typedef struct {
 BNFCodeGenerator* BNFCodeGenerator__new(BNFAst* ast);
 void BNFCodeGenerator_delete(BNFCodeGenerator* this);
 CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this);
-unsigned int BNFCodeGenerator_createTokenType(BNFCodeGenerator* this); /* TODO this should be private, I made it public for testing */
+BNFTokenType* BNFCodeGenerator_createTokenType(BNFCodeGenerator* this); /* TODO this should be private, I made it public for testing */
 
 #endif
 

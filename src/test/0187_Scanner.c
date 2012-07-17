@@ -10,6 +10,7 @@
 #include"BNFScanner.h"
 
 CGAppState* appState;
+BNFScannerRule* startRule = NULL;
 
 void testNewDelete() {
     printf("%s... ", __func__);
@@ -97,8 +98,8 @@ void testComplexRuleset() {
     BNFToken_delete(token);
     token = BNFScanner_scanNextToken(scanner);
     assert(token != NULL);
-    printf("token: %s\n", BNFToken_toString(token));
     assert(BNFToken_getType(token) == BNFTokenType_definitionSign);
+    printf("token: %s\n", BNFToken_toString(token));
     BNFToken_delete(token);
     token = BNFScanner_scanNextToken(scanner);
     assert(token != NULL);
@@ -184,6 +185,7 @@ int main() {
     
     CGAppState__init(__FILE__);
     appState = CGAppState__getInstance();
+    startRule = BNFScannerRuleset__getInstance();
 
     testNewDelete();
     testIdentifier();

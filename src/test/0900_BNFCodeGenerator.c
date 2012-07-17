@@ -34,6 +34,7 @@ void testParseCompleteCalcGrammar() {
 
     char* text = getCalcGrammar_();
     CGArray(BNFSentence)* seenSentences = CGArray__new(BNFSentence, 1);
+    BNFScannerRuleset__getInstance();
     BNFSentence_print(BNFParserRuleset__getInstance(), 0, seenSentences);
 
     BNFScannerRule* scannerStartRule = BNFScannerRuleset__getInstance();
