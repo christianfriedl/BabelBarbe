@@ -12,7 +12,14 @@ typedef struct {
     BNFAst* ast;
     BNFSentence* startSentence;
     CGArray(BNFSentence)* currentSentenceStack;
-    unsigned int nextTokenType;
+    BNFTokenType* nonTerminalTokenType;
+    unsigned int ruleTokenTypeCount;
+    unsigned int ruleSentenceCount;
+    CGString* ruleName;
+    CGArray(BNFSentence)* ruleSentences;
+    CGArray(BNFSentence)* terminalSentences;
+    CGArray(BNFTokenType)* tokenTypes;
+    CGArray(BNFScannerNode)* scannerNodes;
 } BNFCodeGenerator;
 
 BNFCodeGenerator* BNFCodeGenerator__new(BNFAst* ast);

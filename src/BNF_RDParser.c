@@ -8,7 +8,9 @@ DEFINE_ARRAY(BNFAst);
 DEFINE_ARRAY(BNFSentence);
 DEFINE_ARRAY(BNFPhrase);
 DEFINE_ARRAY(BNFAlternative);
+DEFINE_ARRAY(BNFTokenType);
 DEFINE_ARRAY_ITERATOR(BNFToken);
+DEFINE_ARRAY_ITERATOR(BNFTokenType);
 DEFINE_ARRAY_ITERATOR(BNFAlternative);
 DEFINE_ARRAY_ITERATOR(BNFSentence);
 DEFINE_ARRAY_ITERATOR(BNFPhrase);
@@ -57,6 +59,10 @@ void BNFPhrase_delete(BNFPhrase* this) {
 
 void BNFPhrase_setParts(BNFPhrase* this, CGArray(BNFSentence)* parts) {
     this->parts = parts;
+}
+
+void BNFPhrase_addPart(BNFPhrase* this, BNFSentence* part) {
+    CGArray_add(BNFSentence, this->parts, part);
 }
 
 CGArray(BNFAst)* BNFPhrase_parse(BNFPhrase* this, CGArrayIterator(BNFToken)* tokenIterator) {
@@ -194,6 +200,9 @@ BNFSentence* BNFSentence_clone(BNFSentence* this) {
 CGString* BNFSentence_getName(BNFSentence* this) {
     return this->name;
 }
+BNFTokenType* BNFSentence_getTokenType(BNFSentence* this) {
+    return this->tokenType;
+}
 void BNFSentence_delete(BNFSentence* this) {
     CGString_delete(this->name);
     if (this->alternatives != NULL) {
@@ -310,4 +319,202 @@ void BNF_RDParser__printTokenList(CGArray(BNFToken)* tokenList) {
         BNFToken_print(token);
         printf("\n");
     }
+}
+
+/* c dumping */
+CGString* BNFSentence_createCDeclaration(BNFSentence* this) {
+    CGString *text = CGString__newWithSprintf("BNFSentence* %sSentence = NULL;\n", this->name);
+    return text;
+}
+CGString* BNFSentence_createCConstructor(BNFSentence* this) {
+    CGString *text = NULL;
+    if (this->alternatives == NULL)
+        text = CGString__newWithSprintf("%sSentence = BNFSentence__newTerminalSymbol(\"%s\", BNFTokenType_%s, NULL);\n", this->name, this->name, BNFTokenType_getName(this->tokenType));
+    else 
+        text = CGString__newWithSprintf("%sSentence = BNFSentence__new(\"%s\", BNFTokenType_%s, CGArray__new(BNFAlternative, 1));\n", this->name, this->name, BNFTokenType_getName(this->tokenType));
+    return text;
+}
+CGString* BNFSentence_createCAddAlternatives(BNFSentence* this) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFAlternative)* iter = CGArrayIterator__new(BNFAlternative, this->alternatives);
+    unsigned i = 0;
+    BNFAlternative* alternative;
+    while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
+        CGString_append(text, CGString__newWithSprintf("BNFSentence_addAlternative(%sSentence, %sSentenceAlternative%u);\n", this->name, this->name, i));
+        i++;
+    }
+    return text;
+}
+
+CGString* BNFAlternative_createCDeclaration(BNFAlternative* this, CGString* sentenceName, unsigned index) {
+    CGString* text = CGString__newWithSprintf("BNFAlternative* %sSentenceAlternative%u = NULL;\n", sentenceName, index);
+    return text;
+}
+CGString* BNFAlternative_createCConstructor(BNFAlternative* this, CGString* sentenceName, unsigned index) {
+    CGString* text = CGString__newWithSprintf("%sSentenceAlternative%u = BNFAlternative__new(CGArray__new(BNFPhrase, 1));\n", sentenceName, index);
+    return text;
+}
+
+CGString* BNFSentence_createCAlternativesDeclarations(BNFSentence* this) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFAlternative)* iter = CGArrayIterator__new(BNFAlternative, this->alternatives);
+    unsigned i = 0;
+    BNFAlternative* alternative;
+    while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
+        CGString* ctext = BNFAlternative_createCDeclaration(alternative, this->name, i);
+        CGString* text2 = CGString_append(text, ctext);
+        CGString_delete(text);
+        CGString_delete(ctext);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFSentence_createCAlternativesConstructors(BNFSentence* this) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFAlternative)* iter = CGArrayIterator__new(BNFAlternative, this->alternatives);
+    unsigned i = 0;
+    BNFAlternative* alternative;
+    while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
+        CGString* ctext = BNFAlternative_createCConstructor(alternative, this->name, i);
+        CGString* text2 = CGString_append(text, ctext);
+        CGString_delete(text);
+        CGString_delete(ctext);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFPhrase_createCDeclaration(BNFPhrase* this, CGString* sentenceName, unsigned alternativeIndex, unsigned phraseIndex) {
+    CGString* text = CGString__newWithSprintf("BNFPhrase* %sSentenceAlternative%uPhrase%u = NULL;\n", sentenceName, alternativeIndex, phraseIndex);
+    return text;
+}
+CGString* BNFPhrase_createCConstructor(BNFPhrase* this, CGString* sentenceName, unsigned alternativeIndex, unsigned phraseIndex) {
+    CGString* repeatSwitchString = BNFPhraseRepeatSwitch_toString(this->repeatSwitch);
+    CGString* text = CGString__newWithSprintf("%sSentenceAlternative%uPhrase%u = BNFPhrase__new(%s, CGArray__new(BNFSentence, 1));\n", 
+            sentenceName, alternativeIndex, phraseIndex, repeatSwitchString);
+    CGString_delete(repeatSwitchString);
+    return text;
+}
+CGString* BNFPhrase_createCAddParts(BNFPhrase* this, CGString* sentenceName, unsigned alternativeIndex, unsigned phraseIndex) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFSentence)* iter = CGArrayIterator__new(BNFSentence, this->parts);
+    unsigned i = 0;
+    BNFSentence* part;
+    while ((part = CGArrayIterator_fetch(BNFSentence, iter)) != NULL) {
+        CGString* appendText = CGString__newWithSprintf("BNFPhrase_addPart(%sSentenceAlternative%uPhrase%u, %sSentence);\n", 
+            sentenceName, alternativeIndex, phraseIndex, BNFSentence_getName(part));
+        CGString* text2 = CGString_append(text, appendText);
+        CGString_delete(text);
+        CGString_delete(appendText);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFAlternative_createCAddPhrases(BNFAlternative* this, CGString* sentenceName, unsigned int alternativeIndex) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFPhrase)* iter = CGArrayIterator__new(BNFPhrase, this->phrases);
+    unsigned i = 0;
+    BNFPhrase* phrase = NULL;
+    while ((phrase = CGArrayIterator_fetch(BNFPhrase, iter)) != NULL) {
+        CGString* appendText = CGString__newWithSprintf("BNFAlternative_addPhrase(%sSentenceAlternative%u, %sSentenceAlternative%uPhrase%u);\n", 
+            sentenceName, alternativeIndex, i);
+        CGString* text2 = CGString_append(text, appendText);
+        CGString_delete(text);
+        CGString_delete(appendText);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFAlternative_createCPhrasesAddParts(BNFAlternative* this, CGString* sentenceName, unsigned int alternativeIndex) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFPhrase)* iter = CGArrayIterator__new(BNFPhrase, this->phrases);
+    unsigned i = 0;
+    BNFPhrase* phrase = NULL;
+    while ((phrase = CGArrayIterator_fetch(BNFPhrase, iter)) != NULL) {
+        CGString* appendText = BNFPhrase_createCAddParts(phrase, sentenceName, alternativeIndex, i);
+        CGString* text2 = CGString_append(text, appendText);
+        CGString_delete(text);
+        CGString_delete(appendText);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFAlternative_createCPhrasesDeclarations(BNFAlternative* this, CGString* sentenceName, unsigned int alternativeIndex) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFPhrase)* iter = CGArrayIterator__new(BNFPhrase, this->phrases);
+    unsigned i = 0;
+    BNFPhrase* phrase = NULL;
+    while ((phrase = CGArrayIterator_fetch(BNFPhrase, iter)) != NULL) {
+        CGString* appendText = BNFPhrase_createCDeclaration(phrase, sentenceName, alternativeIndex, i);
+        CGString* text2 = CGString_append(text, appendText);
+        CGString_delete(text);
+        CGString_delete(appendText);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFAlternative_createCPhrasesConstructors(BNFAlternative* this, CGString* sentenceName, unsigned int alternativeIndex) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFPhrase)* iter = CGArrayIterator__new(BNFPhrase, this->phrases);
+    unsigned i = 0;
+    BNFPhrase* phrase = NULL;
+    while ((phrase = CGArrayIterator_fetch(BNFPhrase, iter)) != NULL) {
+        CGString* appendText = BNFPhrase_createCConstructor(phrase, sentenceName, alternativeIndex, i);
+        CGString* text2 = CGString_append(text, appendText);
+        CGString_delete(text);
+        CGString_delete(appendText);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFSentence_createCAlternativesPhrasesAddParts(BNFSentence* this) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFAlternative)* iter = CGArrayIterator__new(BNFAlternative, this->alternatives);
+    unsigned i = 0;
+    BNFAlternative* alternative = NULL;
+    while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
+        CGString* appendText = BNFAlternative_createCPhrasesAddParts(alternative, this->name, i);
+        CGString* text2 = CGString_append(text, appendText);
+        CGString_delete(text);
+        CGString_delete(appendText);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFSentence_createCAlternativesPhrasesDeclarations(BNFSentence* this) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFAlternative)* iter = CGArrayIterator__new(BNFAlternative, this->alternatives);
+    unsigned i = 0;
+    BNFAlternative* alternative = NULL;
+    while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
+        CGString* appendText = BNFAlternative_createCPhrasesDeclarations(alternative, this->name, i);
+        CGString* text2 = CGString_append(text, appendText);
+        CGString_delete(text);
+        CGString_delete(appendText);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFSentence_createCAlternativesPhrasesConstructors(BNFSentence* this) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFAlternative)* iter = CGArrayIterator__new(BNFAlternative, this->alternatives);
+    unsigned i = 0;
+    BNFAlternative* alternative = NULL;
+    while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
+        CGString* appendText = BNFAlternative_createCPhrasesConstructors(alternative, this->name, i);
+        CGString* text2 = CGString_append(text, appendText);
+        CGString_delete(text);
+        CGString_delete(appendText);
+        text = text2;
+        i++;
+    }
+    return text;
 }

@@ -48,6 +48,8 @@ BNFScannerRule* BNFScannerNode_getFollowupRule(BNFScannerNode* this);
 void BNFScannerNode_setFollowupRule(BNFScannerNode* this, BNFScannerRule* rule);
 bool BNFScannerNode_getIsNoise(BNFScannerNode* this);
 BNFToken* BNFScannerNode_applyToText(BNFScannerNode* this, const CGString* text);
+CGString* BNFScannerNode_createCDeclaration(BNFScannerNode* this, unsigned int index);
+CGString* BNFScannerNode_createCConstructor(BNFScannerNode* this, unsigned int index);
 
 BNFScannerRule* BNFScannerRule__new(CGString* name, CGArray(BNFScannerNode)* nodes);
 BNFScannerRule* BNFScannerRule_clone(BNFScannerRule* this);

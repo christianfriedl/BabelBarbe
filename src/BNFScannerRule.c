@@ -15,7 +15,8 @@ static ApplyToTextRV_* BNFScannerNode_applyStringToText_(BNFScannerNode* this, c
 static ApplyToTextRV_* BNFScannerNode_applyRegexToText_(BNFScannerNode* this, const CGString* text);
 static BNFToken* BNFScannerNode_applyFunctionToText_(BNFScannerNode* this, const CGString* text, ApplyToTextRV_*(*func)(BNFScannerNode*, const CGString*));
 
-BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, BNFTokenType* tokenType, bool isNoise, BNFToken* (*onAfterScanToken)(BNFToken*)) {
+BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, BNFScannerRule* followupRule, 
+        BNFTokenType* tokenType, bool isNoise, BNFToken* (*onAfterScanToken)(BNFToken*)) {
     BNFScannerNode* this = malloc(sizeof(*this));
     if (this != NULL) {
         this->type = type;
@@ -109,6 +110,17 @@ static ApplyToTextRV_* ApplyToTextRV__new(unsigned int len, bool success) {
 
 static void ApplyToTextRV_delete(ApplyToTextRV_* this) {
     free(this);
+}
+
+CGString* BNFScannerNode_createCDeclaration(BNFScannerNode* this, unsigned int index) {
+    CGString* text = CGString__newWithSprintf("BNFScannerNode* scannerNode%u = NULL;\n", index);
+    return text;
+}
+CGString* BNFScannerNode_createCConstructor(BNFScannerNode* this, unsigned int index) {
+    CGString* text = CGString__newWithSprintf("scannerNode%u = BNFScannerNode__new(BNFScannerNodeType_%s, \"%s\", NULL, BNFTokenType_%s, %s, NULL);\n",
+            index, (this->type == BNFScannerNodeType_regex ? "regex" : "string"),
+                this->pattern, BNFTokenType_getName(this->tokenType), (this->isNoise == true ? "true" : "false"));
+    return text;
 }
 
 static BNFToken* BNFScannerNode_applyFunctionToText_(BNFScannerNode* this, const CGString* text, ApplyToTextRV_*(*func)(BNFScannerNode*, const CGString*)) {
