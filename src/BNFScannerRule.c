@@ -117,9 +117,19 @@ CGString* BNFScannerNode_createCDeclaration(BNFScannerNode* this, unsigned int i
     return text;
 }
 CGString* BNFScannerNode_createCConstructor(BNFScannerNode* this, unsigned int index) {
+    CGString* escapedPattern = CGString__new("");
+    char* occ = NULL;
+    char* oldPos = this->pattern;
+    while ((occ = strchr(oldPos, '\\')) != NULL) {
+        strncat(escapedPattern, oldPos, occ - oldPos);
+        strcat(escapedPattern, "\\\\");
+        oldPos = occ + 1;
+    }
+    strncat(escapedPattern, oldPos, this->pattern + strlen(this->pattern) - oldPos);
+
     CGString* text = CGString__newWithSprintf("scannerNode%u = BNFScannerNode__new(BNFScannerNodeType_%s, CGString__new(\"%s\"), scannerRuleNoise, BNFTokenType_%s, %s, NULL);\n",
             index, (this->type == BNFScannerNodeType_regex ? "regex" : "string"),
-                this->pattern, BNFTokenType_getName(this->tokenType), (this->isNoise == true ? "true" : "false"));
+            escapedPattern, BNFTokenType_getName(this->tokenType), (this->isNoise == true ? "true" : "false"));
     return text;
 }
 

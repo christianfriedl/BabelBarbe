@@ -148,7 +148,6 @@ static void BNFCodeGenerator_handlePhraseSentence_(BNFCodeGenerator* this, BNFAs
 static void BNFCodeGenerator_handleAlternativeSentence_(BNFCodeGenerator* this, BNFAst* ast) {
     BNFAlternative* alternative = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
     BNFSentence_addAlternative(BNFCodeGenerator_getCurrentSentence_(this), alternative);
-    printf("added alternative to sentence %s\n", BNFSentence_getName(BNFCodeGenerator_getCurrentSentence_(this)));
 
     CGTree(BNFAst)* astTree = NULL;
     CGArrayOfCGTreeOfBNFAstIterator* iter = BNFAst_getSubAstIterator(ast);

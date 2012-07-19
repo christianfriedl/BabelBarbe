@@ -20,6 +20,7 @@ BNFScannerNode* scannerNode4 = NULL;
 BNFScannerNode* scannerNode5 = NULL;
 BNFScannerNode* scannerNode6 = NULL;
 BNFScannerRule* scannerRuleStart = NULL;
+BNFScannerRule* scannerRuleNoise = NULL;
 BNFSentence* expressionStringLiteral0Sentence = NULL;
 BNFSentence* expressionStringLiteral1Sentence = NULL;
 BNFSentence* termStringLiteral0Sentence = NULL;
@@ -68,15 +69,16 @@ BNFScannerRule* createScannerRuleset() {
     BNFTokenType_factor1 = BNFTokenType__new(19, "factor1");
     BNFTokenType_literal0 = BNFTokenType__new(20, "literal0");
     scannerRuleStart = BNFScannerRule__new(CGString__new("start"), NULL);
-    scannerNode0 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("+"), scannerRuleStart, BNFTokenType_expression0, false, NULL);
-    scannerNode1 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("-"), scannerRuleStart, BNFTokenType_expression1, false, NULL);
-    scannerNode2 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("*"), scannerRuleStart, BNFTokenType_term0, false, NULL);
-    scannerNode3 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("/"), scannerRuleStart, BNFTokenType_term1, false, NULL);
-    scannerNode4 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("("), scannerRuleStart, BNFTokenType_factor0, false, NULL);
-    scannerNode5 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new(")"), scannerRuleStart, BNFTokenType_factor1, false, NULL);
-    scannerNode6 = BNFScannerNode__new(BNFScannerNodeType_regex, CGString__new("\\d+"), scannerRuleStart, BNFTokenType_literal0, false, NULL);
-    BNFScannerRule_setNodes(scannerRuleStart, CGArray__newFromInitializerList(BNFScannerNode, scannerNode0, scannerNode1, scannerNode2, 
-                scannerNode3, scannerNode4, scannerNode5, scannerNode6, NULL));
+    scannerRuleNoise = BNFScannerRule__new(CGString__new("noise"), NULL);
+    scannerNode0 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("+"), scannerRuleNoise, BNFTokenType_expression0, false, NULL);
+    scannerNode1 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("-"), scannerRuleNoise, BNFTokenType_expression1, false, NULL);
+    scannerNode2 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("*"), scannerRuleNoise, BNFTokenType_term0, false, NULL);
+    scannerNode3 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("/"), scannerRuleNoise, BNFTokenType_term1, false, NULL);
+    scannerNode4 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("("), scannerRuleNoise, BNFTokenType_factor0, false, NULL);
+    scannerNode5 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new(")"), scannerRuleNoise, BNFTokenType_factor1, false, NULL);
+    scannerNode6 = BNFScannerNode__new(BNFScannerNodeType_regex, CGString__new("\\d+"), scannerRuleNoise, BNFTokenType_literal0, false, NULL);
+    BNFScannerRule_setNodes(scannerRuleStart, CGArray__newFromInitializerList(BNFScannerNode, scannerNode0, scannerNode1, scannerNode2, scannerNode3, scannerNode4, scannerNode5, scannerNode6, NULL));
+    BNFScannerRule_setNodes(scannerRuleNoise, CGArray__newFromInitializerList(BNFScannerNode, scannerNode0, scannerNode1, scannerNode2, scannerNode3, scannerNode4, scannerNode5, scannerNode6, NULL));
     return scannerRuleStart;
 }
 
