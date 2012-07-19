@@ -17,3 +17,5 @@ src/test/0200_BNFScannerWithRuleset
 src/test/0800_BNFParserWithRuleset
 src/test/0900_BNFCodeGenerator
 doc/man/
+src/bbarbe
+src/test/calc
