@@ -329,9 +329,9 @@ CGString* BNFSentence_createCDeclaration(BNFSentence* this) {
 CGString* BNFSentence_createCConstructor(BNFSentence* this) {
     CGString *text = NULL;
     if (this->alternatives == NULL)
-        text = CGString__newWithSprintf("%sSentence = BNFSentence__newTerminalSymbol(\"%s\", BNFTokenType_%s, NULL);\n", this->name, this->name, BNFTokenType_getName(this->tokenType));
+        text = CGString__newWithSprintf("%sSentence = BNFSentence__newTerminalSymbol(CGString__new(\"%s\"), BNFTokenType_%s, NULL);\n", this->name, this->name, BNFTokenType_getName(this->tokenType));
     else 
-        text = CGString__newWithSprintf("%sSentence = BNFSentence__new(\"%s\", BNFTokenType_%s, CGArray__new(BNFAlternative, 1));\n", this->name, this->name, BNFTokenType_getName(this->tokenType));
+        text = CGString__newWithSprintf("%sSentence = BNFSentence__new(CGString__new(\"%s\"), BNFTokenType_%s, CGArray__new(BNFAlternative, 1));\n", this->name, this->name, BNFTokenType_getName(this->tokenType));
     return text;
 }
 CGString* BNFSentence_createCAddAlternatives(BNFSentence* this) {
@@ -340,7 +340,7 @@ CGString* BNFSentence_createCAddAlternatives(BNFSentence* this) {
     unsigned i = 0;
     BNFAlternative* alternative;
     while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
-        CGString_append(text, CGString__newWithSprintf("BNFSentence_addAlternative(%sSentence, %sSentenceAlternative%u);\n", this->name, this->name, i));
+        CGString_append(text, CGString__newWithSprintf("    BNFSentence_addAlternative(%sSentence, %sSentenceAlternative%u);\n", this->name, this->name, i));
         i++;
     }
     return text;
@@ -351,7 +351,7 @@ CGString* BNFAlternative_createCDeclaration(BNFAlternative* this, CGString* sent
     return text;
 }
 CGString* BNFAlternative_createCConstructor(BNFAlternative* this, CGString* sentenceName, unsigned index) {
-    CGString* text = CGString__newWithSprintf("%sSentenceAlternative%u = BNFAlternative__new(CGArray__new(BNFPhrase, 1));\n", sentenceName, index);
+    CGString* text = CGString__newWithSprintf("    %sSentenceAlternative%u = BNFAlternative__new(CGArray__new(BNFPhrase, 1));\n", sentenceName, index);
     return text;
 }
 
@@ -391,7 +391,7 @@ CGString* BNFPhrase_createCDeclaration(BNFPhrase* this, CGString* sentenceName, 
 }
 CGString* BNFPhrase_createCConstructor(BNFPhrase* this, CGString* sentenceName, unsigned alternativeIndex, unsigned phraseIndex) {
     CGString* repeatSwitchString = BNFPhraseRepeatSwitch_toString(this->repeatSwitch);
-    CGString* text = CGString__newWithSprintf("%sSentenceAlternative%uPhrase%u = BNFPhrase__new(%s, CGArray__new(BNFSentence, 1));\n", 
+    CGString* text = CGString__newWithSprintf("    %sSentenceAlternative%uPhrase%u = BNFPhrase__new(%s, CGArray__new(BNFSentence, 1));\n", 
             sentenceName, alternativeIndex, phraseIndex, repeatSwitchString);
     CGString_delete(repeatSwitchString);
     return text;
@@ -402,7 +402,7 @@ CGString* BNFPhrase_createCAddParts(BNFPhrase* this, CGString* sentenceName, uns
     unsigned i = 0;
     BNFSentence* part;
     while ((part = CGArrayIterator_fetch(BNFSentence, iter)) != NULL) {
-        CGString* appendText = CGString__newWithSprintf("BNFPhrase_addPart(%sSentenceAlternative%uPhrase%u, %sSentence);\n", 
+        CGString* appendText = CGString__newWithSprintf("    BNFPhrase_addPart(%sSentenceAlternative%uPhrase%u, %sSentence);\n", 
             sentenceName, alternativeIndex, phraseIndex, BNFSentence_getName(part));
         CGString* text2 = CGString_append(text, appendText);
         CGString_delete(text);
@@ -418,7 +418,7 @@ CGString* BNFAlternative_createCAddPhrases(BNFAlternative* this, CGString* sente
     unsigned i = 0;
     BNFPhrase* phrase = NULL;
     while ((phrase = CGArrayIterator_fetch(BNFPhrase, iter)) != NULL) {
-        CGString* appendText = CGString__newWithSprintf("BNFAlternative_addPhrase(%sSentenceAlternative%u, %sSentenceAlternative%uPhrase%u);\n", 
+        CGString* appendText = CGString__newWithSprintf("    BNFAlternative_addPhrase(%sSentenceAlternative%u, %sSentenceAlternative%uPhrase%u);\n", 
             sentenceName, alternativeIndex, i);
         CGString* text2 = CGString_append(text, appendText);
         CGString_delete(text);
@@ -480,10 +480,8 @@ CGString* BNFSentence_createCAlternativesPhrasesAddParts(BNFSentence* this) {
     BNFAlternative* alternative = NULL;
     while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
         CGString* appendText = BNFAlternative_createCPhrasesAddParts(alternative, this->name, i);
-        CGString* text2 = CGString_append(text, appendText);
-        CGString_delete(text);
+        text = CGString_appendWithSprintf_I(text, "%s", appendText);
         CGString_delete(appendText);
-        text = text2;
         i++;
     }
     return text;

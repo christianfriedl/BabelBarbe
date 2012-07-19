@@ -117,7 +117,7 @@ CGString* BNFScannerNode_createCDeclaration(BNFScannerNode* this, unsigned int i
     return text;
 }
 CGString* BNFScannerNode_createCConstructor(BNFScannerNode* this, unsigned int index) {
-    CGString* text = CGString__newWithSprintf("scannerNode%u = BNFScannerNode__new(BNFScannerNodeType_%s, \"%s\", NULL, BNFTokenType_%s, %s, NULL);\n",
+    CGString* text = CGString__newWithSprintf("scannerNode%u = BNFScannerNode__new(BNFScannerNodeType_%s, CGString__new(\"%s\"), scannerRuleNoise, BNFTokenType_%s, %s, NULL);\n",
             index, (this->type == BNFScannerNodeType_regex ? "regex" : "string"),
                 this->pattern, BNFTokenType_getName(this->tokenType), (this->isNoise == true ? "true" : "false"));
     return text;
