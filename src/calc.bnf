@@ -1,6 +1,0 @@
-expression ::= term '+' term
-    | term '-' term
-    | term
-;
-
-term ::= /\d+/;

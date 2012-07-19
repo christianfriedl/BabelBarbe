@@ -329,7 +329,7 @@ CGString* BNFSentence_createCDeclaration(BNFSentence* this) {
 CGString* BNFSentence_createCConstructor(BNFSentence* this) {
     CGString *text = NULL;
     if (this->alternatives == NULL)
-        text = CGString__newWithSprintf("%sSentence = BNFSentence__newTerminalSymbol(CGString__new(\"%s\"), BNFTokenType_%s, NULL);\n", this->name, this->name, BNFTokenType_getName(this->tokenType));
+        text = CGString__newWithSprintf("%sSentence = BNFSentence__newTerminalSymbol(CGString__new(\"%s\"), BNFTokenType_%s);\n", this->name, this->name, BNFTokenType_getName(this->tokenType));
     else 
         text = CGString__newWithSprintf("%sSentence = BNFSentence__new(CGString__new(\"%s\"), BNFTokenType_%s, CGArray__new(BNFAlternative, 1));\n", this->name, this->name, BNFTokenType_getName(this->tokenType));
     return text;

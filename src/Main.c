@@ -52,7 +52,6 @@ int main(int argc, char *argv[]) {
         Main__printUsage();
         return 1;
     }
-    printf("%s\n", argv[1]);
 
     CGString* text = Main__readInputFile(argv[1]);
     BNFAst* ast = Main__parse_(text);

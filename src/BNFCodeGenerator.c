@@ -238,7 +238,12 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_CCUnexpectedSentence, "No start sentence found.");
     BNFSentence* sentence;
     CGString* text;
-    CGString* resultText = CGString__new("");
+    CGString* resultText = CGString__new("#include\"/opt/local/include/pcre.h\"\n"
+                                "#include<bbarbe/BNFTokenType.h>\n"
+                                "#include<bbarbe/BNFToken.h>\n"
+                                "#include<bbarbe/BNFScannerRule.h>\n"
+                                "#include<bbarbe/BNF_RDParser.h>\n\n");
+
 
     text = BNFTokenType_createCDeclaration(this->nonTerminalTokenType);
     resultText = CGString_append_I(resultText, text);
@@ -257,7 +262,8 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         resultText = CGString_append_I(resultText, text);
         i++;
     }
-    resultText = CGString_append_I(resultText, "BNFScannerRule* startRule = NULL;\n");
+    resultText = CGString_append_I(resultText, "BNFScannerRule* scannerRuleStart = NULL;\n");
+    resultText = CGString_append_I(resultText, "BNFScannerRule* scannerRuleNoise = NULL;\n");
     CGArrayIterator(BNFSentence)* terminalSentenceIter = CGArrayIterator__new(BNFSentence, this->terminalSentences);
     while ((sentence = CGArrayIterator_fetch(BNFSentence, terminalSentenceIter)) != NULL) {
         text = BNFSentence_createCDeclaration(sentence);
@@ -281,6 +287,7 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         resultText = CGString_append_I(resultText, text);
     }
 
+    resultText = CGString_append_I(resultText, "\n");
     resultText = CGString_append_I(resultText, "BNFScannerRule* createScannerRuleset() {\n");
     text = BNFTokenType_createCConstructor(this->nonTerminalTokenType);
     resultText = CGString_appendWithSprintf_I(resultText, "    %s", text);
@@ -297,8 +304,8 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         resultText = CGString_appendWithSprintf_I(resultText, "    %s", text);
         i++;
     }
-    resultText = CGString_append_I(resultText, "    BNFScannerRule* scannerRuleStart = BNFScannerRule__new(CGString__new(\"start\"), NULL);\n");
-    resultText = CGString_append_I(resultText, "    BNFScannerRule* scannerRuleNoise = BNFScannerRule__new(CGString__new(\"noise\"), NULL);\n");
+    resultText = CGString_append_I(resultText, "    scannerRuleStart = BNFScannerRule__new(CGString__new(\"start\"), NULL);\n");
+    resultText = CGString_append_I(resultText, "    scannerRuleNoise = BNFScannerRule__new(CGString__new(\"noise\"), NULL);\n");
     resultText = CGString_append_I(resultText, "    BNFScannerRule_setNodes(scannerRuleStart, CGArray__newFromInitializerList(BNFScannerNode, ");
     CGArrayIterator_reset(BNFScannerNode, scannerNodeIter);
     i = 0;
@@ -308,7 +315,7 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         resultText = CGString_appendWithSprintf_I(resultText, "scannerNode%u", i);
         i++;
     }
-    resultText = CGString_append_I(resultText, "));\n");
+    resultText = CGString_append_I(resultText, ", NULL));\n");
     resultText = CGString_append_I(resultText, "    BNFScannerRule_setNodes(scannerRuleNoise, CGArray__newFromInitializerList(BNFScannerNode, ");
     CGArrayIterator_reset(BNFScannerNode, scannerNodeIter);
     i = 0;
@@ -318,9 +325,10 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         resultText = CGString_appendWithSprintf_I(resultText, "scannerNode%u", i);
         i++;
     }
-    resultText = CGString_append_I(resultText, "));\n");
+    resultText = CGString_append_I(resultText, ", NULL));\n");
     resultText = CGString_append_I(resultText, "    return scannerRuleStart;\n}\n");
 
+    resultText = CGString_append_I(resultText, "\n");
     resultText = CGString_append_I(resultText, "BNFSentence* createParserRuleset() {\n");
     text = BNFSentence_createCConstructor(this->startSentence);
     resultText = CGString_appendWithSprintf_I(resultText, "    %s", text);

@@ -1,0 +1,14 @@
+expression ::= term '+' term
+    | term '-' term
+    | term
+;
+
+term ::= factor '*' factor
+    | factor '/' factor
+;
+
+factor ::= literal
+    | '(' expression ')'
+;
+
+literal ::= /\d+/;

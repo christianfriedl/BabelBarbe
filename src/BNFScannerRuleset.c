@@ -34,8 +34,10 @@ static BNFScannerRule* BNFScannerRuleset__new_() {
     BNFScannerNode* repeatManyNode = BNFScannerNode__new(BNFScannerNodeType_string, "+", noiseRule, BNFTokenType_repeatMany, false, NULL);
     BNFScannerNode* stringLiteralNode = BNFScannerNode__new(BNFScannerNodeType_regex, "'(\\\\'|[^'])*'", noiseRule, BNFTokenType_stringLiteral, false, BNFToken_removeQuotationMarks); 
     BNFScannerNode* regexLiteralNode = BNFScannerNode__new(BNFScannerNodeType_regex, "/(\\\\/|[^/])*/", noiseRule, BNFTokenType_regexLiteral, false, BNFToken_removeRegexSlashes); 
-    BNFScannerRule_setNodes(startRule, CGArray__newFromInitializerList(BNFScannerNode, identifierNode, definitionSignNode, semicolonNode, orSignNode, openParenNode, closeParenNode, repeatZeroOrOnceNode, repeatZeroOrMoreNode, repeatManyNode, stringLiteralNode, regexLiteralNode, noiseNode));
-    BNFScannerRule_setNodes(noiseRule, CGArray__newFromInitializerList(BNFScannerNode, identifierNode, definitionSignNode, semicolonNode, orSignNode, openParenNode, closeParenNode, repeatZeroOrOnceNode, repeatZeroOrMoreNode, repeatManyNode, stringLiteralNode, regexLiteralNode));
+    BNFScannerRule_setNodes(startRule, CGArray__newFromInitializerList(BNFScannerNode, identifierNode, definitionSignNode, 
+                semicolonNode, orSignNode, openParenNode, closeParenNode, repeatZeroOrOnceNode, repeatZeroOrMoreNode, 
+                repeatManyNode, stringLiteralNode, regexLiteralNode, noiseNode, NULL));
+    BNFScannerRule_setNodes(noiseRule, CGArray__newFromInitializerList(BNFScannerNode, noiseNode, NULL));
 
     return startRule;
 }

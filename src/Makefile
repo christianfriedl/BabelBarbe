@@ -13,16 +13,17 @@ LDFLAGS=-ggdb -L/opt/local/lib -lpcre $(WARNINGS)
 LOCALMAN=../doc/man
 MANPATH=man3
 
-PREFIX=/usr/local
-INSTALLHEADERS=${PREFIX}/include
+PREFIX=/usr
+INSTALLHEADERS=${PREFIX}/include/bbarbe
 INSTALLLIB=${PREFIX}/lib
-INSTALLMAN=${PREFIX}/usr/man/${MANPATH}
+INSTALLMAN=${PREFIX}/share/man/${MANPATH}
 INSTALLBIN=${PREFIX}/bin
 
 HEADERS=*.h
 STATIC_LIBRARY=libbbarbe.a 
 LIB_OBJECTS =  BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o BNF_RDParser.o BNFParserRuleset.o BNFCodeGenerator.o \
 			   BNFTokenType.o BNFTokenTypeFactory.o
+BINARIES=bbarbe
 
 necessary-test: all tags manpages test
 
@@ -38,7 +39,7 @@ clean-all-test: clean all tags test
 
 localall: $(STATIC_LIBRARY)
 
-all: localall
+all: localall $(BINARIES)
 	(cd test; make all)
 	rm -f *.i *.s
 
@@ -71,8 +72,13 @@ tags: $(LIB_OBJECTS)
 manpages: $(HEADERS)
 	rm -f ${LOCALMAN}/${MANPATH}/*.3 ${LOCALMAN}/${MANPATH}/*.3.gz
 	for i in *.h; do makeman.pl $$i ${LOCALMAN}/${MANPATH}; done
+	perl -pi -e "s/cgenerics/bbarbe/g" ../doc/man/man3/*.3
 	gzip -f ${LOCALMAN}/${MANPATH}/*.3
 
 install:
 	cp ${LOCALMAN}/${MANPATH}/* ${INSTALLMAN}
+	cp ${STATIC_LIBRARY} ${INSTALLLIB}
+	mkdir -p ${INSTALLHEADERS}
+	cp ${HEADERS} ${INSTALLHEADERS}
+	cp ${BINARIES} ${INSTALLBIN}
 
