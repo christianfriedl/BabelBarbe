@@ -10,17 +10,6 @@
 
 CGAppState* appState;
 
-void testCreateTokenType() {
-    printf("%s... ", __func__);
-
-	BNFCodeGenerator* cg = BNFCodeGenerator__new(NULL);
-	assert(BNFCodeGenerator_createTokenType(cg) == 0);
-	assert(BNFCodeGenerator_createTokenType(cg) == 1);
-	assert(BNFCodeGenerator_createTokenType(cg) == 2);
-
-    printf("%s ok\n", __func__);
-}
-
 static char* getCalcGrammar_() {
     FILE* file = fopen("calc.bnf", "r");
     char* text = malloc(1025 * sizeof(char));
@@ -49,9 +38,11 @@ void testParseCompleteCalcGrammar() {
     BNFAst_print(ast, 0);
 
 	BNFCodeGenerator* cg = BNFCodeGenerator__new(ast);
-	BNFCodeGenerator_createCode(cg);
+	CGString* code = BNFCodeGenerator_createCode(cg);
+    printf("Resulting Code:\n%s\n", code);
 
     BNF_RDParser_delete(parser);
+    CGString_delete(code);
     free(text);
 
     printf("%s ok\n", __func__);

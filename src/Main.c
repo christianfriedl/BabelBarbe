@@ -19,14 +19,6 @@ static BNFAst* Main__parse_(CGString* text) {
     CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
     BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
 
-    printf("Dumpin Ruleset:\n");
-    BNF_RDParser_print(parser);
-    printf("\n\n");
-    printf("Resulting Ast:\n");
-    BNFAst_print(ast, 0);
-
-    printf("ok\n");
-
     return ast;
 }
 
@@ -65,8 +57,10 @@ int main(int argc, char *argv[]) {
     CGString* text = Main__readInputFile(argv[1]);
     BNFAst* ast = Main__parse_(text);
     BNFCodeGenerator* cg = BNFCodeGenerator__new(ast);
-    char *code = BNFCodeGenerator_createCode(cg);
+    CGString* code = BNFCodeGenerator_createCode(cg);
     BNFCodeGenerator_delete(cg);
+    printf("%s", code);
+    CGString_delete(code);
     CGAppState__deInit();
 	return 0;
 }

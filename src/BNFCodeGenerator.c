@@ -35,7 +35,6 @@ BNFTokenType* BNFCodeGenerator_createTokenType(BNFCodeGenerator* this) {
         name = CGString__newWithSprintf("%s%u", this->ruleName, this->ruleTokenTypeCount++);
     else
         name = "Unknown token type";
-    printf("--> createing token '%s' in rule %s\n", name, this->ruleName);
 
     BNFTokenType* tt = BNFTokenTypeFactory_createBNFTokenType(BNFTokenTypeFactory__getInstance(), name);
     CGArray_add(BNFTokenType, this->tokenTypes, tt);
@@ -200,8 +199,6 @@ static void BNFCodeGenerator_handleRuleSentence_(BNFCodeGenerator* this, BNFAst*
         this->ruleName = name;
         this->ruleSentenceCount = 0;
         this->ruleTokenTypeCount = 0;
-        printf("--> in rule %s\n", this->ruleName);
-        printf("--> handle rule %s\n", name);
         BNFSentence* namedSentence = BNFSentence__newNonTerminalSymbol(name, this->nonTerminalTokenType);
         BNFSentence* sentence = CGArray_find(BNFSentence, this->ruleSentences, namedSentence, BNFCodeGenerator__compareSentenceNames_);
         /* TODO: sideeffects??? BNFSentence_delete(namedSentence); */
@@ -239,10 +236,6 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         BNFCodeGenerator_handleStartSentence_(this, this->ast);
     else
         CGAppState_THROW(CGAppState__getInstance(), Severity_fatal, BNFExceptionID_CCUnexpectedSentence, "No start sentence found.");
-    printf("----> resulting ruleset: \n");
-    CGArray(BNFSentence)* seenSentences = CGArray__new(BNFSentence, 16);
-    BNFSentence_print(this->startSentence, 0, seenSentences);
-    printf("----> dumping code: \n");
     BNFSentence* sentence;
     CGString* text;
     CGString* resultText = CGString__new("");
@@ -264,7 +257,7 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         resultText = CGString_append_I(resultText, text);
         i++;
     }
-    printf("BNFScannerRule* startRule = NULL;\n");
+    resultText = CGString_append_I(resultText, "BNFScannerRule* startRule = NULL;\n");
     CGArrayIterator(BNFSentence)* terminalSentenceIter = CGArrayIterator__new(BNFSentence, this->terminalSentences);
     while ((sentence = CGArrayIterator_fetch(BNFSentence, terminalSentenceIter)) != NULL) {
         text = BNFSentence_createCDeclaration(sentence);
@@ -353,12 +346,9 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         resultText = CGString_appendWithSprintf_I(resultText, "%s", text);
     }
     resultText = CGString_append_I(resultText, "    return startSentence;\n}\n");
-    printf("%s", resultText);
     CGArrayIterator_delete(BNFSentence, terminalSentenceIter);
     CGArrayIterator_delete(BNFSentence, ruleSentenceIter);
     CGArrayIterator_delete(BNFScannerNode, scannerNodeIter);
     CGArrayIterator_delete(BNFTokenType, tokenTypeIter);
-    printf("----> end dumping code\n");
-    printf("----> result textg:\n%s", resultText);
-    return "";
+    return resultText;
 }
