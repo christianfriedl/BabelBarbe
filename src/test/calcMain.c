@@ -14,7 +14,7 @@ int main() {
     CGAppState__init("calc");
     BNFScannerRule* startRule = createScannerRuleset();
     BNFSentence* startSentence = createParserRuleset();
-    CGString* text = CGString__new("1+2");
+    CGString* text = CGString__new("(1+2)*3");
     BNFScanner* scanner = BNFScanner__new(startRule, text);
     BNF_RDParser* parser = BNF_RDParser__new(startSentence);
     CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
