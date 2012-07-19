@@ -1,0 +1,142 @@
+#include"/opt/local/include/pcre.h"
+#include<bbarbe/BNFTokenType.h>
+#include<bbarbe/BNFToken.h>
+#include<bbarbe/BNFScannerRule.h>
+#include<bbarbe/BNF_RDParser.h>
+
+BNFTokenType* BNFTokenType_nonTerminal = NULL;
+BNFTokenType* BNFTokenType_expression0 = NULL;
+BNFTokenType* BNFTokenType_expression1 = NULL;
+BNFTokenType* BNFTokenType_term0 = NULL;
+BNFTokenType* BNFTokenType_term1 = NULL;
+BNFTokenType* BNFTokenType_factor0 = NULL;
+BNFTokenType* BNFTokenType_factor1 = NULL;
+BNFTokenType* BNFTokenType_literal0 = NULL;
+BNFScannerNode* scannerNode0 = NULL;
+BNFScannerNode* scannerNode1 = NULL;
+BNFScannerNode* scannerNode2 = NULL;
+BNFScannerNode* scannerNode3 = NULL;
+BNFScannerNode* scannerNode4 = NULL;
+BNFScannerNode* scannerNode5 = NULL;
+BNFScannerNode* scannerNode6 = NULL;
+BNFScannerRule* scannerRuleStart = NULL;
+BNFSentence* expressionStringLiteral0Sentence = NULL;
+BNFSentence* expressionStringLiteral1Sentence = NULL;
+BNFSentence* termStringLiteral0Sentence = NULL;
+BNFSentence* termStringLiteral1Sentence = NULL;
+BNFSentence* factorStringLiteral0Sentence = NULL;
+BNFSentence* factorStringLiteral1Sentence = NULL;
+BNFSentence* literalRegexLiteral0Sentence = NULL;
+BNFSentence* startSentence = NULL;
+BNFSentence* expressionSentence = NULL;
+BNFSentence* termSentence = NULL;
+BNFSentence* factorSentence = NULL;
+BNFSentence* literalSentence = NULL;
+BNFAlternative* expressionSentenceAlternative0 = NULL;
+BNFAlternative* expressionSentenceAlternative1 = NULL;
+BNFAlternative* expressionSentenceAlternative2 = NULL;
+BNFAlternative* termSentenceAlternative0 = NULL;
+BNFAlternative* termSentenceAlternative1 = NULL;
+BNFAlternative* factorSentenceAlternative0 = NULL;
+BNFAlternative* factorSentenceAlternative1 = NULL;
+BNFAlternative* literalSentenceAlternative0 = NULL;
+BNFPhrase* expressionSentenceAlternative0Phrase0 = NULL;
+BNFPhrase* expressionSentenceAlternative0Phrase1 = NULL;
+BNFPhrase* expressionSentenceAlternative0Phrase2 = NULL;
+BNFPhrase* expressionSentenceAlternative1Phrase0 = NULL;
+BNFPhrase* expressionSentenceAlternative1Phrase1 = NULL;
+BNFPhrase* expressionSentenceAlternative1Phrase2 = NULL;
+BNFPhrase* expressionSentenceAlternative2Phrase0 = NULL;
+BNFPhrase* termSentenceAlternative0Phrase0 = NULL;
+BNFPhrase* termSentenceAlternative0Phrase1 = NULL;
+BNFPhrase* termSentenceAlternative0Phrase2 = NULL;
+BNFPhrase* termSentenceAlternative1Phrase0 = NULL;
+BNFPhrase* termSentenceAlternative1Phrase1 = NULL;
+BNFPhrase* termSentenceAlternative1Phrase2 = NULL;
+BNFPhrase* factorSentenceAlternative0Phrase0 = NULL;
+BNFPhrase* factorSentenceAlternative1Phrase0 = NULL;
+BNFPhrase* factorSentenceAlternative1Phrase1 = NULL;
+BNFPhrase* factorSentenceAlternative1Phrase2 = NULL;
+BNFPhrase* literalSentenceAlternative0Phrase0 = NULL;
+
+BNFScannerRule* createScannerRuleset() {
+    BNFTokenType_nonTerminal = BNFTokenType__new(13, "nonTerminal");
+    BNFTokenType_expression0 = BNFTokenType__new(14, "expression0");
+    BNFTokenType_expression1 = BNFTokenType__new(15, "expression1");
+    BNFTokenType_term0 = BNFTokenType__new(16, "term0");
+    BNFTokenType_term1 = BNFTokenType__new(17, "term1");
+    BNFTokenType_factor0 = BNFTokenType__new(18, "factor0");
+    BNFTokenType_factor1 = BNFTokenType__new(19, "factor1");
+    BNFTokenType_literal0 = BNFTokenType__new(20, "literal0");
+    scannerNode0 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("+"), scannerRuleStart, BNFTokenType_expression0, false, NULL);
+    scannerNode1 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("-"), scannerRuleStart, BNFTokenType_expression1, false, NULL);
+    scannerNode2 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("*"), scannerRuleStart, BNFTokenType_term0, false, NULL);
+    scannerNode3 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("/"), scannerRuleStart, BNFTokenType_term1, false, NULL);
+    scannerNode4 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new("("), scannerRuleStart, BNFTokenType_factor0, false, NULL);
+    scannerNode5 = BNFScannerNode__new(BNFScannerNodeType_string, CGString__new(")"), scannerRuleStart, BNFTokenType_factor1, false, NULL);
+    scannerNode6 = BNFScannerNode__new(BNFScannerNodeType_regex, CGString__new("\\d+"), scannerRuleStart, BNFTokenType_literal0, false, NULL);
+    scannerRuleStart = BNFScannerRule__new(CGString__new("start"), NULL);
+    BNFScannerRule_setNodes(scannerRuleStart, CGArray__newFromInitializerList(BNFScannerNode, scannerNode0, scannerNode1, scannerNode2, 
+                scannerNode3, scannerNode4, scannerNode5, scannerNode6, NULL));
+    return scannerRuleStart;
+}
+
+BNFSentence* createParserRuleset() {
+    startSentence = BNFSentence__new(CGString__new("start"), BNFTokenType_nonTerminal, CGArray__new(BNFAlternative, 1));
+    expressionStringLiteral0Sentence = BNFSentence__newTerminalSymbol(CGString__new("expressionStringLiteral0"), BNFTokenType_expression0);
+    expressionStringLiteral1Sentence = BNFSentence__newTerminalSymbol(CGString__new("expressionStringLiteral1"), BNFTokenType_expression1);
+    termStringLiteral0Sentence = BNFSentence__newTerminalSymbol(CGString__new("termStringLiteral0"), BNFTokenType_term0);
+    termStringLiteral1Sentence = BNFSentence__newTerminalSymbol(CGString__new("termStringLiteral1"), BNFTokenType_term1);
+    factorStringLiteral0Sentence = BNFSentence__newTerminalSymbol(CGString__new("factorStringLiteral0"), BNFTokenType_factor0);
+    factorStringLiteral1Sentence = BNFSentence__newTerminalSymbol(CGString__new("factorStringLiteral1"), BNFTokenType_factor1);
+    literalRegexLiteral0Sentence = BNFSentence__newTerminalSymbol(CGString__new("literalRegexLiteral0"), BNFTokenType_literal0);
+    expressionSentence = BNFSentence__new(CGString__new("expression"), BNFTokenType_nonTerminal, CGArray__new(BNFAlternative, 1));
+    expressionSentenceAlternative0 = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
+    expressionSentenceAlternative1 = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
+    expressionSentenceAlternative2 = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
+    expressionSentenceAlternative0Phrase0 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    expressionSentenceAlternative0Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    expressionSentenceAlternative0Phrase2 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    expressionSentenceAlternative1Phrase0 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    expressionSentenceAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    expressionSentenceAlternative1Phrase2 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    expressionSentenceAlternative2Phrase0 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    termSentence = BNFSentence__new(CGString__new("term"), BNFTokenType_nonTerminal, CGArray__new(BNFAlternative, 1));
+    termSentenceAlternative0 = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
+    termSentenceAlternative1 = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
+    termSentenceAlternative0Phrase0 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    termSentenceAlternative0Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    termSentenceAlternative0Phrase2 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    termSentenceAlternative1Phrase0 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    termSentenceAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    termSentenceAlternative1Phrase2 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    factorSentence = BNFSentence__new(CGString__new("factor"), BNFTokenType_nonTerminal, CGArray__new(BNFAlternative, 1));
+    factorSentenceAlternative0 = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
+    factorSentenceAlternative1 = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
+    factorSentenceAlternative0Phrase0 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    factorSentenceAlternative1Phrase0 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    factorSentenceAlternative1Phrase1 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    factorSentenceAlternative1Phrase2 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    literalSentence = BNFSentence__new(CGString__new("literal"), BNFTokenType_nonTerminal, CGArray__new(BNFAlternative, 1));
+    literalSentenceAlternative0 = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
+    literalSentenceAlternative0Phrase0 = BNFPhrase__new(BNFPhraseRepeat_once, CGArray__new(BNFSentence, 1));
+    BNFPhrase_addPart(expressionSentenceAlternative0Phrase0, termSentence);
+    BNFPhrase_addPart(expressionSentenceAlternative0Phrase1, expressionStringLiteral0Sentence);
+    BNFPhrase_addPart(expressionSentenceAlternative0Phrase2, termSentence);
+    BNFPhrase_addPart(expressionSentenceAlternative1Phrase0, termSentence);
+    BNFPhrase_addPart(expressionSentenceAlternative1Phrase1, expressionStringLiteral1Sentence);
+    BNFPhrase_addPart(expressionSentenceAlternative1Phrase2, termSentence);
+    BNFPhrase_addPart(expressionSentenceAlternative2Phrase0, termSentence);
+    BNFPhrase_addPart(termSentenceAlternative0Phrase0, factorSentence);
+    BNFPhrase_addPart(termSentenceAlternative0Phrase1, termStringLiteral0Sentence);
+    BNFPhrase_addPart(termSentenceAlternative0Phrase2, factorSentence);
+    BNFPhrase_addPart(termSentenceAlternative1Phrase0, factorSentence);
+    BNFPhrase_addPart(termSentenceAlternative1Phrase1, termStringLiteral1Sentence);
+    BNFPhrase_addPart(termSentenceAlternative1Phrase2, factorSentence);
+    BNFPhrase_addPart(factorSentenceAlternative0Phrase0, literalSentence);
+    BNFPhrase_addPart(factorSentenceAlternative1Phrase0, factorStringLiteral0Sentence);
+    BNFPhrase_addPart(factorSentenceAlternative1Phrase1, expressionSentence);
+    BNFPhrase_addPart(factorSentenceAlternative1Phrase2, factorStringLiteral1Sentence);
+    BNFPhrase_addPart(literalSentenceAlternative0Phrase0, literalRegexLiteral0Sentence);
+    return startSentence;
+}
