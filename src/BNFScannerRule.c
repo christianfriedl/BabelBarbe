@@ -22,7 +22,7 @@ BNFScannerNode* BNFScannerNode__new(BNFScannerNodeType type, CGString* pattern, 
         this->type = type;
         if (type == BNFScannerNodeType_regex) {
             this->pattern = NULL;
-            this->regex = NULL;
+            this->regex = NULL; /* vim syntastic does not grok pcre* regex, ignore warning about BNFScannerNode not having it */
             CGAppState_catchAndDeleteException(CGAppState__getInstance());
             BNFScannerNode_setRegex(this, pattern);
             if (CGAppState_isExceptionRaised(CGAppState__getInstance())) {

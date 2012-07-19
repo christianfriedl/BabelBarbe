@@ -19,13 +19,13 @@ typedef enum { BNFScannerNodeType_string = 0, BNFScannerNodeType_regex = 1 } BNF
 typedef struct {
     BNFScannerNodeType type;        /* this scanner node can represent a static string literal, or regular expression */
     CGString* pattern;              /* the pattern, represented as a string - either literal, or regex */
-    pcre* regex;                    /* the compiled regex, used internally */
     BNFScannerRule* followupRule;   /* if this node matches, then the scanner should move to this rule */
     BNFTokenType* tokenType;         /* if this node matches, then this is its resulting token type */
     bool isNoise;                   /* true if this node represents "noise", i.e. whitespace */
     BNFToken* (*onAfterScanToken)(BNFToken*);    /* callback function to do postprocessing on the token; can be NULL
                                                         NOTE: this HAS to create a new token from the old one - the old one gets delete'd in the scanner
                                                   */
+    pcre* regex;                    /* the compiled regex, used internally */
 } BNFScannerNode;
 
 DECLARE_ARRAY_TYPE(BNFScannerNode)

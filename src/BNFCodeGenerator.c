@@ -240,45 +240,59 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
     printf("----> dumping code: \n");
     BNFSentence* sentence;
     CGString* text;
-    CGArrayIterator(BNFScannerNode)* snIter = CGArrayIterator__new(BNFScannerNode, this->scannerNodes);
+
+    CGArrayIterator(BNFTokenType)* tokenTypeIter = CGArrayIterator__new(BNFTokenType, this->tokenTypes);
+    BNFTokenType *tt = NULL;
+    while ((tt = CGArrayIterator_fetch(BNFTokenType, tokenTypeIter)) != NULL) {
+        text = BNFTokenType_createCDeclaration(tt);
+        printf("%s", text);
+    }
+    CGArrayIterator(BNFScannerNode)* scannerNodeIter = CGArrayIterator__new(BNFScannerNode, this->scannerNodes);
     BNFScannerNode* node = NULL;
     unsigned int i = 0;
-    while ((node = CGArrayIterator_fetch(BNFScannerNode, snIter)) != NULL) {
+    while ((node = CGArrayIterator_fetch(BNFScannerNode, scannerNodeIter)) != NULL) {
         text = BNFScannerNode_createCDeclaration(node, i);
         printf("%s", text);
+    }
+    CGArrayIterator(BNFSentence)* terminalSentenceIter = CGArrayIterator__new(BNFSentence, this->terminalSentences);
+    while ((sentence = CGArrayIterator_fetch(BNFSentence, terminalSentenceIter)) != NULL) {
+        text = BNFSentence_createCDeclaration(sentence);
+        printf("%s", text);
+    }
+    CGArrayIterator(BNFSentence)* ruleSentenceIter = ruleSentenceIter = CGArrayIterator__new(BNFSentence, this->ruleSentences);
+    while ((sentence = CGArrayIterator_fetch(BNFSentence, ruleSentenceIter)) != NULL) {
+        text = BNFSentence_createCDeclaration(sentence);
+        printf("%s", text);
+    }
+    CGArrayIterator_reset(BNFSentence, ruleSentenceIter);
+    while ((sentence = CGArrayIterator_fetch(BNFSentence, ruleSentenceIter)) != NULL) {
+        text = BNFSentence_createCAlternativesDeclarations(sentence);
+        printf("%s", text);
+    }
+    CGArrayIterator_reset(BNFSentence, ruleSentenceIter);
+    while ((sentence = CGArrayIterator_fetch(BNFSentence, ruleSentenceIter)) != NULL) {
+        text = BNFSentence_createCAlternativesPhrasesDeclarations(sentence);
+        printf("%s", text);
+    }
+    CGArrayIterator_reset(BNFTokenType, tokenTypeIter);
+    while ((tt = CGArrayIterator_fetch(BNFTokenType, tokenTypeIter)) != NULL) {
+        text = BNFTokenType_createCConstructor(tt);
+        printf("%s", text);
+    }
+    CGArrayIterator_reset(BNFScannerNode, scannerNodeIter);
+    i = 0;
+    while ((node = CGArrayIterator_fetch(BNFScannerNode, scannerNodeIter)) != NULL) {
         text = BNFScannerNode_createCConstructor(node, i);
         printf("%s", text);
         i++;
     }
-    CGArrayIterator_delete(BNFScannerNode, snIter);
-    CGArrayIterator(BNFTokenType)* ttIter = CGArrayIterator__new(BNFTokenType, this->tokenTypes);
-    BNFTokenType *tt = NULL;
-    while ((tt = CGArrayIterator_fetch(BNFTokenType, ttIter)) != NULL) {
-        text = BNFTokenType_createCDeclaration(tt);
-        printf("%s", text);
-        text = BNFTokenType_createCConstructor(tt);
-        printf("%s", text);
-    }
-    CGArrayIterator_delete(BNFTokenType, ttIter);
-    CGArrayIterator(BNFSentence)* iter = CGArrayIterator__new(BNFSentence, this->terminalSentences);
-    while ((sentence = CGArrayIterator_fetch(BNFSentence, iter)) != NULL) {
-        text = BNFSentence_createCDeclaration(sentence);
-        printf("%s", text);
+    CGArrayIterator_reset(BNFSentence, terminalSentenceIter);
+    while ((sentence = CGArrayIterator_fetch(BNFSentence, terminalSentenceIter)) != NULL) {
         text = BNFSentence_createCConstructor(sentence);
         printf("%s", text);
     }
-    CGArrayIterator_delete(BNFSentence, iter);
-    iter = CGArrayIterator__new(BNFSentence, this->ruleSentences);
-    while ((sentence = CGArrayIterator_fetch(BNFSentence, iter)) != NULL) {
-        text = BNFSentence_createCDeclaration(sentence);
-        printf("%s", text);
-        text = BNFSentence_createCAlternativesDeclarations(sentence);
-        printf("%s", text);
-        text = BNFSentence_createCAlternativesPhrasesDeclarations(sentence);
-        printf("%s", text);
-    }
-    CGArrayIterator_reset(BNFSentence, iter);
-    while ((sentence = CGArrayIterator_fetch(BNFSentence, iter)) != NULL) {
+    CGArrayIterator_reset(BNFSentence, ruleSentenceIter);
+    while ((sentence = CGArrayIterator_fetch(BNFSentence, ruleSentenceIter)) != NULL) {
         text = BNFSentence_createCConstructor(sentence);
         printf("%s", text);
         text = BNFSentence_createCAlternativesConstructors(sentence);
@@ -286,13 +300,17 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         text = BNFSentence_createCAlternativesPhrasesConstructors(sentence);
         printf("%s", text);
     }
-    CGArrayIterator_reset(BNFSentence, iter);
-    while ((sentence = CGArrayIterator_fetch(BNFSentence, iter)) != NULL) {
+    CGArrayIterator_reset(BNFSentence, ruleSentenceIter);
+    while ((sentence = CGArrayIterator_fetch(BNFSentence, ruleSentenceIter)) != NULL) {
         text = BNFSentence_createCAddAlternatives(sentence);
         printf("%s", text);
         text = BNFSentence_createCAlternativesPhrasesAddParts(sentence);
         printf("%s", text);
     }
+    CGArrayIterator_delete(BNFSentence, terminalSentenceIter);
+    CGArrayIterator_delete(BNFSentence, ruleSentenceIter);
+    CGArrayIterator_delete(BNFScannerNode, scannerNodeIter);
+    CGArrayIterator_delete(BNFTokenType, tokenTypeIter);
     printf("----> end dumping code\n");
     return "";
 }
