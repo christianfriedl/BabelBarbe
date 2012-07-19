@@ -13,13 +13,14 @@ LDFLAGS=-ggdb -L/opt/local/lib -lpcre $(WARNINGS)
 LOCALMAN=../doc/man
 MANPATH=man3
 
-PREFIX=~
+PREFIX=/usr/local
 INSTALLHEADERS=${PREFIX}/include
 INSTALLLIB=${PREFIX}/lib
 INSTALLMAN=${PREFIX}/usr/man/${MANPATH}
+INSTALLBIN=${PREFIX}/bin
 
 HEADERS=*.h
-STATIC_LIBRARY=libbnf.a 
+STATIC_LIBRARY=libbbarbe.a 
 LIB_OBJECTS =  BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o BNF_RDParser.o BNFParserRuleset.o BNFCodeGenerator.o \
 			   BNFTokenType.o BNFTokenTypeFactory.o
 
@@ -30,8 +31,8 @@ current-test: $(STATIC_LIBRARY)
 	rm -f *.i *.s
 	rm -f test/*.i test/*.s
 
-compiler: Main.o $(STATIC_LIBRARY)
-	$(CC) $(LDFLAGS) -o $@ $< -L./ -lbnf $(LDFLAGS) -lcgenerics
+bbarbe: Main.o $(STATIC_LIBRARY)
+	$(CC) $(LDFLAGS) -o $@ $< -L./ -lbbarbe $(LDFLAGS) -lcgenerics
 
 clean-all-test: clean all tags test
 
@@ -48,7 +49,7 @@ $(STATIC_LIBRARY): $(LIB_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $?
 
 clean:
-	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY) *.e.c *.BAK *.i *.s compiler
+	rm -f *.o $(TEST_BINARIES) $(STATIC_LIBRARY) *.e.c *.BAK *.i *.s bbarbe
 	(cd test; make clean)
 
 .PHONY: test
