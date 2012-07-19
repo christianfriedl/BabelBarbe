@@ -25,5 +25,13 @@ clean:
 	$(CC)  -o $@ $< $(LDFLAGS)
 	rm -f *.i *.s
 
+calcMain.o: calcMain.c
+
+calcRuleset.o: calcRuleset.c
+
+calc: calcMain.o calcRuleset.o
+	$(CC)  -o calc calcMain.o calcRuleset.o $(LDFLAGS)
+	rm -f *.i *.s
+
 tags: $(BINARIES)
 	ctags *.c ../../../CGenerics/src/*.{c,h}

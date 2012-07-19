@@ -148,6 +148,7 @@ static void BNFCodeGenerator_handlePhraseSentence_(BNFCodeGenerator* this, BNFAs
 static void BNFCodeGenerator_handleAlternativeSentence_(BNFCodeGenerator* this, BNFAst* ast) {
     BNFAlternative* alternative = BNFAlternative__new(CGArray__new(BNFPhrase, 1));
     BNFSentence_addAlternative(BNFCodeGenerator_getCurrentSentence_(this), alternative);
+    printf("added alternative to sentence %s\n", BNFSentence_getName(BNFCodeGenerator_getCurrentSentence_(this)));
 
     CGTree(BNFAst)* astTree = NULL;
     CGArrayOfCGTreeOfBNFAstIterator* iter = BNFAst_getSubAstIterator(ast);
@@ -269,8 +270,6 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         text = BNFSentence_createCDeclaration(sentence);
         resultText = CGString_append_I(resultText, text);
     }
-    text = BNFSentence_createCDeclaration(this->startSentence);
-    resultText = CGString_append_I(resultText, text);
     CGArrayIterator(BNFSentence)* ruleSentenceIter = ruleSentenceIter = CGArrayIterator__new(BNFSentence, this->ruleSentences);
     while ((sentence = CGArrayIterator_fetch(BNFSentence, ruleSentenceIter)) != NULL) {
         text = BNFSentence_createCDeclaration(sentence);
@@ -297,6 +296,8 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         text = BNFTokenType_createCConstructor(tt);
         resultText = CGString_appendWithSprintf_I(resultText, "    %s", text);
     }
+    resultText = CGString_append_I(resultText, "    scannerRuleStart = BNFScannerRule__new(CGString__new(\"start\"), NULL);\n");
+    resultText = CGString_append_I(resultText, "    scannerRuleNoise = BNFScannerRule__new(CGString__new(\"noise\"), NULL);\n");
     CGArrayIterator_reset(BNFScannerNode, scannerNodeIter);
     i = 0;
     while ((node = CGArrayIterator_fetch(BNFScannerNode, scannerNodeIter)) != NULL) {
@@ -304,8 +305,6 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         resultText = CGString_appendWithSprintf_I(resultText, "    %s", text);
         i++;
     }
-    resultText = CGString_append_I(resultText, "    scannerRuleStart = BNFScannerRule__new(CGString__new(\"start\"), NULL);\n");
-    resultText = CGString_append_I(resultText, "    scannerRuleNoise = BNFScannerRule__new(CGString__new(\"noise\"), NULL);\n");
     resultText = CGString_append_I(resultText, "    BNFScannerRule_setNodes(scannerRuleStart, CGArray__newFromInitializerList(BNFScannerNode, ");
     CGArrayIterator_reset(BNFScannerNode, scannerNodeIter);
     i = 0;
@@ -330,8 +329,6 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
 
     resultText = CGString_append_I(resultText, "\n");
     resultText = CGString_append_I(resultText, "BNFSentence* createParserRuleset() {\n");
-    text = BNFSentence_createCConstructor(this->startSentence);
-    resultText = CGString_appendWithSprintf_I(resultText, "    %s", text);
     CGArrayIterator_reset(BNFSentence, terminalSentenceIter);
     while ((sentence = CGArrayIterator_fetch(BNFSentence, terminalSentenceIter)) != NULL) {
         text = BNFSentence_createCConstructor(sentence);
@@ -345,6 +342,8 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         resultText = CGString_appendWithSprintf_I(resultText, "%s", text);
         text = BNFSentence_createCAlternativesPhrasesConstructors(sentence);
         resultText = CGString_appendWithSprintf_I(resultText, "%s", text);
+        text = BNFSentence_createCAlternativesAddPhrases(sentence);
+        resultText = CGString_appendWithSprintf_I(resultText, "%s", text);
     }
     CGArrayIterator_reset(BNFSentence, ruleSentenceIter);
     while ((sentence = CGArrayIterator_fetch(BNFSentence, ruleSentenceIter)) != NULL) {
@@ -353,7 +352,7 @@ CGString* BNFCodeGenerator_createCode(BNFCodeGenerator* this) {
         text = BNFSentence_createCAlternativesPhrasesAddParts(sentence);
         resultText = CGString_appendWithSprintf_I(resultText, "%s", text);
     }
-    resultText = CGString_append_I(resultText, "    return startSentence;\n}\n");
+    resultText = CGString_appendWithSprintf_I(resultText, "    return %sSentence;\n}\n", BNFSentence_getName(CGArray_getValueAt(BNFSentence, this->ruleSentences, 0)));
     CGArrayIterator_delete(BNFSentence, terminalSentenceIter);
     CGArrayIterator_delete(BNFSentence, ruleSentenceIter);
     CGArrayIterator_delete(BNFScannerNode, scannerNodeIter);

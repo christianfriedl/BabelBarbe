@@ -99,5 +99,6 @@ CGString* BNFAlternative_createCPhrasesConstructors(BNFAlternative* this, CGStri
 CGString* BNFSentence_createCAlternativesPhrasesAddParts(BNFSentence* this);
 CGString* BNFSentence_createCAlternativesPhrasesDeclarations(BNFSentence* this);
 CGString* BNFSentence_createCAlternativesPhrasesConstructors(BNFSentence* this);
+CGString* BNFSentence_createCAlternativesAddPhrases(BNFSentence* this);
 
 #endif

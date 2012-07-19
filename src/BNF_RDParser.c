@@ -340,7 +340,7 @@ CGString* BNFSentence_createCAddAlternatives(BNFSentence* this) {
     unsigned i = 0;
     BNFAlternative* alternative;
     while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
-        CGString_append(text, CGString__newWithSprintf("    BNFSentence_addAlternative(%sSentence, %sSentenceAlternative%u);\n", this->name, this->name, i));
+        text = CGString_append(text, CGString__newWithSprintf("    BNFSentence_addAlternative(%sSentence, %sSentenceAlternative%u);\n", this->name, this->name, i));
         i++;
     }
     return text;
@@ -419,7 +419,7 @@ CGString* BNFAlternative_createCAddPhrases(BNFAlternative* this, CGString* sente
     BNFPhrase* phrase = NULL;
     while ((phrase = CGArrayIterator_fetch(BNFPhrase, iter)) != NULL) {
         CGString* appendText = CGString__newWithSprintf("    BNFAlternative_addPhrase(%sSentenceAlternative%u, %sSentenceAlternative%uPhrase%u);\n", 
-            sentenceName, alternativeIndex, i);
+            sentenceName, alternativeIndex, sentenceName, alternativeIndex, i);
         CGString* text2 = CGString_append(text, appendText);
         CGString_delete(text);
         CGString_delete(appendText);
@@ -511,6 +511,21 @@ CGString* BNFSentence_createCAlternativesPhrasesConstructors(BNFSentence* this) 
         CGString* text2 = CGString_append(text, appendText);
         CGString_delete(text);
         CGString_delete(appendText);
+        text = text2;
+        i++;
+    }
+    return text;
+}
+CGString* BNFSentence_createCAlternativesAddPhrases(BNFSentence* this) {
+    CGString *text = CGString__new("");
+    CGArrayIterator(BNFAlternative)* iter = CGArrayIterator__new(BNFAlternative, this->alternatives);
+    unsigned i = 0;
+    BNFAlternative* alternative;
+    while ((alternative = CGArrayIterator_fetch(BNFAlternative, iter)) != NULL) {
+        CGString* ctext = BNFAlternative_createCAddPhrases(alternative, this->name, i);
+        CGString* text2 = CGString_append(text, ctext);
+        CGString_delete(text);
+        CGString_delete(ctext);
         text = text2;
         i++;
     }
