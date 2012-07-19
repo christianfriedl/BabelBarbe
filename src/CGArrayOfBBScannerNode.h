@@ -1,0 +1,9 @@
+#ifndef _CG_ARRAY_OF_BB_SCANNER_NODE_H
+#define _CG_ARRAY_OF_BB_SCANNER_NODE_H
+
+#include"BBScannerRule.h"
+
+DECLARE_ARRAY_FUNCS(BBScannerNode)
+DECLARE_ARRAY_ITERATOR_FUNCS(BBScannerNode)
+
+#endif

@@ -1,18 +1,18 @@
 #include<assert.h>
 #include<stdio.h>
 #include<cgenerics/CGAppState.h>
-#include"BNFToken.h"
-#include"BNFScannerRuleset.h"
+#include"BBToken.h"
+#include"BBScannerRuleset.h"
 
 CGAppState* appState;
-BNFScannerRule* startRule = NULL;
+BBScannerRule* startRule = NULL;
 
 void testNewDelete() {
     printf("%s... ", __func__);
 
     char* text = "xyz";
-    BNFToken* token = BNFToken__new(BNFTokenType_identifier, CGString__new(text));
-    BNFToken_delete(token);
+    BBToken* token = BBToken__new(BBTokenType_identifier, CGString__new(text));
+    BBToken_delete(token);
 
     printf("ok -- ");
 }
@@ -20,9 +20,9 @@ void testPrint() {
     printf("%s... ", __func__);
 
     char* text = "xyz";
-    BNFToken* token = BNFToken__new(BNFTokenType_identifier, CGString__new(text));
-    BNFToken_print(token);
-    BNFToken_delete(token);
+    BBToken* token = BBToken__new(BBTokenType_identifier, CGString__new(text));
+    BBToken_print(token);
+    BBToken_delete(token);
 
     printf("ok -- ");
 }
@@ -30,18 +30,18 @@ void testGetters() {
     printf("%s... ", __func__);
 
     char* text = "xyz";
-    BNFToken* token = BNFToken__new(BNFTokenType_identifier, CGString__new(text));
+    BBToken* token = BBToken__new(BBTokenType_identifier, CGString__new(text));
     CGString* string;
-    string = BNFToken_getTypeName(token);
+    string = BBToken_getTypeName(token);
     assert(string != NULL);
     printf("'%s' should contain a stringified token type\n", string);
-    string = BNFToken_toString(token);
+    string = BBToken_toString(token);
     assert(string != NULL);
     printf("'%s' should contain a stringified token\n", string);
-    string = BNFToken_getText(token);
+    string = BBToken_getText(token);
     assert(string != NULL);
     assert(!CGString__compare(string, CGString__new(text)));
-    BNFToken_delete(token);
+    BBToken_delete(token);
 
     printf("ok -- ");
 }
@@ -50,7 +50,7 @@ int main() {
     printf("=== %s ===\n", __FILE__);
 
     CGAppState__init(__FILE__);
-    startRule = BNFScannerRuleset__getInstance(); /* so that we initialize the token types */
+    startRule = BBScannerRuleset__getInstance(); /* so that we initialize the token types */
 
     testNewDelete();
     testPrint();

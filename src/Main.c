@@ -2,22 +2,22 @@
 #include<stdio.h>
 #include<cgenerics/CGAppState.h>
 #include<cgenerics/CGString.h>
-#include"BNFScanner.h"
-#include"BNFScannerRuleset.h"
-#include"BNF_RDParser.h"
-#include"BNFParserRuleset.h"
-#include"BNFCodeGenerator.h"
+#include"BBScanner.h"
+#include"BBScannerRuleset.h"
+#include"BB_RDParser.h"
+#include"BBParserRuleset.h"
+#include"BBCodeGenerator.h"
 
 
 CGAppState* appState;
 
-static BNFAst* Main__parse_(CGString* text) {
-    BNFScannerRule* scannerStartRule = BNFScannerRuleset__getInstance();
-    BNFScanner* scanner = BNFScanner__new(scannerStartRule, text);
-    BNF_RDParser* parser = BNF_RDParser__new(BNFParserRuleset__getInstance());
+static BBAst* Main__parse_(CGString* text) {
+    BBScannerRule* scannerStartRule = BBScannerRuleset__getInstance();
+    BBScanner* scanner = BBScanner__new(scannerStartRule, text);
+    BB_RDParser* parser = BB_RDParser__new(BBParserRuleset__getInstance());
 
-    CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
-    BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
+    CGArray(BBToken)* tokenList = BBScanner_scanAllTokens(scanner);
+    BBAst* ast = BB_RDParser_parse(parser, tokenList);
 
     return ast;
 }
@@ -54,10 +54,10 @@ int main(int argc, char *argv[]) {
     }
 
     CGString* text = Main__readInputFile(argv[1]);
-    BNFAst* ast = Main__parse_(text);
-    BNFCodeGenerator* cg = BNFCodeGenerator__new(ast);
-    CGString* code = BNFCodeGenerator_createCode(cg);
-    BNFCodeGenerator_delete(cg);
+    BBAst* ast = Main__parse_(text);
+    BBCodeGenerator* cg = BBCodeGenerator__new(ast);
+    CGString* code = BBCodeGenerator_createCode(cg);
+    BBCodeGenerator_delete(cg);
     printf("%s", code);
     CGString_delete(code);
     CGAppState__deInit();

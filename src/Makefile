@@ -21,8 +21,8 @@ INSTALLBIN=${PREFIX}/bin
 
 HEADERS=*.h
 STATIC_LIBRARY=libbbarbe.a 
-LIB_OBJECTS =  BNFToken.o BNFScanner.o BNFScannerRule.o CGArrayOfBNFScannerNode.o BNFScannerRuleset.o BNFAst.o BNF_RDParser.o BNFParserRuleset.o BNFCodeGenerator.o \
-			   BNFTokenType.o BNFTokenTypeFactory.o
+LIB_OBJECTS =  BBToken.o BBScanner.o BBScannerRule.o CGArrayOfBBScannerNode.o BBScannerRuleset.o BBAst.o BB_RDParser.o BBParserRuleset.o BBCodeGenerator.o \
+			   BBTokenType.o BBTokenTypeFactory.o
 BINARIES=bbarbe
 
 necessary-test: all tags manpages test

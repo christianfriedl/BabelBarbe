@@ -4,21 +4,21 @@
 #include<cgenerics/CGAppState.h>
 #include<cgenerics/CGString.h>
 #include<cgenerics/CGArray.h>
-#include"CGArrayOfBNFScannerNode.h"
-#include"BNFToken.h"
-#include"BNFScannerRule.h"
-#include"BNFScanner.h"
+#include"CGArrayOfBBScannerNode.h"
+#include"BBToken.h"
+#include"BBScannerRule.h"
+#include"BBScanner.h"
 
 CGAppState* appState;
-BNFScannerRule* startRule = NULL;
+BBScannerRule* startRule = NULL;
 
 void testNewDelete() {
     printf("%s... ", __func__);
     CGString* text = CGString__new("");
-    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, NULL);
-    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
-    BNFScanner* scanner = BNFScanner__new(rule, text);
-    BNFScanner_delete(scanner);
+    CGArray(BBScannerNode)* nodes = CGArray__newFromInitializerList(BBScannerNode, NULL);
+    BBScannerRule* rule = BBScannerRule__new(CGString__new(""), nodes);
+    BBScanner* scanner = BBScanner__new(rule, text);
+    BBScanner_delete(scanner);
     printf("ok -- ");
 }
 
@@ -26,17 +26,17 @@ void testIdentifier() {
     printf("%s... ", __func__);
 
     char* text = CGString__new("abcde");
-    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, BNFScannerNode__new(BNFScannerNodeType_regex, "\\w+", NULL, BNFTokenType_identifier, false, NULL), NULL);
-    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
-    BNFScanner* scanner = BNFScanner__new(rule, text);
-    BNFToken* token = BNFScanner_scanNextToken(scanner);
+    CGArray(BBScannerNode)* nodes = CGArray__newFromInitializerList(BBScannerNode, BBScannerNode__new(BBScannerNodeType_regex, "\\w+", NULL, BBTokenType_identifier, false, NULL), NULL);
+    BBScannerRule* rule = BBScannerRule__new(CGString__new(""), nodes);
+    BBScanner* scanner = BBScanner__new(rule, text);
+    BBToken* token = BBScanner_scanNextToken(scanner);
     assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_identifier);
-    CGString* tokenText = BNFToken_getText(token);
+    assert(BBToken_getType(token) == BBTokenType_identifier);
+    CGString* tokenText = BBToken_getText(token);
     assert(!CGString__compare(tokenText, text));
-    assert(BNFScanner_scanNextToken(scanner) == NULL);
-    BNFToken_delete(token);
-    BNFScanner_delete(scanner);
+    assert(BBScanner_scanNextToken(scanner) == NULL);
+    BBToken_delete(token);
+    BBScanner_delete(scanner);
 
     printf("ok -- ");
 }
@@ -45,18 +45,18 @@ void testIdentifierWithError() {
 
     CGString* text = CGString__new("abcde123");
     CGString* identText = CGString__new("abcde");
-    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode, BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", NULL, BNFTokenType_identifier, false, NULL), NULL);
-    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
-    BNFScanner* scanner = BNFScanner__new(rule, text);
-    BNFToken* token = BNFScanner_scanNextToken(scanner);
+    CGArray(BBScannerNode)* nodes = CGArray__newFromInitializerList(BBScannerNode, BBScannerNode__new(BBScannerNodeType_regex, "[a-z]+", NULL, BBTokenType_identifier, false, NULL), NULL);
+    BBScannerRule* rule = BBScannerRule__new(CGString__new(""), nodes);
+    BBScanner* scanner = BBScanner__new(rule, text);
+    BBToken* token = BBScanner_scanNextToken(scanner);
     assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_identifier);
-    CGString* tokenText = BNFToken_getText(token);
+    assert(BBToken_getType(token) == BBTokenType_identifier);
+    CGString* tokenText = BBToken_getText(token);
     assert(!CGString__compare(tokenText, identText));
-    assert(BNFScanner_scanNextToken(scanner) == NULL);
-    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_ScannerError) == true);
-    BNFToken_delete(token);
-    BNFScanner_delete(scanner);
+    assert(BBScanner_scanNextToken(scanner) == NULL);
+    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BBExceptionID_ScannerError) == true);
+    BBToken_delete(token);
+    BBScanner_delete(scanner);
 
     printf("ok -- ");
 }
@@ -64,54 +64,54 @@ void testNoise() {
     printf("%s... ", __func__);
 
     CGString* text = CGString__new("     ");
-    CGArray(BNFScannerNode)* nodes = CGArray__newFromInitializerList(BNFScannerNode,
-                                            BNFScannerNode__new(BNFScannerNodeType_regex, "\\s*", NULL, BNFTokenType_noise, true, NULL),
+    CGArray(BBScannerNode)* nodes = CGArray__newFromInitializerList(BBScannerNode,
+                                            BBScannerNode__new(BBScannerNodeType_regex, "\\s*", NULL, BBTokenType_noise, true, NULL),
                                             NULL);
-    BNFScannerRule* rule = BNFScannerRule__new(CGString__new(""), nodes);
-    BNFScanner* scanner = BNFScanner__new(rule, text);
-    BNFToken* token = BNFScanner_scanNextToken(scanner);
+    BBScannerRule* rule = BBScannerRule__new(CGString__new(""), nodes);
+    BBScanner* scanner = BBScanner__new(rule, text);
+    BBToken* token = BBScanner_scanNextToken(scanner);
     assert(token == NULL);
-    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BNFExceptionID_ScannerError) == true);
-    BNFScanner_delete(scanner);
+    assert(CGAppState_catchAndDeleteExceptionWithID(appState, BBExceptionID_ScannerError) == true);
+    BBScanner_delete(scanner);
 }
 void testComplexRuleset() {
     printf("%s... ", __func__);
 
     CGString* text = CGString__new("abcde ::= fghi;");
-    CGArray(BNFScannerNode)* startNodes;
-    CGArray(BNFScannerNode)* noiseNodes;
-    noiseNodes = CGArray__new(BNFScannerNode, 1);
-    BNFScannerRule* startRule;
-    BNFScannerRule* noiseRule = BNFScannerRule__new(CGString__new(""), noiseNodes);
-    startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
-                        BNFScannerNode__new(BNFScannerNodeType_regex, "[a-z]+", noiseRule, BNFTokenType_identifier, false, NULL), 
-                        BNFScannerNode__new(BNFScannerNodeType_string, "::=", noiseRule, BNFTokenType_definitionSign, false, NULL), 
-                        BNFScannerNode__new(BNFScannerNodeType_string, ";", noiseRule, BNFTokenType_semicolon, false, NULL), 
+    CGArray(BBScannerNode)* startNodes;
+    CGArray(BBScannerNode)* noiseNodes;
+    noiseNodes = CGArray__new(BBScannerNode, 1);
+    BBScannerRule* startRule;
+    BBScannerRule* noiseRule = BBScannerRule__new(CGString__new(""), noiseNodes);
+    startNodes = CGArray__newFromInitializerList(BBScannerNode, 
+                        BBScannerNode__new(BBScannerNodeType_regex, "[a-z]+", noiseRule, BBTokenType_identifier, false, NULL), 
+                        BBScannerNode__new(BBScannerNodeType_string, "::=", noiseRule, BBTokenType_definitionSign, false, NULL), 
+                        BBScannerNode__new(BBScannerNodeType_string, ";", noiseRule, BBTokenType_semicolon, false, NULL), 
                         NULL);
-    startRule = BNFScannerRule__new(CGString__new(""), startNodes);
-    CGArray_add(BNFScannerNode, noiseNodes, BNFScannerNode__new(BNFScannerNodeType_regex, "\\s*", startRule, BNFTokenType_noise, true, NULL));
+    startRule = BBScannerRule__new(CGString__new(""), startNodes);
+    CGArray_add(BBScannerNode, noiseNodes, BBScannerNode__new(BBScannerNodeType_regex, "\\s*", startRule, BBTokenType_noise, true, NULL));
 
-    BNFScanner* scanner = BNFScanner__new(startRule, text);
-    BNFToken* token = BNFScanner_scanNextToken(scanner);
+    BBScanner* scanner = BBScanner__new(startRule, text);
+    BBToken* token = BBScanner_scanNextToken(scanner);
     assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_identifier);
-    BNFToken_delete(token);
-    token = BNFScanner_scanNextToken(scanner);
+    assert(BBToken_getType(token) == BBTokenType_identifier);
+    BBToken_delete(token);
+    token = BBScanner_scanNextToken(scanner);
     assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_definitionSign);
-    printf("token: %s\n", BNFToken_toString(token));
-    BNFToken_delete(token);
-    token = BNFScanner_scanNextToken(scanner);
+    assert(BBToken_getType(token) == BBTokenType_definitionSign);
+    printf("token: %s\n", BBToken_toString(token));
+    BBToken_delete(token);
+    token = BBScanner_scanNextToken(scanner);
     assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_identifier);
-    BNFToken_delete(token);
-    token = BNFScanner_scanNextToken(scanner);
+    assert(BBToken_getType(token) == BBTokenType_identifier);
+    BBToken_delete(token);
+    token = BBScanner_scanNextToken(scanner);
     assert(token != NULL);
-    assert(BNFToken_getType(token) == BNFTokenType_semicolon);
-    BNFToken_delete(token);
-    token = BNFScanner_scanNextToken(scanner);
+    assert(BBToken_getType(token) == BBTokenType_semicolon);
+    BBToken_delete(token);
+    token = BBScanner_scanNextToken(scanner);
     assert(token == NULL);
-    BNFScanner_delete(scanner);
+    BBScanner_delete(scanner);
 
     printf("ok -- ");
 }
@@ -119,39 +119,39 @@ void testScanSameToken() {
     printf("%s... ", __func__);
 
     CGString* text = CGString__new("aaaaaaa");
-    CGArray(BNFScannerNode)* startNodes;
-    BNFScannerRule* startRule = NULL;
-	BNFScannerNode* startNode = BNFScannerNode__new(BNFScannerNodeType_string, "a", NULL, BNFTokenType_identifier, false, NULL);
-    startNodes = CGArray__newFromInitializerList(BNFScannerNode, 
+    CGArray(BBScannerNode)* startNodes;
+    BBScannerRule* startRule = NULL;
+	BBScannerNode* startNode = BBScannerNode__new(BBScannerNodeType_string, "a", NULL, BBTokenType_identifier, false, NULL);
+    startNodes = CGArray__newFromInitializerList(BBScannerNode, 
 						startNode,
                         NULL);
-    startRule = BNFScannerRule__new(CGString__new(""), startNodes);
-	BNFScannerNode_setFollowupRule(startNode, startRule);
+    startRule = BBScannerRule__new(CGString__new(""), startNodes);
+	BBScannerNode_setFollowupRule(startNode, startRule);
 
-    BNFScanner* scanner = BNFScanner__new(startRule, text);
+    BBScanner* scanner = BBScanner__new(startRule, text);
 
-    BNFToken* token = BNFScanner_scanNextToken(scanner);
+    BBToken* token = BBScanner_scanNextToken(scanner);
     assert(token != NULL);
-	printf("-%s-\n", BNFToken_getText(token));
-	assert(!CGString__compare(BNFToken_getText(token), "a"));
-    assert(BNFToken_getType(token) == BNFTokenType_identifier);
-    BNFToken_delete(token);
+	printf("-%s-\n", BBToken_getText(token));
+	assert(!CGString__compare(BBToken_getText(token), "a"));
+    assert(BBToken_getType(token) == BBTokenType_identifier);
+    BBToken_delete(token);
 
-    token = BNFScanner_scanNextToken(scanner);
+    token = BBScanner_scanNextToken(scanner);
     assert(token != NULL);
-	printf("-%s-\n", BNFToken_getText(token));
-	assert(!CGString__compare(BNFToken_getText(token), "a"));
-    assert(BNFToken_getType(token) == BNFTokenType_identifier);
-    BNFToken_delete(token);
+	printf("-%s-\n", BBToken_getText(token));
+	assert(!CGString__compare(BBToken_getText(token), "a"));
+    assert(BBToken_getType(token) == BBTokenType_identifier);
+    BBToken_delete(token);
 
-    token = BNFScanner_scanNextToken(scanner);
+    token = BBScanner_scanNextToken(scanner);
     assert(token != NULL);
-	printf("-%s-\n", BNFToken_getText(token));
-	assert(!CGString__compare(BNFToken_getText(token), "a"));
-    assert(BNFToken_getType(token) == BNFTokenType_identifier);
-    BNFToken_delete(token);
+	printf("-%s-\n", BBToken_getText(token));
+	assert(!CGString__compare(BBToken_getText(token), "a"));
+    assert(BBToken_getType(token) == BBTokenType_identifier);
+    BBToken_delete(token);
 
-    BNFScanner_delete(scanner);
+    BBScanner_delete(scanner);
 
     printf("%s ok\n", __func__);
 }
@@ -159,23 +159,23 @@ void testScanAllTokens() {
     printf("%s... ", __func__);
 
     CGString* text = CGString__new("aaaaaaa");
-    CGArray(BNFScannerNode)* startNodes;
-    BNFScannerRule* startRule;
-    BNFScannerNode* aNode = BNFScannerNode__new(BNFScannerNodeType_string, "a", NULL, BNFTokenType_identifier, false, NULL);
-    startNodes = CGArray__newFromInitializerList(BNFScannerNode, aNode, NULL);
-    startRule = BNFScannerRule__new(CGString__new(""), startNodes);
-    BNFScannerNode_setFollowupRule(aNode, startRule);
+    CGArray(BBScannerNode)* startNodes;
+    BBScannerRule* startRule;
+    BBScannerNode* aNode = BBScannerNode__new(BBScannerNodeType_string, "a", NULL, BBTokenType_identifier, false, NULL);
+    startNodes = CGArray__newFromInitializerList(BBScannerNode, aNode, NULL);
+    startRule = BBScannerRule__new(CGString__new(""), startNodes);
+    BBScannerNode_setFollowupRule(aNode, startRule);
 
-    BNFScanner* scanner = BNFScanner__new(startRule, text);
-	CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
+    BBScanner* scanner = BBScanner__new(startRule, text);
+	CGArray(BBToken)* tokenList = BBScanner_scanAllTokens(scanner);
     assert(tokenList != NULL);
-	printf("%u %u\n", CGArray_getSize(BNFToken, tokenList), CGString_getSize(text));
-	printf("-%s- -%s-\n", BNFToken_getText(CGArray_getValueAt(BNFToken, tokenList, 0)),
-		BNFToken_getText(CGArray_getValueAt(BNFToken, tokenList, 1)));
-	assert(CGArray_getSize(BNFToken, tokenList) == CGString_getSize(text));
-	assert(!CGString__compare(BNFToken_getText(CGArray_getValueAt(BNFToken, tokenList, 0)), CGString__new("a")));
+	printf("%u %u\n", CGArray_getSize(BBToken, tokenList), CGString_getSize(text));
+	printf("-%s- -%s-\n", BBToken_getText(CGArray_getValueAt(BBToken, tokenList, 0)),
+		BBToken_getText(CGArray_getValueAt(BBToken, tokenList, 1)));
+	assert(CGArray_getSize(BBToken, tokenList) == CGString_getSize(text));
+	assert(!CGString__compare(BBToken_getText(CGArray_getValueAt(BBToken, tokenList, 0)), CGString__new("a")));
 
-    BNFScanner_delete(scanner);
+    BBScanner_delete(scanner);
 
     printf("ok -- ");
 }
@@ -185,7 +185,7 @@ int main() {
     
     CGAppState__init(__FILE__);
     appState = CGAppState__getInstance();
-    startRule = BNFScannerRuleset__getInstance();
+    startRule = BBScannerRuleset__getInstance();
 
     testNewDelete();
     testIdentifier();

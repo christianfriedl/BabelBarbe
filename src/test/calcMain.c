@@ -1,26 +1,26 @@
 #include"/opt/local/include/pcre.h"
-#include<bbarbe/BNFTokenType.h>
-#include<bbarbe/BNFToken.h>
-#include<bbarbe/BNFScannerRule.h>
-#include<bbarbe/BNFAst.h>
-#include<bbarbe/BNF_RDParser.h>
+#include<bbarbe/BBTokenType.h>
+#include<bbarbe/BBToken.h>
+#include<bbarbe/BBScannerRule.h>
+#include<bbarbe/BBAst.h>
+#include<bbarbe/BB_RDParser.h>
 
 CGAppState* appState = NULL;
 
-BNFScannerRule* createScannerRuleset();
-BNFSentence* createParserRuleset();
+BBScannerRule* createScannerRuleset();
+BBSentence* createParserRuleset();
 
 int main() {
     CGAppState__init("calc");
-    BNFScannerRule* startRule = createScannerRuleset();
-    BNFSentence* startSentence = createParserRuleset();
+    BBScannerRule* startRule = createScannerRuleset();
+    BBSentence* startSentence = createParserRuleset();
     CGString* text = CGString__new("(1+2)*3");
-    BNFScanner* scanner = BNFScanner__new(startRule, text);
-    BNF_RDParser* parser = BNF_RDParser__new(startSentence);
-    CGArray(BNFToken)* tokenList = BNFScanner_scanAllTokens(scanner);
-    BNFAst* ast = BNF_RDParser_parse(parser, tokenList);
+    BBScanner* scanner = BBScanner__new(startRule, text);
+    BB_RDParser* parser = BB_RDParser__new(startSentence);
+    CGArray(BBToken)* tokenList = BBScanner_scanAllTokens(scanner);
+    BBAst* ast = BB_RDParser_parse(parser, tokenList);
     if (ast != NULL)
-        BNFAst_print(ast, 0);
+        BBAst_print(ast, 0);
     else
         printf("no resulting ast.\n");
     CGAppState__deInit();
