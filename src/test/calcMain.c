@@ -14,7 +14,7 @@ int main() {
     CGAppState__init("calc");
     BBScannerRule* startRule = createScannerRuleset();
     BBSentence* startSentence = createParserRuleset();
-    CGString* text = CGString__new("(1+2)*3");
+    CGString* text = CGString__new("( 1 +2 )*3");
     BBScanner* scanner = BBScanner__new(startRule, text);
     BB_RDParser* parser = BB_RDParser__new(startSentence);
     CGArray(BBToken)* tokenList = BBScanner_scanAllTokens(scanner);

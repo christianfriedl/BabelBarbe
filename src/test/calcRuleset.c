@@ -5,6 +5,7 @@
 #include<bbarbe/BB_RDParser.h>
 
 BBTokenType* BBTokenType_nonTerminal = NULL;
+BBTokenType* tokenTypeNoise = NULL;
 BBTokenType* BBTokenType_expression0 = NULL;
 BBTokenType* BBTokenType_expression1 = NULL;
 BBTokenType* BBTokenType_term0 = NULL;
@@ -21,6 +22,7 @@ BBScannerNode* scannerNode5 = NULL;
 BBScannerNode* scannerNode6 = NULL;
 BBScannerRule* scannerRuleStart = NULL;
 BBScannerRule* scannerRuleNoise = NULL;
+BBScannerNode* scannerNodeNoise = NULL;
 BBSentence* expressionStringLiteral0Sentence = NULL;
 BBSentence* expressionStringLiteral1Sentence = NULL;
 BBSentence* termStringLiteral0Sentence = NULL;
@@ -70,6 +72,7 @@ BBScannerRule* createScannerRuleset() {
     BBTokenType_literal0 = BBTokenType__new(20, "literal0");
     scannerRuleStart = BBScannerRule__new(CGString__new("start"), NULL);
     scannerRuleNoise = BBScannerRule__new(CGString__new("noise"), NULL);
+    scannerNodeNoise = BBScannerNode__new(BBScannerNodeType_regex, "\\s*", scannerRuleStart, BBTokenType_noise, true, NULL);
     scannerNode0 = BBScannerNode__new(BBScannerNodeType_string, CGString__new("+"), scannerRuleNoise, BBTokenType_expression0, false, NULL);
     scannerNode1 = BBScannerNode__new(BBScannerNodeType_string, CGString__new("-"), scannerRuleNoise, BBTokenType_expression1, false, NULL);
     scannerNode2 = BBScannerNode__new(BBScannerNodeType_string, CGString__new("*"), scannerRuleNoise, BBTokenType_term0, false, NULL);
@@ -77,8 +80,8 @@ BBScannerRule* createScannerRuleset() {
     scannerNode4 = BBScannerNode__new(BBScannerNodeType_string, CGString__new("("), scannerRuleNoise, BBTokenType_factor0, false, NULL);
     scannerNode5 = BBScannerNode__new(BBScannerNodeType_string, CGString__new(")"), scannerRuleNoise, BBTokenType_factor1, false, NULL);
     scannerNode6 = BBScannerNode__new(BBScannerNodeType_regex, CGString__new("\\d+"), scannerRuleNoise, BBTokenType_literal0, false, NULL);
-    BBScannerRule_setNodes(scannerRuleStart, CGArray__newFromInitializerList(BBScannerNode, scannerNode0, scannerNode1, scannerNode2, scannerNode3, scannerNode4, scannerNode5, scannerNode6, NULL));
-    BBScannerRule_setNodes(scannerRuleNoise, CGArray__newFromInitializerList(BBScannerNode, scannerNode0, scannerNode1, scannerNode2, scannerNode3, scannerNode4, scannerNode5, scannerNode6, NULL));
+    BBScannerRule_setNodes(scannerRuleStart, CGArray__newFromInitializerList(BBScannerNode, scannerNode0, scannerNode1, scannerNode2, scannerNode3, scannerNode4, scannerNode5, scannerNode6, scannerNodeNoise, NULL));
+    BBScannerRule_setNodes(scannerRuleNoise, CGArray__newFromInitializerList(BBScannerNode, scannerNodeNoise, NULL));
     return scannerRuleStart;
 }
 

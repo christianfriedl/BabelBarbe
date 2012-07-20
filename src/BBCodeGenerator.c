@@ -247,6 +247,7 @@ CGString* BBCodeGenerator_createCode(BBCodeGenerator* this) {
 
     text = BBTokenType_createCDeclaration(this->nonTerminalTokenType);
     resultText = CGString_append_I(resultText, text);
+    resultText = CGString_append_I(resultText, "BBTokenType* tokenTypeNoise = NULL;\n");
 
     CGArrayIterator(BBTokenType)* tokenTypeIter = CGArrayIterator__new(BBTokenType, this->tokenTypes);
     BBTokenType *tt = NULL;
@@ -264,6 +265,7 @@ CGString* BBCodeGenerator_createCode(BBCodeGenerator* this) {
     }
     resultText = CGString_append_I(resultText, "BBScannerRule* scannerRuleStart = NULL;\n");
     resultText = CGString_append_I(resultText, "BBScannerRule* scannerRuleNoise = NULL;\n");
+    resultText = CGString_append_I(resultText, "BBScannerNode* scannerNodeNoise = NULL;\n");
     CGArrayIterator(BBSentence)* terminalSentenceIter = CGArrayIterator__new(BBSentence, this->terminalSentences);
     while ((sentence = CGArrayIterator_fetch(BBSentence, terminalSentenceIter)) != NULL) {
         text = BBSentence_createCDeclaration(sentence);
@@ -297,6 +299,7 @@ CGString* BBCodeGenerator_createCode(BBCodeGenerator* this) {
     }
     resultText = CGString_append_I(resultText, "    scannerRuleStart = BBScannerRule__new(CGString__new(\"start\"), NULL);\n");
     resultText = CGString_append_I(resultText, "    scannerRuleNoise = BBScannerRule__new(CGString__new(\"noise\"), NULL);\n");
+    resultText = CGString_append_I(resultText, "    scannerNodeNoise = BBScannerNode__new(BBScannerNodeType_regex, \"\\\\s*\", scannerRuleStart, BBTokenType_noise, true, NULL);\n");
     CGArrayIterator_reset(BBScannerNode, scannerNodeIter);
     i = 0;
     while ((node = CGArrayIterator_fetch(BBScannerNode, scannerNodeIter)) != NULL) {
@@ -313,17 +316,8 @@ CGString* BBCodeGenerator_createCode(BBCodeGenerator* this) {
         resultText = CGString_appendWithSprintf_I(resultText, "scannerNode%u", i);
         i++;
     }
-    resultText = CGString_append_I(resultText, ", NULL));\n");
-    resultText = CGString_append_I(resultText, "    BBScannerRule_setNodes(scannerRuleNoise, CGArray__newFromInitializerList(BBScannerNode, ");
-    CGArrayIterator_reset(BBScannerNode, scannerNodeIter);
-    i = 0;
-    while ((node = CGArrayIterator_fetch(BBScannerNode, scannerNodeIter)) != NULL) {
-        if (i>0)
-            resultText = CGString_append_I(resultText, ", ");
-        resultText = CGString_appendWithSprintf_I(resultText, "scannerNode%u", i);
-        i++;
-    }
-    resultText = CGString_append_I(resultText, ", NULL));\n");
+    resultText = CGString_append_I(resultText, ", scannerNodeNoise, NULL));\n");
+    resultText = CGString_append_I(resultText, "    BBScannerRule_setNodes(scannerRuleNoise, CGArray__newFromInitializerList(BBScannerNode, scannerNodeNoise, NULL));\n");
     resultText = CGString_append_I(resultText, "    return scannerRuleStart;\n}\n");
 
     resultText = CGString_append_I(resultText, "\n");
