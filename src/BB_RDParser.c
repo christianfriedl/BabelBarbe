@@ -15,6 +15,8 @@ DEFINE_ARRAY_ITERATOR(BBAlternative);
 DEFINE_ARRAY_ITERATOR(BBSentence);
 DEFINE_ARRAY_ITERATOR(BBPhrase);
 
+static void BBSentence_resetTokenIterator_(BBSentence* this, CGArrayIterator(BBToken)* iter, bool isStarted, unsigned int index);
+
 BBAst* BBSentence_parse(BBSentence* this, CGArrayIterator(BBToken)* tokenIterator);
 
 CGString* BBPhraseRepeatSwitch_toString(BBPhraseRepeatSwitch this) {
@@ -212,13 +214,19 @@ void BBSentence_delete(BBSentence* this) {
     free(this);
 }
 
+static void BBSentence_resetTokenIterator_(BBSentence* this, CGArrayIterator(BBToken)* iter, bool isStarted, unsigned int index) {
+    if (isStarted)
+        CGArrayIterator_moveToIndex(BBToken, iter, index);
+    else
+        CGArrayIterator_reset(BBToken, iter);
+}
 BBAst* BBSentence_parse(BBSentence* this, CGArrayIterator(BBToken)* tokenIterator) {
     if (this->alternatives == NULL) { /* this is a terminal symbol */
         BBToken* token = CGArrayIterator_fetch(BBToken, tokenIterator);
         #ifdef DEBUG
         printf("terminal symbol sentence for token %s %s\n", token != NULL ? BBToken_getTypeName(token): "(NULL)" , token != NULL ? BBToken_getText(token) : "(NULL)");
         #endif
-        if (token == NULL) {
+        if (token == NULL) { /* end of token list */
             return NULL;
         } else if (BBTokenType_isEqual(BBToken_getType(token), this->tokenType))
             return BBAst__new(NULL, token, this);
@@ -226,7 +234,9 @@ BBAst* BBSentence_parse(BBSentence* this, CGArrayIterator(BBToken)* tokenIterato
             CGArrayIterator_unFetch(BBToken, tokenIterator);
             return NULL;
         }
-    } else {
+    } else { /* nonterminal */
+        bool isStartedBeforeSentence = CGArrayIterator_getHasStarted(BBToken, tokenIterator);
+        unsigned int indexBeforeSentence = CGArrayIterator_getCurrentIndex(BBToken, tokenIterator);
         BBAst* ast = NULL;
         CGArrayIterator(BBAlternative)* alternativesIterator = CGArrayIterator__new(BBAlternative, this->alternatives);
         BBAlternative* alternative = NULL;
@@ -240,6 +250,8 @@ BBAst* BBSentence_parse(BBSentence* this, CGArrayIterator(BBToken)* tokenIterato
                 break;
             } else if (CGAppState_isExceptionRaisedWithID(CGAppState__getInstance(), BBExceptionID_ScannerError))
                 return NULL;
+            else
+                BBSentence_resetTokenIterator_(this, tokenIterator, isStartedBeforeSentence, indexBeforeSentence);
             /* Possible TODO: warn if there are multiple applicable alternatives */
         }
         return ast;

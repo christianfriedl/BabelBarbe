@@ -216,6 +216,76 @@ void testRepetition() {
     printf("%s ok\n", __func__);
 }
 
+/*
+ * start ::= rule1 | rule2 ;
+ * rule1 ::= identifier semicolon ;
+ * rule2 ::= identifier definitionSign ;
+ */
+void testTwoAlternativesWithSameStartKeyword() {
+    printf("%s...\n", __func__);
+
+    CGAppState_reset(CGAppState__getInstance());
+    CGString* nonterminalName = CGString__new("nonterminal");
+    CGString* identName = CGString__new("ident");
+    CGString* semicolonName = CGString__new("semicolon");
+    CGString* definitionSignName = CGString__new("definitionSign");
+    BBToken* tokenNonterminal = BBToken__new(BBTokenType_nonTerminal, CGString__new(identName));
+    BBToken* tokenIdent = BBToken__new(BBTokenType_identifier, CGString__new(identName));
+    BBToken* tokenSemicolon = BBToken__new(BBTokenType_semicolon, CGString__new(semicolonName));
+    BBToken* tokenDefinitionSign = BBToken__new(BBTokenType_definitionSign, CGString__new(definitionSignName));
+
+    BBSentence* identifierSentence = BBSentence__new(identName, BBTokenType_identifier, NULL);
+    BBSentence* semicolonSentence = BBSentence__new(semicolonName, BBTokenType_semicolon, NULL);
+    BBSentence* definitionSignSentence = BBSentence__new(definitionSignName, BBTokenType_definitionSign, NULL);
+
+    BBPhrase* rule1Alternative0Phrase0 = BBPhrase__new(BBPhraseRepeat_once, CGArray__newFromInitializerList(BBSentence, identifierSentence, semicolonSentence, NULL));
+    BBAlternative* rule1Alternative0 = BBAlternative__new(CGArray__newFromInitializerList(BBPhrase, rule1Alternative0Phrase0, NULL));
+    BBSentence* rule1Sentence = BBSentence__new(CGString__new("rule1"), BBTokenType_nonTerminal, CGArray__newFromInitializerList(BBAlternative, rule1Alternative0, NULL));
+
+    BBPhrase* rule2Alternative0Phrase0 = BBPhrase__new(BBPhraseRepeat_once, CGArray__newFromInitializerList(BBSentence, identifierSentence, definitionSignSentence, NULL));
+    BBAlternative* rule2Alternative0 = BBAlternative__new(CGArray__newFromInitializerList(BBPhrase, rule2Alternative0Phrase0, NULL));
+    BBSentence* rule2Sentence = BBSentence__new(CGString__new("rule2"), BBTokenType_nonTerminal, CGArray__newFromInitializerList(BBAlternative, rule2Alternative0, NULL));
+
+    BBPhrase* startAlternative0Phrase0 = BBPhrase__new(BBPhraseRepeat_once, CGArray__newFromInitializerList(BBSentence, rule1Sentence, NULL));
+    BBPhrase* startAlternative1Phrase0 = BBPhrase__new(BBPhraseRepeat_once, CGArray__newFromInitializerList(BBSentence, rule2Sentence, NULL));
+    BBAlternative* startAlternative0 = BBAlternative__new(CGArray__newFromInitializerList(BBPhrase, startAlternative0Phrase0, NULL));
+    BBAlternative* startAlternative1 = BBAlternative__new(CGArray__newFromInitializerList(BBPhrase, startAlternative1Phrase0, NULL));
+    BBSentence* startSentence = BBSentence__new(CGString__new("start"), BBTokenType_nonTerminal, CGArray__newFromInitializerList(BBAlternative, startAlternative0, startAlternative1, NULL));
+
+    BB_RDParser* parser = BB_RDParser__new(startSentence);
+    BB_RDParser_print(parser);
+
+    /* 1. identifier semicolon */
+    CGArray(BBToken)* tokenList = CGArray__newFromInitializerList(BBToken, tokenIdent, tokenSemicolon, NULL);
+    BBAst* ast = BB_RDParser_parse(parser, tokenList);
+    BBAst_print(ast, 0);
+    assert(BBAst_getSentence(ast) == startSentence);
+    BBAst* ruleLeaf = BBAst_getSubAstAt(ast, 0);
+    assert(BBAst_getSentence(ruleLeaf) == rule1Sentence);
+    BBAst* identLeaf = BBAst_getSubAstAt(ruleLeaf, 0);
+    assert(BBAst_getSentence(identLeaf) == identifierSentence);
+    BBAst* secondLeaf = BBAst_getSubAstAt(ruleLeaf, 1);
+    assert(BBAst_getSentence(secondLeaf) == semicolonSentence);
+
+    /* 1. identifier definitionSign */
+    tokenList = CGArray__newFromInitializerList(BBToken, tokenIdent, tokenDefinitionSign, NULL);
+    ast = BB_RDParser_parse(parser, tokenList);
+    BBAst_print(ast, 0);
+    assert(BBAst_getSentence(ast) == startSentence);
+    ruleLeaf = BBAst_getSubAstAt(ast, 0);
+    assert(BBAst_getSentence(ruleLeaf) == rule2Sentence);
+    identLeaf = BBAst_getSubAstAt(ruleLeaf, 0);
+    assert(BBAst_getSentence(identLeaf) == identifierSentence);
+    secondLeaf = BBAst_getSubAstAt(ruleLeaf, 1);
+    assert(BBAst_getSentence(secondLeaf) == definitionSignSentence);
+
+
+
+    BB_RDParser_delete(parser);
+
+    printf("%s ok\n", __func__);
+}
+
 
 int main() {
     CGAppState__init(__FILE__);
@@ -229,6 +299,7 @@ int main() {
     testTwoAlternativesWithoutRepetition();
     testTwoAlternativesAndTwoPhrasesWithoutRepetition();
     testRepetition();
+    testTwoAlternativesWithSameStartKeyword();
 
     /* testing errors */
     /* testUnexpectedEOF(); */
